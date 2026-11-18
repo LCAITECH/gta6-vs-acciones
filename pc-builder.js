@@ -135,6 +135,7 @@ function applyPreset(id, silent) {
   });
   syncBuildSelects();
   renderBuild();
+  window.__gtaBuilder?.onBuildChange?.();
   if (!silent) {
     const g = G();
     if (g?.track) g.track("build_pc");
@@ -237,8 +238,11 @@ function useAsGoal() {
   }
   const g = G();
   if (g?.track) g.track("build_pc");
-  const tab = document.querySelector('.d-subtabs [data-pane="meta"]');
-  if (tab) tab.click();
+  if (typeof window.__gtaUseArmadoAsMetas === "function") window.__gtaUseArmadoAsMetas();
+  else {
+    const tab = document.querySelector('.d-subtabs [data-pane="metas"]') || document.querySelector('.d-subtabs [data-pane="meta"]');
+    if (tab) tab.click();
+  }
 }
 
 function metrics(it) {
@@ -339,6 +343,7 @@ function showPane(name) {
     }
     renderBuild();
   }
+  if (name === "metas" && typeof window.__gtaRenderMetas === "function") window.__gtaRenderMetas();
 }
 
 async function loadHw() {
@@ -367,6 +372,7 @@ function bind() {
       document.querySelectorAll("#d-presets [data-preset]").forEach((b) => b.setAttribute("aria-pressed", "false"));
       if (id === "b-cpu" || id === "b-ram") syncBuildSelects();
       renderBuild();
+      window.__gtaBuilder?.onBuildChange?.();
     });
   });
   $("b-use-goal")?.addEventListener("click", useAsGoal);
@@ -402,3 +408,18 @@ async function init() {
 }
 
 init();
+
+window.__gtaBuilder = {
+  get hw() { return hw; },
+  get byId() { return byId; },
+  get build() { return build; },
+  buildTotal,
+  selectedParts,
+  compatErrors,
+  itemsOf,
+  cheapestOfGroup,
+  mep,
+  ttwo,
+  toUsd,
+  onBuildChange: null,
+};

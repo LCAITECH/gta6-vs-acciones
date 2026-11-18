@@ -432,6 +432,7 @@
       <nav class="d-subtabs" id="d-subtabs" aria-label="Dentro del desafío">
         <button type="button" data-pane="comparar" aria-selected="true">Comparar</button>
         <button type="button" data-pane="armar">Armar PC</button>
+        <button type="button" data-pane="metas">Metas</button>
         <button type="button" data-pane="meta">Meta y simulación</button>
         <button type="button" data-pane="encuesta">Encuesta</button>
       </nav>
@@ -480,6 +481,46 @@
           <div class="case3d-wrap panel">
             <h4>Gabinete</h4>
             <div id="case3d" class="case3d"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="d-pane" data-pane="metas" hidden>
+        <h3>Tus metas</h3>
+        <p class="muted">Elegí qué querés comprarte. El monto es el precio verificado, pasado a dólares al MEP del día. Los plazos son una cuenta, no una promesa.</p>
+        <div class="metas-layout">
+          <form class="panel" id="m-form" autocomplete="off">
+            <label for="m-type">¿Cuál es tu objetivo?</label>
+            <select id="m-type">
+              <option value="pc">Mi PC nueva</option>
+              <option value="gpu">Una placa de video</option>
+              <option value="ram">Más memoria RAM</option>
+              <option value="cpu">Un procesador nuevo</option>
+            </select>
+            <label for="m-item">Elegí el modelo</label>
+            <select id="m-item"></select>
+            <p class="muted" id="m-item-info"></p>
+            <div class="row">
+              <div><label for="m-initial">Aporte inicial (US$)</label><input id="m-initial" type="number" min="0" step="0.01" value="100"></div>
+              <div><label for="m-monthly">Aporte mensual (US$)</label><input id="m-monthly" type="number" min="0" step="0.01" value="10"></div>
+            </div>
+            <label for="m-start">Desde</label>
+            <input id="m-start" type="date" value="2026-11-18">
+            <label for="m-drop">Si el componente baja: <strong id="m-drop-val">20%</strong></label>
+            <input id="m-drop" type="range" min="0" max="40" step="5" value="20" aria-valuemin="0" aria-valuemax="40">
+            <div class="chips" id="m-drop-chips" role="group" aria-label="Baja del componente">
+              <button type="button" data-drop="10">10%</button>
+              <button type="button" data-drop="20" aria-pressed="true">20%</button>
+              <button type="button" data-drop="30">30%</button>
+            </div>
+            <label for="m-ttwo">Supuesto de TTWO: <strong id="m-ttwo-val">0%</strong></label>
+            <input id="m-ttwo" type="range" min="-50" max="100" step="5" value="0">
+            <p class="fine-inline">El supuesto de TTWO interpola el precio en línea recta hasta esa variación a los 24 meses, igual que el simulador. No es un pronóstico.</p>
+          </form>
+          <div>
+            <div class="danger-box" id="m-disclaimer" role="note"></div>
+            <div id="m-out" aria-live="polite"></div>
           </div>
         </div>
       </div>
@@ -661,6 +702,7 @@
   <script src="app.js" type="module"></script>
   <script src="extras.js" type="module"></script>
   <script src="pc-builder.js" type="module"></script>
+  <script src="goals.js" type="module"></script>
   <script src="ttwo-chart.js" type="module"></script>
 </body>
 </html>
