@@ -714,3 +714,20 @@ label, .muted, .hint, .check, .stat .k, .stat .s, .legend, .ticker .meta,
 .cta.alt { background: linear-gradient(90deg, #9b89f5, #f976b0); }
 .share-actions .muted { word-break: break-word; }
 @media (max-width: 900px) { .share-layout { grid-template-columns: 1fr; } }
+
+/* ----- Price autofill clarity ----- */
+[hidden] { display: none !important; }
+.badge { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; vertical-align: 1px; text-shadow: none; }
+.badge.official { background: #ffdf80; color: #1a0b16; box-shadow: 0 0 10px #ffdf8088; }
+.badge.custom { background: #9b89f5; color: #0d0820; box-shadow: 0 0 10px #9b89f588; }
+.badge.missing { background: #f4717c; color: #1a0b16; box-shadow: 0 0 10px #f4717c88; }
+.price-hint { color: var(--muted); font-size: 13px; }
+.price-hint strong { color: var(--gold); }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--sky); text-decoration: underline; cursor: pointer; font: inherit; text-shadow: 0 0 8px #99ccff55; }
+.linkbtn:hover { color: var(--gold); }
+#custom-row { border-radius: 14px; }
+#custom-row.flash { animation: priceFlash 1.1s ease-out; }
+@keyframes priceFlash {
+  0% { box-shadow: 0 0 0 2px #ffdf80, 0 0 28px #f976b0; background: #ffdf8022; }
+  100% { box-shadow: 0 0 0 0 transparent; background: transparent; }
+}

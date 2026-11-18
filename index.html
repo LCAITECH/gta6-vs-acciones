@@ -162,7 +162,6 @@
           <option value="standard">Estándar</option>
           <option value="ultimate" selected>Ultimate</option>
           <option value="xbox-upgrade">Mejora a Ultimate (solo Xbox)</option>
-          <option value="custom">Monto personalizado</option>
         </select>
 
         <label for="store">Tienda</label>
@@ -171,12 +170,11 @@
           <option value="xbox">Xbox Store Argentina (ARS)</option>
           <option value="official">Precio de lista oficial (USD)</option>
         </select>
-        <p class="hint">Las reservas abrieron el 25/06/2026. El lanzamiento es el 19/11/2026 en PS5 y Xbox Series X|S. En PC, por ahora, no publicado.</p>
 
-        <div class="row" id="custom-row" hidden>
+        <div class="row" id="custom-row">
           <div>
-            <label for="custom-amount">Monto</label>
-            <input id="custom-amount" type="number" min="0" step="0.01" value="99.99">
+            <label for="custom-amount">Monto (sin impuestos) <span class="badge" id="amount-badge">Precio oficial</span></label>
+            <input id="custom-amount" type="number" min="0" step="0.01" value="99.99" inputmode="decimal">
           </div>
           <div>
             <label for="custom-ccy">Moneda</label>
@@ -186,25 +184,27 @@
             </select>
           </div>
         </div>
+        <p class="hint price-hint" id="price-hint"></p>
+        <p class="hint">Las reservas abrieron el 25/06/2026. El lanzamiento es el 19/11/2026 en PS5 y Xbox Series X|S. En PC, por ahora, no publicado.</p>
 
         <label for="purchase-date">Fecha de compra</label>
         <input id="purchase-date" type="date" value="2026-06-25" min="2024-11-18" max="2026-11-19">
-        <p class="hint">Si el mercado estuvo cerrado ese día, usamos el último cierre anterior. Por defecto, el día en que abrieron las reservas.</p>
+        <p class="hint">Cuándo pagaste. Por defecto, 25/06/2026 (apertura de reservas). Si ese día la bolsa estaba cerrada, usamos el cierre anterior.</p>
 
         <div class="row">
           <div>
-            <label for="dlc">DLC y add-ons pagos (opcional)</label>
+            <label for="dlc">DLC / add-ons pagos (opcional, sin impuestos)</label>
             <input id="dlc" type="number" min="0" step="0.01" value="0">
           </div>
           <div>
-            <label for="dlc-ccy">Moneda del extra</label>
+            <label for="dlc-ccy">Moneda del DLC</label>
             <select id="dlc-ccy">
               <option value="USD" selected>USD</option>
               <option value="ARS">ARS</option>
             </select>
           </div>
         </div>
-        <p class="hint">Los precios de DLC de historia de GTA 6 no estaban publicados al 18/11/2026. Podés cargar lo que ya gastaste o un escenario.</p>
+        <p class="hint">Los precios de DLC de historia de GTA 6 no estaban publicados al 18/11/2026. Si compraste algo extra, cargá el total; dejalo en 0 si no. Los impuestos se suman solos.</p>
 
         <label for="gtaplus-months">Meses extra de GTA+ (después del de cortesía)</label>
         <input id="gtaplus-months" type="number" min="0" step="1" value="0">

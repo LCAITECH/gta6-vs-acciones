@@ -53,33 +53,17 @@ function computeSpend() {
   let listCcy = "USD";
   let note = "";
 
-  if (edition === "custom") {
-    const amount = Math.max(0, Number($("custom-amount").value) || 0);
-    const ccy = $("custom-ccy").value;
-    if (ccy === "ARS") {
-      listArs = amount;
-      listUsd = amount / fxBuy;
-      listCcy = "ARS";
-    } else {
-      listUsd = amount;
-      listArs = amount * fxBuy;
-    }
-  } else if (edition === "xbox-upgrade") {
-    if (store !== "xbox") {
-      note = "La mejora a Ultimate solo tenía precio publicado en Xbox Store Argentina (ARS 28.691). En PlayStation Store figuraba como no disponible. La cuenta usa el precio de Xbox.";
-    }
-    listArs = PRICES["xbox-upgrade"].xboxArs;
-    listUsd = listArs / fxBuy;
-    listCcy = "ARS";
-  } else if (store === "xbox") {
-    listArs = PRICES[edition].xboxArs;
-    listUsd = listArs / fxBuy;
+  const amount = Math.max(0, Number($("custom-amount").value) || 0);
+  const ccy = $("custom-ccy").value;
+  if (ccy === "ARS") {
+    listArs = amount;
+    listUsd = amount / fxBuy;
     listCcy = "ARS";
   } else {
-    listUsd = PRICES[edition].usd;
-    listArs = listUsd * fxBuy;
-    listCcy = "USD";
+    listUsd = amount;
+    listArs = amount * fxBuy;
   }
+  if (amountMode === "missing" && !amount) note = "Esta combinación no tiene precio publicado: cargá el monto que pagaste.";
 
   const taxedUsd = listUsd * factor;
   const taxedArs = listArs * factor;
@@ -440,7 +424,7 @@ function renderCompare(model) {
   const percApplies = false;
   const ivaBank = 0.21;
 
-  const xboxArs = store === "xbox" || model.edition === "xbox-upgrade";
+  const xboxArs = model.listCcy === "ARS";
   const extrasUsd = model.dlcUsd + model.plusUsd;
   let bankArs;
   let usdEquiv;
@@ -503,6 +487,7 @@ let quotes = [];
 let latestQuote = null;
 let fx = null;
 let lastCompare = null;
+let amountMode = "official"; // official | custom | missing
 let lastModel = null;
 let chartFrame = 0;
 
@@ -525,6 +510,8 @@ async function boot() {
   }
   $("purchase-date").min = quotes[0].date;
   loadStateFromUrl();
+  if (urlAmountMode === "custom") { amountMode = "custom"; renderPriceHint(); }
+  else applyOfficialPrice(false);
   bind();
   bindShare();
   bindTracking();
@@ -559,12 +546,17 @@ function bindParallax() {
 
 function bind() {
   $("edition").addEventListener("change", () => {
-    $("custom-row").hidden = $("edition").value !== "custom";
     if ($("edition").value === "xbox-upgrade") $("store").value = "xbox";
+    applyOfficialPrice(true);
     update();
   });
+  $("store").addEventListener("change", () => {
+    applyOfficialPrice(true);
+    update();
+  });
+  $("custom-amount").addEventListener("input", markCustom);
+  $("custom-ccy").addEventListener("change", () => { markCustom(); update(); });
   [
-    "store",
     "custom-amount",
     "custom-ccy",
     "purchase-date",
@@ -649,11 +641,15 @@ function saveStateToUrl() {
     q.set(id, el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value);
   });
   q.set("binance-iva", binanceIva ? "1" : "0");
+  q.set("amount-mode", amountMode);
   history.replaceState(null, "", `${location.pathname}?${q.toString()}${location.hash}`);
 }
 
+let urlAmountMode = null;
 function loadStateFromUrl() {
   const q = new URLSearchParams(location.search);
+  const legacyCustom = q.get("edition") === "custom";
+  if (legacyCustom) q.set("edition", "ultimate"); // legacy links
   if (![...q.keys()].length) return;
   STATE_IDS.forEach((id) => {
     const el = $(id);
@@ -664,7 +660,7 @@ function loadStateFromUrl() {
     else el.value = v.slice(0, 32);
   });
   if (q.has("binance-iva")) binanceIva = q.get("binance-iva") === "1";
-  $("custom-row").hidden = $("edition").value !== "custom";
+  urlAmountMode = q.get("amount-mode") || (legacyCustom ? "custom" : null);
 }
 
 function shareUrl() {
@@ -852,4 +848,61 @@ function bindTracking() {
     if (href.includes("bingx.com")) track("cta-bingx");
     else if (href.includes("binance.com")) track("cta-binance");
   });
+}
+
+
+// ---------- Official price autofill ----------
+const STORE_LABEL = { ps: "PlayStation Store AR", xbox: "Xbox Store AR", official: "la lista oficial de Take-Two" };
+function officialPrice(edition, store) {
+  const p = PRICES[edition];
+  if (!p) return null;
+  if (store === "xbox") return p.xboxArs ? { amount: p.xboxArs, ccy: "ARS" } : null;
+  return p.usd ? { amount: p.usd, ccy: "USD" } : null;
+}
+function fmtPrice(o) {
+  return o.ccy === "ARS" ? `ARS ${o.amount.toLocaleString("es-AR")}` : `US$ ${fmtAR.format(o.amount)}`;
+}
+function renderPriceHint() {
+  const off = officialPrice($("edition").value, $("store").value);
+  const badge = $("amount-badge");
+  const hint = $("price-hint");
+  const where = STORE_LABEL[$("store").value];
+  badge.className = "badge " + amountMode;
+  if (amountMode === "official" && off) {
+    badge.textContent = "Precio oficial";
+    hint.innerHTML = `Precio oficial en ${where}: <strong>${fmtPrice(off)}</strong>. Autocompletado; podés editarlo.`;
+  } else if (amountMode === "custom") {
+    badge.textContent = "Personalizado";
+    hint.innerHTML = off
+      ? `Monto editado a mano. Precio oficial en ${where}: ${fmtPrice(off)}. <button type="button" class="linkbtn" id="restore-price">Restaurar precio oficial</button>`
+      : `Monto editado a mano. Esta combinación no tiene precio publicado.`;
+  } else {
+    badge.textContent = "Sin precio publicado";
+    const why = $("edition").value === "xbox-upgrade" && $("store").value === "ps" ? " (en PlayStation Store figura como no disponible)" : "";
+    hint.innerHTML = `No hay precio publicado para esta edición en ${where}${why}. Escribí el monto que pagaste.`;
+  }
+  const r = $("restore-price");
+  if (r) r.addEventListener("click", () => { applyOfficialPrice(true); update(); });
+}
+function applyOfficialPrice(flash) {
+  const off = officialPrice($("edition").value, $("store").value);
+  if (off) {
+    $("custom-amount").value = off.amount;
+    $("custom-ccy").value = off.ccy;
+    amountMode = "official";
+  } else {
+    $("custom-amount").value = "";
+    $("custom-amount").placeholder = "Escribí el monto";
+    $("custom-ccy").value = $("store").value === "xbox" ? "ARS" : "USD";
+    amountMode = "missing";
+  }
+  renderPriceHint();
+  if (flash && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const row = $("custom-row");
+    row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
+  }
+}
+function markCustom() {
+  amountMode = "custom";
+  renderPriceHint();
 }
