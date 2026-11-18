@@ -13,6 +13,93 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0c1a'/%3E%3Cpath d='M10 42 L26 26 L38 34 L54 16' stroke='%23f976b0' stroke-width='5' fill='none'/%3E%3Cpath d='M10 48 H54' stroke='%23ffdf80' stroke-width='4' fill='none'/%3E%3C/svg%3E">
 </head>
 <body>
+  <div class="miami-scene" aria-hidden="true">
+    <div class="sky"></div>
+    <div class="sun-wrap">
+      <svg class="sun" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sunFill" cx="50%" cy="45%" r="60%">
+            <stop offset="0%" stop-color="#fff1b8"/>
+            <stop offset="35%" stop-color="#ffdf80"/>
+            <stop offset="70%" stop-color="#f4717c"/>
+            <stop offset="100%" stop-color="#e963c7"/>
+          </radialGradient>
+          <mask id="sunStripes">
+            <rect width="200" height="200" fill="#000"/>
+            <rect x="0" y="8" width="200" height="16" fill="#fff"/>
+            <rect x="0" y="32" width="200" height="15" fill="#fff"/>
+            <rect x="0" y="55" width="200" height="14" fill="#fff"/>
+            <rect x="0" y="77" width="200" height="13" fill="#fff"/>
+            <rect x="0" y="98" width="200" height="12" fill="#fff"/>
+            <rect x="0" y="118" width="200" height="11" fill="#fff"/>
+            <rect x="0" y="137" width="200" height="10" fill="#fff"/>
+            <rect x="0" y="155" width="200" height="9" fill="#fff"/>
+            <rect x="0" y="172" width="200" height="8" fill="#fff"/>
+          </mask>
+        </defs>
+        <circle cx="100" cy="100" r="92" fill="url(#sunFill)" mask="url(#sunStripes)"/>
+      </svg>
+    </div>
+    <div class="horizon"></div>
+    <div class="ocean"></div>
+    <div class="grid-floor"></div>
+    <svg class="palm palm-far palm-far-l" viewBox="0 0 220 520" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#120814" d="M110 520c-6-110 8-210-8-312-6-40 6-78-2-118 8-2 18-2 16 6 6 38-6 74 2 122 16 104 4 200 10 302z"/>
+      <path fill="#120814" d="M106 92c-86-8-118-58-92-92 26 42 64 64 94 82z"/>
+      <path fill="#120814" d="M106 90c-72-40-92-100-54-122 8 42 34 78 62 112z"/>
+      <path fill="#120814" d="M108 88c-36-66-34-128 8-136 4 50 2 96 4 126z"/>
+      <path fill="#120814" d="M110 88c30-78 62-110 94-88-28 32-56 70-86 96z"/>
+      <path fill="#120814" d="M110 94c62-48 122-46 132-8-40 2-90 4-124 16z"/>
+      <path fill="#120814" d="M108 96c52 2 100 42 90 90-36-38-66-66-88-82z"/>
+      <path fill="#120814" d="M104 96c-64 28-96 88-70 118 14-48 44-86 68-108z"/>
+    </svg>
+    <svg class="palm palm-far palm-far-r" viewBox="0 0 220 520" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#120814" d="M110 520c-6-110 8-210-8-312-6-40 6-78-2-118 8-2 18-2 16 6 6 38-6 74 2 122 16 104 4 200 10 302z"/>
+      <path fill="#120814" d="M106 92c-86-8-118-58-92-92 26 42 64 64 94 82z"/>
+      <path fill="#120814" d="M106 90c-72-40-92-100-54-122 8 42 34 78 62 112z"/>
+      <path fill="#120814" d="M108 88c-36-66-34-128 8-136 4 50 2 96 4 126z"/>
+      <path fill="#120814" d="M110 88c30-78 62-110 94-88-28 32-56 70-86 96z"/>
+      <path fill="#120814" d="M110 94c62-48 122-46 132-8-40 2-90 4-124 16z"/>
+      <path fill="#120814" d="M108 96c52 2 100 42 90 90-36-38-66-66-88-82z"/>
+      <path fill="#120814" d="M104 96c-64 28-96 88-70 118 14-48 44-86 68-108z"/>
+    </svg>
+    <svg class="palm palm-left" viewBox="0 0 220 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="palmShade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#07040c"/>
+          <stop offset="55%" stop-color="#140816"/>
+          <stop offset="100%" stop-color="#2a1230"/>
+        </linearGradient>
+      </defs>
+      <g id="palmMain" fill="url(#palmShade)">
+        <path d="M112 520c-8-118 10-228-12-340-8-44 8-86-4-128 10-4 24-2 22 8 8 42-8 82 2 132 20 112 6 216 14 328z"/>
+        <path d="M104 54c-102-6-138-72-96-118 34 54 78 84 112 108z"/>
+        <path d="M106 50c-90-48-118-132-58-158 14 58 46 108 76 148z"/>
+        <path d="M108 48c-42-88-28-168 28-178 2 68-2 126 0 164z"/>
+        <path d="M110 48c20-96 58-150 112-132-28 62-62 108-100 140z"/>
+        <path d="M112 46c48-90 108-126 154-88-48 36-92 82-140 118z"/>
+        <path d="M114 56c80-58 150-46 168 8-56-8-118 2-160 22z"/>
+        <path d="M110 60c78 4 140 58 122 126-52-52-92-90-118-112z"/>
+        <path d="M106 58c-80 40-124 122-84 164 22-68 58-118 82-150z"/>
+        <path d="M104 62c-96 18-132-28-100-72 40 36 78 56 100 68z"/>
+      </g>
+    </svg>
+    <svg class="palm palm-right" viewBox="0 0 220 520" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#100610">
+        <path d="M112 520c-8-118 10-228-12-340-8-44 8-86-4-128 10-4 24-2 22 8 8 42-8 82 2 132 20 112 6 216 14 328z"/>
+        <path d="M104 54c-102-6-138-72-96-118 34 54 78 84 112 108z"/>
+        <path d="M106 50c-90-48-118-132-58-158 14 58 46 108 76 148z"/>
+        <path d="M108 48c-42-88-28-168 28-178 2 68-2 126 0 164z"/>
+        <path d="M110 48c20-96 58-150 112-132-28 62-62 108-100 140z"/>
+        <path d="M112 46c48-90 108-126 154-88-48 36-92 82-140 118z"/>
+        <path d="M114 56c80-58 150-46 168 8-56-8-118 2-160 22z"/>
+        <path d="M110 60c78 4 140 58 122 126-52-52-92-90-118-112z"/>
+        <path d="M106 58c-80 40-124 122-84 164 22-68 58-118 82-150z"/>
+        <path d="M104 62c-96 18-132-28-100-72 40 36 78 56 100 68z"/>
+      </g>
+    </svg>
+    <div class="vignette"></div>
+  </div>
   <div class="wrap">
     <header class="site-header">
       <div class="brand">LCA ITECH<span>Calculadora educativa</span></div>
@@ -24,9 +111,35 @@
     </header>
 
     <section class="hero">
-      <div class="pill">GTA 6 · TTWO · Argentina</div>
-      <h1>El juego contra la acción</h1>
-      <p class="lede">¿Y si, en vez de comprar Grand Theft Auto VI y lo que le agregues después, ponías esa misma plata en acciones de Take-Two Interactive (NASDAQ: TTWO) el día de la compra? Esta calculadora lo grafica. No es consejo financiero.</p>
+      <div class="hero-layout">
+        <div class="vi-mark">
+          <svg viewBox="0 0 330 240" role="img" aria-label="VI, sello estilizado propio, no es el logo oficial">
+            <defs>
+              <linearGradient id="viGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fff1b8"/>
+                <stop offset="28%" stop-color="#ffdf80"/>
+                <stop offset="62%" stop-color="#f4717c"/>
+                <stop offset="100%" stop-color="#f976b0"/>
+              </linearGradient>
+            </defs>
+            <path d="M30 32 L116 208 L202 32" fill="none" stroke="#3a1028" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="vi-stroke" d="M30 32 L116 208 L202 32" fill="none" stroke="url(#viGrad)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M30 32 L116 208 L202 32" fill="none" stroke="#fff6d8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".42"/>
+            <path d="M278 32 L278 208" fill="none" stroke="#3a1028" stroke-width="38" stroke-linecap="round"/>
+            <path class="vi-stroke" d="M278 32 L278 208" fill="none" stroke="url(#viGrad)" stroke-width="30" stroke-linecap="round"/>
+            <path d="M278 32 L278 208" fill="none" stroke="#fff6d8" stroke-width="7" stroke-linecap="round" opacity=".42"/>
+            <path d="M16 226 H314" fill="none" stroke="#ffdf80" stroke-width="2" opacity=".75"/>
+            <path d="M24 232 H306" fill="none" stroke="#f976b0" stroke-width="1.2" opacity=".55"/>
+            <circle cx="16" cy="226" r="3.2" fill="#ffdf80"/>
+            <circle cx="314" cy="226" r="3.2" fill="#ffdf80"/>
+          </svg>
+        </div>
+        <div class="hero-copy">
+          <div class="pill">GTA 6 · TTWO · Argentina</div>
+          <h1>El juego contra la acción</h1>
+          <p class="lede">¿Y si, en vez de comprar Grand Theft Auto VI y lo que le agregues después, ponías esa misma plata en acciones de Take-Two Interactive (NASDAQ: TTWO) el día de la compra? Esta calculadora lo grafica. No es consejo financiero.</p>
+        </div>
+      </div>
     </section>
 
     <div class="legal-box">
@@ -187,7 +300,15 @@
     <footer class="site-footer">
       <p>Precios, impuestos y cotizaciones relevados el 18/11/2026 (America/Buenos_Aires). Pueden cambiar. Contrastá el total en la tienda y en tu resumen antes de pagar.</p>
       <p>Esta herramienta es solo educativa e ilustrativa. No es oferta, recomendación ni asesoramiento financiero, impositivo ni de inversión. El rendimiento pasado de TTWO no anticipa resultados futuros. Las acciones pueden subir o bajar, y el juego lo jugás: son cosas distintas.</p>
-      <p>Código abierto en GitHub · LCA ITECH · MIT</p>
+      <div class="made-by">
+        <p class="made-title">Hecho por LCA ITECH</p>
+        <ul class="social">
+          <li><a href="https://portfolio.lcaitech.com" rel="noopener noreferrer" target="_blank">Portfolio</a></li>
+          <li><a href="https://www.linkedin.com/in/leandrobuchter/" rel="noopener noreferrer" target="_blank">LinkedIn</a></li>
+          <li><a href="https://x.com/LCA_ITECH" rel="noopener noreferrer" target="_blank">X</a></li>
+          <li><a href="https://github.com/LCAITECH" rel="noopener noreferrer" target="_blank">GitHub</a></li>
+        </ul>
+      </div>
     </footer>
   </div>
   <script src="app.js" type="module"></script>

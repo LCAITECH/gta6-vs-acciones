@@ -271,9 +271,12 @@ function drawChart(points, ccy) {
     const n = Math.max(1, Math.floor(1 + (points.length - 1) * frac));
     const visible = points.slice(0, n);
 
+    ctx.save();
     ctx.strokeStyle = "#ffdf80";
     ctx.lineWidth = 4;
     ctx.setLineDash([14, 10]);
+    ctx.shadowColor = "#ffdf80";
+    ctx.shadowBlur = 18;
     ctx.beginPath();
     visible.forEach((p, i) => {
       const xx = x(i);
@@ -282,6 +285,7 @@ function drawChart(points, ccy) {
       else ctx.lineTo(xx, yy);
     });
     ctx.stroke();
+    ctx.restore();
     ctx.setLineDash([]);
 
     const grad = ctx.createLinearGradient(0, pad.t, 0, h - pad.b);
@@ -300,10 +304,14 @@ function drawChart(points, ccy) {
     ctx.fillStyle = grad;
     ctx.fill();
 
+    ctx.save();
     ctx.strokeStyle = "#f976b0";
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 10;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
+    ctx.shadowColor = "#f976b0";
+    ctx.shadowBlur = 28;
+    ctx.globalAlpha = 0.55;
     ctx.beginPath();
     visible.forEach((p, i) => {
       const xx = x(i);
@@ -312,16 +320,33 @@ function drawChart(points, ccy) {
       else ctx.lineTo(xx, yy);
     });
     ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 5;
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    visible.forEach((p, i) => {
+      const xx = x(i);
+      const yy = y(p.invested);
+      if (i === 0) ctx.moveTo(xx, yy);
+      else ctx.lineTo(xx, yy);
+    });
+    ctx.stroke();
+    ctx.restore();
 
     const lastPt = visible[visible.length - 1];
+    ctx.save();
+    ctx.shadowColor = "#f976b0";
+    ctx.shadowBlur = 18;
     ctx.fillStyle = "#f976b0";
     ctx.beginPath();
     ctx.arc(x(visible.length - 1), y(lastPt.invested), 8, 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowColor = "#ffdf80";
     ctx.fillStyle = "#ffdf80";
     ctx.beginPath();
     ctx.arc(x(visible.length - 1), y(lastPt.spent), 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
   };
 
   if (chartFrame) cancelAnimationFrame(chartFrame);
