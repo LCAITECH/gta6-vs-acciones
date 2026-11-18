@@ -12,6 +12,7 @@ const EVENTS = new Set([
   "share_x", "share_whatsapp", "click_bingx", "click_binance",
   "view_calculadora", "view_jodita", "view_conviene", "view_ttwo", "view_desafio", "view_encuesta", "view_fuentes",
   "poll_vote", "challenge_calc", "projection_calc", "cost_builder_calc", "wait_calc",
+  "build_pc", "case3d_interact", "compare_view",
   "share_challenge_x", "share_challenge_whatsapp", "share_challenge_copy",
   "share_jodita_x", "share_jodita_whatsapp", "share_jodita_copy",
 ]);

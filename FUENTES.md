@@ -123,6 +123,67 @@ La Digital de la tienda oficial Sony (ARS 1.869.999) no se usa como precio de re
 `assets/desafio-pc-*.{webp,jpg}`: imagen generada con IA (PC gamer neón, atardecer synthwave, palmeras; sin texto ni logos).
 
 
+## Precios de hardware (Desafío Gordo Compu)
+
+Snapshot armado el 18/11/2026 12:39 (hora Argentina, `America/Buenos_Aires`). Fuente principal: fichas públicas de [Venex](https://www.venex.com.ar). El comparador **no es un tick en vivo**: `scripts/refresh-hardware.py` (GitHub Action cada ~6 h) intenta releer cada URL. Si una tienda no responde, se conserva el último valor verificado con su fecha (`status: stale`).
+
+No se usa Mercado Libre: `api.mercadolibre.com` declara `Disallow: /` y la API anónima responde 403.
+
+| Componente | Producto | Precio (ARS) | Tienda | Fecha | Ficha |
+| --- | --- | --- | --- | --- | --- |
+| RTX 4060 8 GB | Placa de Video Gigabyte NVIDIA GeForce RTX 4060 Aero OC 8GB GDDR6 | ARS 633.789 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-gigabyte-nvidia-geforce-rtx-4060-aero-oc-8gb-gddr6.html) |
+| RTX 5060 8 GB | Placa de Video ASUS Prime NVIDIA GeForce RTX 5060 OC 8GB GDDR7 | ARS 694.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-asus-prime-nvidia-geforce-rtx-5060-oc-8gb-gddr7.html) |
+| RTX 5060 Ti 8 GB | Placa de Video Gigabyte NVIDIA GeForce RTX 5060 Ti 8GB AERO OC | ARS 879.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-gigabyte-nvidia-geforce-rtx-5060-ti-aero-8gb.html) |
+| RTX 5060 Ti 16 GB | Placa de Video Palit NVIDIA GeForce RTX 5060 Ti 16GB Infinity 3 OC | ARS 994.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-palit-nvidia-geforce-rtx-5060-ti-infinity-3-oc-16gb-gddr7.html) |
+| RTX 5070 12 GB | Placa de Video Palit NVIDIA GeForce RTX 5070 Infinity 3 12GB GDDR7 | ARS 1.599.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-palit-nvidia-geforce-rtx-5070-infinity-3-12gb-gddr7.html) |
+| RTX 5070 12 GB | Placa de video GeForce RTX 5070 12GB Gigabyte Gaming OC | ARS 1.789.650 | FullH4rd | 18/11/2026 | [FullH4rd](https://fullh4rd.com.ar/prod/30259/placa-de-video-geforce-rtx-5070-12gb-gigabyte-gaming-oc) |
+| RTX 5070 Ti 16 GB | Placa de Video Gigabyte NVIDIA GeForce RTX 5070 Ti 16GB Eagle OC | ARS 2.319.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-gigabyte-nvidia-geforce-rtx-5070-ti-16gb-eagle-oc.html) |
+| RTX 5080 16 GB | Placa de Video Palit NVIDIA GeForce RTX 5080 16GB Infinity 3 | ARS 3.099.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-palit-nvidia-geforce-rtx-5080-16gb-infinity-3.html) |
+| RX 7600 8 GB | Placa de Video ASRock AMD Radeon RX 7600 8GB Challenger OC | ARS 547.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-asrock-amd-radeon-rx-7600-challenger-8gb-oc.html) |
+| RX 9060 8 GB | Placa de Video ASRock AMD Radeon RX 9060 8GB Challenger | ARS 668.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-asrock-amd-radeon-rx-9060-challenger-8gb.html) |
+| RX 9060 XT 8 GB | Placa de Video ASUS Prime AMD Radeon RX 9060 XT 8GB OC | ARS 784.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-asus-amd-radeon-rx-9060-xt-prime-oc-8gb.html) |
+| RX 9060 XT 16 GB | Placa de Video ASRock AMD Radeon RX 9060 XT 16GB Challenger OC | ARS 929.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-asrock-amd-radeon-rx-9060-xt-challenger-16gb-oc.html) |
+| RX 9070 16 GB | Placa de Video Gigabyte AMD Radeon RX 9070 16GB Gaming OC | ARS 1.509.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-gigabyte-amd-radeon-9070-gaming-oc-15gb.html) |
+| RX 9070 XT 16 GB | Placa de Video PowerColor AMD Radeon RX 9070 XT Reaper 16GB GDDR6 | ARS 1.473.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-powercolor-amd-radeon-rx-9070-xt-reaper-16gb-gddr6.html) |
+| Ryzen 5 5500 | Procesador AMD Ryzen 5 5500 6/12 4.2GHz AM4 Sin Video | ARS 172.299 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-cpu-amd-ryzen-5-5500-6-12-4-2ghz-zen3-am4.html) |
+| Ryzen 5 5600 | Procesador AMD Ryzen 5 5600 6/12 4.4GHz AM4 Sin Video | ARS 247.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-cpu-amd-ryzen-5-5600-6-12-zen3.html) |
+| Ryzen 7 5700 | Procesador AMD Ryzen 7 5700 8/16 4.6GHz AM4 Sin Video | ARS 239.500 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-cpu-amd-ryzen-7-5700-8-16-4-6ghz-s-g-zen3-am4.html) |
+| Ryzen 5 8400F | Procesador AMD Ryzen 5 8400F 6/12 4.7GHz AM5 Sin Video | ARS 269.500 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-amd-ryzen-5-8400f-6-12-4-7ghz-am5.html) |
+| Ryzen 5 8600G | Procesador AMD Ryzen 5 8600G 6/12 5.0GHz AM5 | ARS 298.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-cpu-amd-ryzen-5-8600g-6-12-5ghz-am5.html) |
+| Core i3-12100F | Procesador Intel Core i3 12100F 4/8 4.3GHz LGA1700 Sin Video | ARS 149.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-intel-core-i3-12100f-alderlake-4-3ghz-4-8-12mb-lga1700-s-video.html) |
+| Core i5-12400F | Procesador Intel Core i5 12400F 6/12 4.4GHz LGA1700 Sin Video | ARS 279.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-intel-core-i5-12400f-alderlake-4-40ghz-12mb-lga1700.html) |
+| Core i5-14400F | Procesador Intel Core i5 14400F 10/16 4.7GHz LGA1700 Sin Video | ARS 334.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/microprocesadores/microprocesador-core-i5-14400f-raptorlake-10-16-4-7ghz-20mb-s1700.html) |
+| DDR4 8 GB 3200 | Memoria RAM G.Skill DDR4 8GB 3200MHz CL22 Bulk | ARS 109.500 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/memorias-ram/desktop/memoria-ram-ddr4-8gb-3200mhz-gskill-oem-bulk-cl22.html) |
+| DDR4 16 GB 3200 | Memoria RAM Kingdian Heat H41 DDR4 16GB 3200MHz | ARS 216.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/memorias-ram/desktop/memoria-ram-kingdian-heat-h41-ddr4-16gb-3200mhz.html) |
+| DDR4 32 GB 3200 (2×16) ×2 | 2 × Memoria RAM Kingdian Heat H41 DDR4 16GB 3200MHz | ARS 433.980 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/memorias-ram/desktop/memoria-ram-kingdian-heat-h41-ddr4-16gb-3200mhz.html) |
+| DDR5 16 GB 5600 | Memoria RAM Hiksemi Hiker DDR5 16GB 5600MHz | ARS 457.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/memorias-ram/desktop/memoria-ram-hiksemi-hiker-16gb-5600mhz.html) |
+| DDR5 16 GB 6000 | Memoria RAM Corsair Vengeance DDR5 16GB 6000MHz CL38 | ARS 473.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/memorias-ram/desktop/memoria-ram-corsair-vengeance-ddr5-16gb-6000mhz-cl38.html) |
+| DDR5 32 GB 5600 (2×16) ×2 | 2 × Memoria RAM Hiksemi Hiker DDR5 16GB 5600MHz | ARS 915.980 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/memorias-ram/desktop/memoria-ram-hiksemi-hiker-16gb-5600mhz.html) |
+| MSI A520M-A PRO | Motherboard MSI A520M-A PRO AMD A520 AM4 DDR4 | ARS 80.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/motherboards/amd/motherboard-msi-a520m-a-pro-am4-ddr4.html) |
+| MSI PRO B550M-B | Motherboard MSI PRO B550M-B AM4 DDR4 | ARS 123.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/motherboards/amd/motherboard-msi-pro-b550m-b-am4-ddr4.html) |
+| ASUS Prime A620M-K | Motherboard ASUS Prime A620M-K AM5 DDR5 | ARS 122.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/motherboards/amd/motherboard-asus-prime-a620m-k-ddr5-am5.html) |
+| MSI PRO B650M-B | Motherboard MSI PRO B650M-B AM5 DDR5 | ARS 140.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/motherboards/amd/motherboard-msi-pro-b650m-b-am5-ddr5.html) |
+| MSI PRO H610M-S DDR4 | Motherboard MSI Pro H610m-S LGA1700 DDR4 | ARS 109.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/motherboards/intel/motherboard-msi-pro-h610m-s-ddr4-box-s1700.html) |
+| MSI PRO H610M-G DDR5 | Motherboard MSI Pro H610M-G LGA1700 DDR5 | ARS 106.999 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/motherboards/intel/motherboard-msi-pro-h610m-g-ddr5-lga1700.html) |
+| MSI MAG 550W 80+ Bronze | Fuente MSI MAG 550W A550BN 80+ Bronze | ARS 72.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/fuentes/fuente-msi-mag-550w-a550bn-80-bronze.html) |
+| Raptor 750W 80+ Bronze | Fuente Raptor 750W 80 Plus Bronze Volt | ARS 68.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/fuentes/fuente-raptor-750w-volt-80-bronze.html) |
+| Kingston NV3 500 GB NVMe | Disco sólido SSD Kingston NV3 500GB M.2 NVMe PCIe 4.0 5000MB/s | ARS 184.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/discos-solidos-ssd/disco-de-estado-solido-ssd-500gb-kingston-m2-nvme-2280-nv3-5000mb-s.html) |
+| Kingston NV3 1 TB NVMe | Disco sólido SSD Kingston NV3 1TB M.2 NVMe PCIe 4.0 6000MB/s | ARS 268.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/discos-solidos-ssd/ssd-1tb-kingston-m2-nvme-2280-nv3-6000mb-s.html) |
+| Gamemax Nova N5 RGB | Gabinete Gamemax Nova N5 RGB Mid Tower ATX | ARS 40.990 | Venex | 18/11/2026 12:39 | [Venex](https://www.venex.com.ar/componentes-de-pc/gabinetes/gabinete-gamemax-nova-n5-mid-tower-atx-rgb.html) |
+| PS5 Slim Digital (bundle Astro Bot + GT7) | PlayStation 5 Slim Digital Bundle GT7 + Astro Bot | ARS 1.899.999 | Cetrogar | 18/11/2026 ~11:15 | [Cetrogar](https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p) |
+| PS5 Slim Standard con lectora (bundle Astro Bot + GT7) | PlayStation 5 Slim Standard Bundle GT7 + Astro Bot | ARS 1.999.999 | Frávega | 18/11/2026 ~11:15 | [Frávega](https://www.fravega.com/promociones/bancarias) |
+| PS5 Pro Digital | PlayStation 5 Pro Digital | ARS 2.859.999 | Tienda oficial Sony en Frávega | 18/11/2026 ~11:15 | [Tienda oficial Sony en Frávega](https://www.fravega.com/l/videojuegos/consolas/?tipo-de-consola=ps5) |
+| Xbox Series S 512 GB | Xbox Series S 512 GB | ARS 1.294.000 · efectivo ARS 1.035.200 | Game Sense | 18/11/2026 ~11:15 | [Game Sense](https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/) |
+| Xbox Series X 1 TB | Xbox Series X 1 TB | ARS 2.386.000 · efectivo ARS 1.908.800 | Game Sense | 18/11/2026 ~11:15 | [Game Sense](https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/) |
+
+Notas:
+- RAM de 32 GB: no había un kit de 32 GB en las páginas 1–2 de memorias desktop de Venex; el precio es 2 × el módulo de 16 GB de la misma ficha.
+- RTX 5070 FullH4rd (Gigabyte Gaming OC, ARS 1.789.650): último valor verificado el 18/11/2026. En este entorno el sitio respondió 403; queda como referencia hasta que el refresco pueda leerla. En Venex hay una 5070 más barata el mismo día (Palit Infinity 3, ARS 1.599.990).
+- Consolas: mismos precios ya citados más arriba (Cetrogar / Frávega / Game Sense, 18/11/2026 ~11:15). El comparador usa efectivo en Series S/X cuando está publicado.
+- Metas fijas del desafío (RTX 5060 Gigabyte Windforce 2 Max OC ARS 979.999 en Venex y RTX 5070 FullH4rd) se mantienen como referencias anteriores; el catálogo muestra además el SKU más barato verificado de cada clase.
+
+Cambio peso/dólar del comparador y del armador: MEP (bolsa venta) de `data/fx-ar.json` (DolarApi https://dolarapi.com). Acciones: último precio de `data/ttwo-latest.json`.
+
 ## Rendimiento por consola (¿Me conviene?)
 
 Fuente principal, verificada el 18/11/2026 (hora Argentina):

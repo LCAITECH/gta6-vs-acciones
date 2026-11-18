@@ -552,19 +552,39 @@ const POLL_OPTS = [
   ["ambas", "Ambas cosas"],
   ["tengo-todo", "Tengo consola y PC lista"],
 ];
+function pollRoots() { return [...document.querySelectorAll("[data-poll-root]")]; }
+function setPollStatus(msg) {
+  document.querySelectorAll(".poll-status").forEach((el) => { el.textContent = msg; });
+}
 function renderPollButtons() {
   const voted = localStorage.getItem("gta6-poll-" + POLL);
-  $("poll-options").innerHTML = POLL_OPTS.map(([k, l]) => `<button type="button" class="poll-btn${voted === k ? " chosen" : ""}" data-opt="${k}"${voted ? " disabled" : ""}>${l}</button>`).join("");
-  if (voted) loadPollResults();
+  const html = POLL_OPTS.map(([k, l]) => `<button type="button" class="poll-btn${voted === k ? " chosen" : ""}" data-opt="${k}"${voted ? " disabled" : ""}>${l}</button>`).join("");
+  pollRoots().forEach((root) => {
+    const opts = root.querySelector(".poll-options");
+    if (opts) opts.innerHTML = html;
+  });
 }
+let pollFirstPaint = true;
 function renderPollResults(d) {
   const voted = localStorage.getItem("gta6-poll-" + POLL);
   const total = d.total || 0;
-  $("poll-results").innerHTML = POLL_OPTS.map(([k, l]) => {
-    const n = d.counts[k] || 0; const pct = total ? Math.round((n / total) * 100) : 0;
-    return `<div class="poll-row${voted === k ? " mine" : ""}"><div class="poll-label"><span>${l}${voted === k ? " · tu voto" : ""}</span><span>${pct}% (${n})</span></div><div class="poll-bar"><div style="width:${pct}%"></div></div></div>`;
+  const rows = POLL_OPTS.map(([k, l]) => {
+    const n = (d.counts && d.counts[k]) || 0; const pct = total ? Math.round((n / total) * 100) : 0;
+    return `<div class="poll-row${voted === k ? " mine" : ""}"><div class="poll-label"><span>${l}${voted === k ? " · tu voto" : ""}</span><span>${pct}% (${n})</span></div><div class="poll-bar"><div data-pct="${pct}" style="width:${pollFirstPaint ? 0 : pct}%"></div></div></div>`;
   }).join("") + `<p class="muted">${total} voto${total === 1 ? "" : "s"} en total. Un voto por navegador; no guardamos datos personales.</p>`;
-  $("poll-results").hidden = false;
+  pollRoots().forEach((root) => {
+    const box = root.querySelector(".poll-results");
+    if (!box) return;
+    box.innerHTML = rows;
+    box.hidden = false;
+  });
+  const grow = () => document.querySelectorAll(".poll-bar div[data-pct]").forEach((el) => { el.style.width = el.dataset.pct + "%"; });
+  if (pollFirstPaint) {
+    pollFirstPaint = false;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (motion) grow();
+    else requestAnimationFrame(() => requestAnimationFrame(grow));
+  }
 }
 async function loadPollResults() {
   try {
@@ -572,21 +592,47 @@ async function loadPollResults() {
     if (res.ok) renderPollResults(await res.json());
   } catch { /* offline */ }
 }
+function startPollLive() {
+  loadPollResults();
+  if (startPollLive.timer) return;
+  startPollLive.timer = setInterval(() => {
+    if (document.visibilityState === "visible") loadPollResults();
+  }, 30000);
+}
 async function vote(opt) {
   if (localStorage.getItem("gta6-poll-" + POLL)) return;
-  $("poll-status").textContent = "Enviando…";
+  setPollStatus("Enviando…");
   try {
     const res = await fetch(`${API}/poll`, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ poll: POLL, option: opt }) });
     if (!res.ok) throw new Error(res.status);
     localStorage.setItem("gta6-poll-" + POLL, opt);
     G().track("poll_vote");
-    $("poll-status").textContent = "¡Gracias por votar!";
+    setPollStatus("¡Gracias por votar!");
     renderPollButtons();
     renderPollResults(await res.json());
   } catch (e) {
-    $("poll-status").textContent = "No se pudo registrar el voto. Probá de nuevo en un rato.";
+    setPollStatus("No se pudo registrar el voto. Probá de nuevo en un rato.");
   }
 }
+
+function setBuildGoal(label, amount, ccy) {
+  GOALS.build = { label, amount, ccy };
+  const sel = $("d-goal");
+  if (!sel) return;
+  let opt = sel.querySelector('option[value="build"]');
+  if (!opt) {
+    opt = document.createElement("option");
+    opt.value = "build";
+    const custom = sel.querySelector('option[value="custom"]');
+    sel.insertBefore(opt, custom || null);
+  }
+  opt.textContent = label;
+  sel.value = "build";
+  $("d-goal-custom").hidden = true;
+  renderDesafio();
+  renderSim();
+}
+window.__gtaSetBuildGoal = setBuildGoal;
 
 // ================= SHARE + URL STATE =================
 function setShare(prefix, text, anchor, longText) {
@@ -676,8 +722,12 @@ function init() {
       g.track(`share_${name}_copy`);
     });
   });
-  $("poll-options").addEventListener("click", (e) => { const b = e.target.closest(".poll-btn"); if (b) vote(b.dataset.opt); });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-poll-root] .poll-btn");
+    if (b) vote(b.dataset.opt);
+  });
   renderPollButtons();
+  startPollLive();
 
   g.listeners.push(() => { renderJodita(); renderDesafio(); renderWait(); renderConviene(); });
   const waitQuotes = () => (g.quotes && g.quotes.length ? (($("d-start").min = g.quotes[0].date), ($("d-start").max = g.quotes[g.quotes.length - 1].date), renderAll()) : setTimeout(waitQuotes, 100));

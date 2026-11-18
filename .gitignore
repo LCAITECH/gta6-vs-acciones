@@ -10,3 +10,4 @@ share-sample.png
 analytics-worker/.wrangler/
 analytics-worker/node_modules/
 share-sample-*.png
+__pycache__/

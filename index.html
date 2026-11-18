@@ -429,6 +429,62 @@
           <ul class="paths"><li>Comprar la PC</li><li>Meter en Take-Two</li><li>Ni una ni otra / esperar</li></ul>
         </div>
       </div>
+      <nav class="d-subtabs" id="d-subtabs" aria-label="Dentro del desafío">
+        <button type="button" data-pane="comparar" aria-selected="true">Comparar</button>
+        <button type="button" data-pane="armar">Armar PC</button>
+        <button type="button" data-pane="meta">Meta y simulación</button>
+        <button type="button" data-pane="encuesta">Encuesta</button>
+      </nav>
+
+      <div class="d-pane" data-pane="comparar">
+        <h3>Placa vs consola</h3>
+        <p class="muted" id="cmp-stamp">Cargando precios verificados…</p>
+        <p class="fine-inline">No es un tick en vivo: un robot revisa las fichas públicas cada ~6 horas. Si una tienda no responde, se muestra el último precio verificado con su fecha. Dólares al MEP (DolarApi) y acciones al último cierre de TTWO.</p>
+        <div class="row cmp-pick">
+          <div><label for="cmp-gpu">Placa</label><select id="cmp-gpu"></select></div>
+          <div><label for="cmp-console">Consola</label><select id="cmp-console"></select></div>
+        </div>
+        <div class="cmp-cards" id="cmp-cards"></div>
+        <p class="muted" id="cmp-delta"></p>
+        <h4 class="cmp-list-title">Catálogo verificado</h4>
+        <div id="cmp-table"></div>
+      </div>
+
+      <div class="d-pane" data-pane="armar" hidden>
+        <h3>Armá tu Gordo Compu</h3>
+        <p class="muted">Precios de fichas reales. La mother tiene que calzar con el socket del micro y el tipo de RAM. Fuente, disco y gabinete son optativos.</p>
+        <div class="chips" id="d-presets" role="group" aria-label="Presets">
+          <button type="button" data-preset="basico">Gordo Compu básico</button>
+          <button type="button" data-preset="medio">Gordo Compu medio</button>
+          <button type="button" data-preset="zarpado">Gordo Compu zarpado</button>
+        </div>
+        <div class="build-layout">
+          <form class="panel" id="b-form" autocomplete="off">
+            <div class="row">
+              <div><label for="b-cpu">Micro</label><select id="b-cpu"></select></div>
+              <div><label for="b-ram">Memoria</label><select id="b-ram"></select></div>
+            </div>
+            <div class="row">
+              <div><label for="b-mobo">Mother</label><select id="b-mobo"></select></div>
+              <div><label for="b-gpu">Placa de video</label><select id="b-gpu"></select></div>
+            </div>
+            <div class="row">
+              <div><label for="b-psu">Fuente (opcional)</label><select id="b-psu"></select></div>
+              <div><label for="b-ssd">Disco (opcional)</label><select id="b-ssd"></select></div>
+            </div>
+            <label for="b-case">Gabinete (opcional)</label>
+            <select id="b-case"></select>
+            <div id="b-out"></div>
+            <button type="button" class="cta" id="b-use-goal">Usar este armado como meta</button>
+          </form>
+          <div class="case3d-wrap panel">
+            <h4>Gabinete</h4>
+            <div id="case3d" class="case3d"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-pane" data-pane="meta" hidden>
       <details class="sim panel" id="sim">
         <summary><strong>Simulador de proyección</strong> <span class="fine-inline">· simulación hipotética, no es consejo de inversión</span></summary>
         <div class="sim-grid">
@@ -437,9 +493,9 @@
           <div><label for="s-start">Fecha de inicio</label><input id="s-start" type="date" value="2026-11-18"></div>
           <div><label for="s-target">Precio TTWO al final (US$)</label><input id="s-target" type="number" min="1" step="0.01"></div>
         </div>
-        <div class="chips" id="s-horizon" role="radiogroup" aria-label="Horizonte">
+        <div class="chips horizon-chips" id="s-horizon" role="radiogroup" aria-label="Horizonte en meses">
           <span class="fine-inline">Horizonte:</span>
-          <button type="button" data-m="1">1 m</button><button type="button" data-m="2">2 m</button><button type="button" data-m="3">3 m</button><button type="button" data-m="4">4 m</button><button type="button" data-m="5">5 m</button><button type="button" data-m="6" aria-pressed="true">6 m</button><button type="button" data-m="12">12 m</button>
+          <button type="button" data-m="1">1 m</button><button type="button" data-m="2">2 m</button><button type="button" data-m="3">3 m</button><button type="button" data-m="4">4 m</button><button type="button" data-m="5">5 m</button><button type="button" data-m="6" aria-pressed="true">6 m</button><button type="button" data-m="7">7 m</button><button type="button" data-m="8">8 m</button><button type="button" data-m="9">9 m</button><button type="button" data-m="10">10 m</button><button type="button" data-m="11">11 m</button><button type="button" data-m="12">12 m</button>
         </div>
         <label for="s-slider" class="slider-label">Variación de TTWO: <strong id="s-slider-val">0%</strong></label>
         <input id="s-slider" type="range" min="-50" max="100" step="5" value="0">
@@ -476,10 +532,10 @@
           </div>
         </div>
       </div>
-
-      <h3 id="esperar" style="margin-top:34px">Consola hoy vs. esperar la PC</h3>
-      <p class="muted">Compará jugar ya (tu jodita de arriba) contra guardar esa plata en TTWO hasta que salga en PC. No hay fecha oficial para PC: elegí una vos.</p>
-      <div class="panel wait-panel">
+      <details class="panel wait-acc">
+        <summary><strong>Consola hoy vs. esperar la PC</strong> <span class="fine-inline">· fecha de PC a tu criterio, no hay anuncio oficial</span></summary>
+        <p class="muted">Compará jugar ya (tu jodita de arriba) contra guardar esa plata en TTWO hasta que salga en PC. No hay fecha oficial para PC: elegí una vos.</p>
+      <div class="wait-panel">
         <label for="w-mode">¿Qué querés comparar?</label>
         <select id="w-mode">
           <option value="pc">Esperar el lanzamiento en PC (fecha tuya, no oficial)</option>
@@ -494,16 +550,28 @@
         <p class="muted" id="w-scen-lead"></p>
         <div class="scen-grid" id="w-scen"></div>
       </div>
+      </details>
+      </div>
+
+      <div class="d-pane" data-pane="encuesta" hidden>
+        <h3>Encuesta en vivo</h3>
+        <p class="muted">¿Vas a esperar al de PC o comprás consola? Los totales se actualizan solos, sin datos personales.</p>
+        <div class="panel poll-panel" data-poll-root>
+          <div class="poll-options"></div>
+          <p class="muted poll-status" aria-live="polite"></p>
+          <div class="poll-results" hidden></div>
+        </div>
+      </div>
     </section>
 
       </div>
       <div class="view" data-view="encuesta" hidden>
     <section id="encuesta">
       <h2>Encuesta: ¿vas a esperar al lanzamiento en PC o vas a comprar consola?</h2>
-      <div class="panel poll-panel">
+      <div class="panel poll-panel" data-poll-root>
         <div class="poll-options" id="poll-options"></div>
-        <p class="muted" id="poll-status" aria-live="polite"></p>
-        <div id="poll-results" hidden></div>
+        <p class="muted poll-status" id="poll-status" aria-live="polite"></p>
+        <div class="poll-results" id="poll-results" hidden></div>
       </div>
     </section>
 
@@ -592,6 +660,7 @@
   <script src="router.js" type="module"></script>
   <script src="app.js" type="module"></script>
   <script src="extras.js" type="module"></script>
+  <script src="pc-builder.js" type="module"></script>
   <script src="ttwo-chart.js" type="module"></script>
 </body>
 </html>
