@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GTA 6 vs. acciones de Take-Two — LCA ITECH</title>
+  <meta name="description" content="Calculadora educativa: qué habría pasado si, en vez de comprar GTA 6 y los DLC, invertías esa plata en acciones de Take-Two (TTWO) el mismo día.">
+  <meta name="theme-color" content="#0d0c1a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0c1a'/%3E%3Cpath d='M10 42 L26 26 L38 34 L54 16' stroke='%23f976b0' stroke-width='5' fill='none'/%3E%3Cpath d='M10 48 H54' stroke='%23ffdf80' stroke-width='4' fill='none'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <div class="brand">LCA ITECH<span>Calculadora educativa</span></div>
+      <nav class="nav">
+        <a href="#calculadora">Calculadora</a>
+        <a href="#pago">Pago real</a>
+        <a href="#fuentes">Fuentes</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="pill">GTA 6 · TTWO · Argentina</div>
+      <h1>El juego contra la acción</h1>
+      <p class="lede">¿Y si, en vez de comprar Grand Theft Auto VI y lo que le agregues después, ponías esa misma plata en acciones de Take-Two Interactive (NASDAQ: TTWO) el día de la compra? Esta calculadora lo grafica. No es consejo financiero.</p>
+    </section>
+
+    <div class="legal-box">
+      Este sitio es un proyecto independiente de <strong>LCA ITECH</strong>. No está afiliado, asociado, autorizado ni respaldado por Rockstar Games, Take-Two Interactive Software, Inc., PlayStation, Microsoft, BingX ni Binance. Grand Theft Auto, GTA y los signos relacionados son marcas de Take-Two Interactive Software, Inc. La paleta visual toma inspiración de la página oficial de GTA VI, sin copiar logos, arte, tipografías ni assets.
+    </div>
+
+    <section id="calculadora" class="grid">
+      <form class="panel" id="form" autocomplete="off">
+        <h3>Tu compra</h3>
+
+        <label for="edition">Edición</label>
+        <select id="edition">
+          <option value="standard">Estándar</option>
+          <option value="ultimate" selected>Ultimate</option>
+          <option value="xbox-upgrade">Mejora a Ultimate (solo Xbox)</option>
+          <option value="custom">Monto personalizado</option>
+        </select>
+
+        <label for="store">Tienda</label>
+        <select id="store">
+          <option value="ps" selected>PlayStation Store Argentina (USD)</option>
+          <option value="xbox">Xbox Store Argentina (ARS)</option>
+          <option value="official">Precio de lista oficial (USD)</option>
+        </select>
+        <p class="hint">Las reservas abrieron el 25/06/2026. El lanzamiento es el 19/11/2026 en PS5 y Xbox Series X|S. En PC, por ahora, no publicado.</p>
+
+        <div class="row" id="custom-row" hidden>
+          <div>
+            <label for="custom-amount">Monto</label>
+            <input id="custom-amount" type="number" min="0" step="0.01" value="99.99">
+          </div>
+          <div>
+            <label for="custom-ccy">Moneda</label>
+            <select id="custom-ccy">
+              <option value="USD">USD</option>
+              <option value="ARS">ARS</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="purchase-date">Fecha de compra</label>
+        <input id="purchase-date" type="date" value="2026-06-25" min="2024-11-18" max="2026-11-19">
+        <p class="hint">Si el mercado estuvo cerrado ese día, usamos el último cierre anterior. Por defecto, el día en que abrieron las reservas.</p>
+
+        <div class="row">
+          <div>
+            <label for="dlc">DLC y add-ons pagos (opcional)</label>
+            <input id="dlc" type="number" min="0" step="0.01" value="0">
+          </div>
+          <div>
+            <label for="dlc-ccy">Moneda del extra</label>
+            <select id="dlc-ccy">
+              <option value="USD" selected>USD</option>
+              <option value="ARS">ARS</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">Los precios de DLC de historia de GTA 6 no estaban publicados al 18/11/2026. Podés cargar lo que ya gastaste o un escenario.</p>
+
+        <label for="gtaplus-months">Meses extra de GTA+ (después del de cortesía)</label>
+        <input id="gtaplus-months" type="number" min="0" step="1" value="0">
+        <p class="hint">GTA+ en PlayStation Store AR: US$ 7,99/mes. En Xbox Store AR: ARS 6.670/mes. El mes de cortesía por reserva digital no se suma si dejas tildada la casilla de abajo.</p>
+        <label class="check"><input type="checkbox" id="courtesy-month" checked> No sumo el mes de GTA+ de cortesía por reservar o comprar en digital hasta el 19/11/2026</label>
+
+        <h3 style="margin-top:22px">Impuestos y tipo de cambio</h3>
+        <label class="check"><input type="checkbox" id="iva" checked> IVA 21% (servicios digitales, RG 4240/2018 + alícuota general)</label>
+        <label class="check"><input type="checkbox" id="percepcion"> Percepción 30% (RG 5617/2024). Por defecto va apagada: PlayStation Network, Microsoft y Rockstar Games están en el anexo de la RG 5677/2025.</label>
+        <label for="iibb">Ingresos Brutos / percepción provincial (%)</label>
+        <input id="iibb" type="number" min="0" max="20" step="0.1" value="0">
+        <p class="hint">No hay una alícuota nacional única publicada. Si tu provincia te percibe (a veces se habla de 2% en CABA o PBA), cargala vos. Si no, dejala en 0.</p>
+
+        <div class="row">
+          <div>
+            <label for="fx-buy">Tipo de cambio el día de compra (ARS/USD)</label>
+            <input id="fx-buy" type="number" min="1" step="0.01" value="1575">
+          </div>
+          <div>
+            <label for="fx-now">Tipo de cambio hoy (ARS/USD)</label>
+            <input id="fx-now" type="number" min="1" step="0.01" value="1575">
+          </div>
+        </div>
+        <p class="hint">Valor de arranque: dólar BNA billete vendedor 1.575,00, relevado en bna.com.ar el 18/11/2026. El mismo día, divisas venta 1.552,00. Poné el dólar de tu resumen si lo tenés.</p>
+
+        <label for="display-ccy">Mostrar el gráfico en</label>
+        <select id="display-ccy">
+          <option value="USD" selected>Dólares</option>
+          <option value="ARS">Pesos</option>
+        </select>
+      </form>
+
+      <div>
+        <div class="results" id="stats"></div>
+        <div class="panel">
+          <div class="chart-wrap"><canvas id="chart" width="1400" height="720" aria-label="Gráfico comparativo del dinero gastado y del valor de TTWO en el tiempo"></canvas></div>
+          <div class="legend">
+            <span><i class="swatch" style="background:#ffdf80"></i>Plata gastada en el juego (queda fija)</span>
+            <span><i class="swatch" style="background:#f976b0"></i>Esa misma plata en TTWO</span>
+          </div>
+          <p class="hint" id="chart-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pago">
+      <h2>Cuánto pagás de verdad</h2>
+      <p class="lede">En la tienda, al precio de lista se le pueden sumar IVA y, según el caso, percepciones. Con una tarjeta cripto la cuenta puede ser otra. Los porcentajes de comisión y cashback de BingX los tomamos como <strong>dato informado por el dueño del sitio</strong> (2% de cashback y 1,5% de comisión; sin impuestos argentinos en el pago). Van marcados como “según condiciones vigentes, verificá en la app”.</p>
+      <div class="pay-grid" id="pay-grid"></div>
+      <p class="muted" style="margin-top:14px">Links de referido: el enlace de la BingX Card es de referido de LCA ITECH. Si pedís o usás la tarjeta a través de ese link, LCA ITECH puede recibir una recompensa. Eso no cambia el precio que te cobran. La de Binance queda como placeholder hasta tener el link.</p>
+    </section>
+
+    <section id="impuestos">
+      <h2>Cómo está armada la cuenta</h2>
+      <div class="panel">
+        <p>Los impuestos se suman sobre el precio de lista (no se multiplican entre sí): <code>total = lista × (1 + IVA + percepción + IIBB)</code>.</p>
+        <ul>
+          <li>PlayStation Store Argentina cobra en dólares: Estándar US$ 79,99 y Ultimate US$ 99,99 (fichas oficiales consultadas el 18/11/2026). La mejora a Ultimate figuraba como “No disponible”.</li>
+          <li>Xbox Store Argentina cobra en pesos, con un “+” de impuestos: Estándar ARS 113.299, Ultimate ARS 141.990 y mejora ARS 28.691 (fichas oficiales, 18/11/2026).</li>
+          <li>GTA+: US$ 7,99/mes en PlayStation Store AR y ARS 6.670/mes en Xbox Store AR (fichas oficiales, 18/11/2026).</li>
+          <li>Desde el 16/04/2025, la RG 5677/2025 saca de la percepción del 30% a los pagos a portales del anexo, entre ellos PlayStation Network, Microsoft y Rockstar Games. El IVA 21% sigue. La percepción provincial depende de tu jurisdicción.</li>
+          <li>TTWO: último cierre US$ 203,93 el 17/11/2026 (Nasdaq y Yahoo Finance, contrastados el 18/11/2026). El gráfico usa un snapshot estático de cierres diarios, no una cotización en vivo.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="fuentes">
+      <h2>Fuentes y fechas</h2>
+      <p class="muted">Cada número de esta página tiene fuente y fecha de relevamiento. Si no encontramos un dato publicado, dice “no publicado”. No usamos precios de otro país como si fueran de Argentina.</p>
+      <div class="panel" style="overflow-x:auto">
+        <table class="source-table">
+          <thead>
+            <tr><th>Dato</th><th>Valor</th><th>Fecha</th><th>Fuente</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Lanzamiento GTA VI (PS5 y Xbox Series)</td><td>19/11/2026</td><td>18/11/2026</td><td><a href="https://taketwointeractivesoftwareinc.gcs-web.com/news-releases/news-release-details/rockstar-games-announces-pre-orders-grand-theft-auto-vi/">Take-Two / Rockstar, 24/06/2026</a></td></tr>
+            <tr><td>Inicio de reservas</td><td>25/06/2026, medianoche local</td><td>18/11/2026</td><td><a href="https://taketwointeractivesoftwareinc.gcs-web.com/news-releases/news-release-details/rockstar-games-announces-pre-orders-grand-theft-auto-vi/">Take-Two, 24/06/2026</a></td></tr>
+            <tr><td>Precio de lista oficial USD</td><td>Estándar US$ 79,99 · Ultimate US$ 99,99</td><td>18/11/2026</td><td><a href="https://taketwointeractivesoftwareinc.gcs-web.com/news-releases/news-release-details/rockstar-games-announces-pre-orders-grand-theft-auto-vi/">Take-Two, 24/06/2026</a></td></tr>
+            <tr><td>PlayStation Store Argentina</td><td>Estándar US$ 79,99 · Ultimate US$ 99,99 · mejora no disponible</td><td>18/11/2026</td><td><a href="https://store.playstation.com/es-ar/product/EP1004-PPSA01547_00-GTAVISTANDARD001">Estándar</a> · <a href="https://store.playstation.com/es-ar/product/EP1004-PPSA01547_00-GTAVIULTIMATE001">Ultimate</a></td></tr>
+            <tr><td>Xbox Store Argentina</td><td>Estándar ARS 113.299+ · Ultimate ARS 141.990+ · mejora ARS 28.691</td><td>18/11/2026</td><td><a href="https://www.xbox.com/es-AR/games/store/grand-theft-auto-vi/9P3H4968GRSM/0017">Estándar</a> · <a href="https://www.xbox.com/es-AR/games/store/grand-theft-auto-vi-ultimate-edition/9NNZSNHLR63L">Ultimate</a></td></tr>
+            <tr><td>GTA+ PlayStation Store AR</td><td>US$ 7,99 / mes</td><td>18/11/2026</td><td><a href="https://store.playstation.com/es-ar/product/UP1004-PPSA16755_00-GTAPLUS00001T01M">Ficha oficial</a></td></tr>
+            <tr><td>GTA+ Xbox Store AR</td><td>ARS 6.670 / mes</td><td>18/11/2026</td><td><a href="https://www.xbox.com/es-AR/games/store/gta-xbox-series-xs/cfq7ttc0hx8w">Ficha oficial</a></td></tr>
+            <tr><td>DLC de historia / Shark Cards de GTA 6</td><td>no publicado</td><td>18/11/2026</td><td>—</td></tr>
+            <tr><td>Precio físico en cadenas argentinas</td><td>no publicado (no verificamos góndola)</td><td>18/11/2026</td><td>—</td></tr>
+            <tr><td>Versión de PC al lanzamiento</td><td>no publicado</td><td>18/11/2026</td><td>El anuncio oficial cubre PS5 y Xbox Series X|S</td></tr>
+            <tr><td>IVA servicios digitales</td><td>Alícuota general 21%; régimen de percepción RG 4240/2018</td><td>18/11/2026</td><td><a href="https://www.afip.gov.ar/iva/servicios-digitales/reg-percepcion-4240.asp">ARCA / RG 4240</a></td></tr>
+            <tr><td>Percepción 30% dólar tarjeta</td><td>30% (RG 5617). Excluida para PSN, Microsoft y Rockstar Games desde el 16/04/2025 (RG 5677, anexo oficial)</td><td>18/11/2026</td><td><a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-5677-2025-411846/texto">RG 5677/2025</a> · <a href="https://www.arca.gob.ar/regimen-devolucion-percepciones/percepcion/importe.asp">ARCA, alícuota 30%</a></td></tr>
+            <tr><td>Dólar BNA billete</td><td>Compra 1.525,00 · Venta 1.575,00</td><td>18/11/2026</td><td><a href="https://www.bna.com.ar/Personas">Banco Nación, Cotización Billetes</a></td></tr>
+            <tr><td>Dólar BNA divisas</td><td>Compra 1.543,00 · Venta 1.552,00</td><td>18/11/2026</td><td><a href="https://www.bna.com.ar/Personas">Banco Nación, Cotización Divisas</a></td></tr>
+            <tr><td>TTWO último cierre</td><td>US$ 203,93 (17/11/2026)</td><td>18/11/2026</td><td><a href="https://www.nasdaq.com/market-activity/stocks/ttwo/historical">Nasdaq</a> · <a href="https://finance.yahoo.com/quote/TTWO/history/">Yahoo Finance</a> (coinciden)</td></tr>
+            <tr><td>BingX Card — comisión y cashback (oficial)</td><td>Trading fee 1,50%. Cashback virtual tramo 1: 2% (si el gasto mensual es menor a US$ 200; sube a 2,5% / 3%)</td><td>18/11/2026</td><td><a href="https://bingx.com/en/support/articles/16946861859471">BingX Card Benefits and Fees, 23/07/2026</a></td></tr>
+            <tr><td>BingX Card — disponibilidad en Argentina</td><td>LATAM figura entre las regiones compatibles; el listado país por país no está publicado. Confirmá en la app.</td><td>18/11/2026</td><td><a href="https://bingx.com/es/support/articles/16946777309967">Cómo solicitar y usar la BingX Card, 23/07/2026</a></td></tr>
+            <tr><td>BingX Card — dato del dueño del sitio</td><td>2% cashback, 1,5% de comisión; indica que no se suman impuestos argentinos al pagar desde Argentina. No es una verificación nuestra.</td><td>18/11/2026</td><td>Informado por el dueño del sitio. Verificá en la app y en tu resumen.</td></tr>
+            <tr><td>Binance Card Argentina</td><td>Disponible para residentes (plástico, emitida por Pomelo). Tabla oficial de comisiones: no verificada en esta consulta (la FAQ estuvo detrás de un desafío anti-bot). Link de referido: placeholder.</td><td>18/11/2026</td><td><a href="https://www.infobae.com/economia/networking/2026/09/17/binance-lanzo-su-tarjeta-fisica-en-argentina/">Infobae, 17/09/2026</a> · <a href="https://www.binance.com/en/support/faq/detail/2a32d3668e704413b47fbf515ee38d6e">FAQ oficial (no se pudo leer completa)</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>Precios, impuestos y cotizaciones relevados el 18/11/2026 (America/Buenos_Aires). Pueden cambiar. Contrastá el total en la tienda y en tu resumen antes de pagar.</p>
+      <p>Esta herramienta es solo educativa e ilustrativa. No es oferta, recomendación ni asesoramiento financiero, impositivo ni de inversión. El rendimiento pasado de TTWO no anticipa resultados futuros. Las acciones pueden subir o bajar, y el juego lo jugás: son cosas distintas.</p>
+      <p>Código abierto en GitHub · LCA ITECH · MIT</p>
+    </footer>
+  </div>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
