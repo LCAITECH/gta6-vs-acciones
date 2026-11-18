@@ -48,3 +48,7 @@ El enlace “Págalo con la BingX card” es de referido de la tarjeta. El de �
 ## Licencia
 
 MIT. Ver `LICENSE`.
+
+## Privacidad y estadísticas
+
+El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo.

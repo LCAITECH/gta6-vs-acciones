@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Estadísticas · GTA 6 vs acciones</title>
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background: linear-gradient(180deg, #1a0b2e, #3a1446 45%, #07040c); min-height: 100vh; }
+    .wrap::before { display: none; }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 18px 0; }
+    .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    td, th { padding: 7px 6px; border-bottom: 1px solid #ffffff14; text-align: left; }
+    td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+    th { color: var(--gold); }
+    .bars { display: flex; align-items: flex-end; gap: 3px; height: 140px; margin-top: 10px; }
+    .bars div { flex: 1; background: linear-gradient(180deg, #ffdf80, #f976b0); border-radius: 4px 4px 0 0; min-height: 2px; box-shadow: 0 0 10px #f976b066; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header"><div class="brand">LCA ITECH<span>Estadísticas privadas</span></div><nav class="nav"><a href="./">Volver al sitio</a></nav></header>
+    <h2>Estadísticas</h2>
+    <p class="muted" id="status">Cargando…</p>
+    <div class="kpis" id="kpis"></div>
+    <div class="panel"><h3>Visitas por día (30 días)</h3><div class="bars" id="bars"></div></div>
+    <div class="two" style="margin-top:18px">
+      <div class="panel"><h3>Eventos</h3><table id="events"></table></div>
+      <div class="panel"><h3>Referentes (30 días)</h3><table id="refs"></table></div>
+      <div class="panel"><h3>Países (30 días)</h3><table id="countries"></table></div>
+      <div class="panel"><h3>Dispositivos (30 días)</h3><table id="devices"></table></div>
+    </div>
+    <p class="muted" style="margin-top:18px">Sin cookies ni IPs: solo evento, ruta, dominio de referencia, país y tipo de dispositivo.</p>
+  </div>
+  <script>
+    const API = "https://gta6-analytics.lcaitech.workers.dev/stats";
+    const key = new URLSearchParams(location.hash.slice(1)).get("key") || location.hash.slice(1);
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "—").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmt = new Intl.NumberFormat("es-AR");
+    const table = (rows, a, b, ha, hb) => `<tr><th>${ha}</th><th class="n">${hb}</th></tr>` + (rows.length ? rows.map((r) => `<tr><td>${esc(r[a])}</td><td class="n">${fmt.format(r[b])}</td></tr>`).join("") : `<tr><td colspan="2" class="muted">Sin datos</td></tr>`);
+    const get = (rows, ev) => (rows.find((r) => r.event === ev) || { n: 0 }).n;
+    async function load() {
+      if (!key) { $("status").textContent = "Falta la clave: abrí stats.html#key=TU_CLAVE"; return; }
+      const res = await fetch(API, { headers: { Authorization: "Bearer " + key }, cache: "no-store" });
+      if (!res.ok) { $("status").textContent = res.status === 401 ? "Clave inválida." : "Error " + res.status; return; }
+      const d = await res.json();
+      $("status").textContent = "Actualizado " + new Date(d.generatedAt).toLocaleString("es-AR", { timeZone: "America/Buenos_Aires" }) + " (hora Argentina)";
+      const k = [["Visitas 7 días", get(d.last7, "pageview")], ["Visitas 30 días", get(d.last30, "pageview")], ["Visitas totales", get(d.total, "pageview")],
+        ["Clics BingX (30 d)", get(d.last30, "click_bingx")], ["Clics Binance (30 d)", get(d.last30, "click_binance")],
+        ["Compartidos (30 d)", d.last30.filter((r) => r.event.startsWith("share")).reduce((a, r) => a + r.n, 0)]];
+      $("kpis").innerHTML = k.map(([l, v]) => `<div class="stat"><div class="k">${l}</div><div class="v">${fmt.format(v)}</div></div>`).join("");
+      const max = Math.max(1, ...d.daily.map((r) => r.pageviews));
+      $("bars").innerHTML = d.daily.map((r) => `<div title="${r.day}: ${r.pageviews}" style="height:${(r.pageviews / max) * 100}%"></div>`).join("");
+      const ev = d.total.map((r) => ({ event: r.event, n7: get(d.last7, r.event), n30: get(d.last30, r.event), n: r.n }));
+      $("events").innerHTML = `<tr><th>Evento</th><th class="n">7 d</th><th class="n">30 d</th><th class="n">Total</th></tr>` + ev.map((r) => `<tr><td>${esc(r.event)}</td><td class="n">${r.n7}</td><td class="n">${r.n30}</td><td class="n">${r.n}</td></tr>`).join("");
+      $("refs").innerHTML = table(d.referrers, "host", "n", "Dominio", "Visitas");
+      $("countries").innerHTML = table(d.countries, "country", "n", "País", "Visitas");
+      $("devices").innerHTML = table(d.devices, "device", "n", "Tipo", "Visitas");
+    }
+    load().catch((e) => { $("status").textContent = "Error: " + e.message; });
+  </script>
+</body>
+</html>

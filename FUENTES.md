@@ -65,3 +65,7 @@ Relevada el 18/11/2026 en [rockstargames.com/VI](https://www.rockstargames.com/V
 - Gradientes típicos: `linear-gradient(189deg, #4d203e 0%, #3e1a37 30%, #321532 65%, #251229 100%)` y variantes navy/púrpura
 
 En el sitio se usan fuentes libres (Big Shoulders Display y Figtree) con una estética art-déco condensada, no la fuente de Rockstar.
+
+## Privacidad y estadísticas
+
+El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo.

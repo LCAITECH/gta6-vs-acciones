@@ -6,3 +6,6 @@ node_modules/
 screenshot.png
 screenshot*.png
 share-sample.png
+.stats-key
+analytics-worker/.wrangler/
+analytics-worker/node_modules/

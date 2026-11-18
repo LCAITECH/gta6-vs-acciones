@@ -1,0 +1,12 @@
+name = "gta6-analytics"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+account_id = "e5dea32e1d9e7766b2ff8f500c2b2ae0"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gta6-analytics"
+database_id = "0768854c-d3b6-4d3c-b378-6378629945f8"
+
+# Secret (not committed): STATS_KEY  ->  npx wrangler secret put STATS_KEY
