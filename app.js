@@ -633,34 +633,60 @@ boot().catch((err) => {
 const STATE_IDS = ["edition","store","custom-amount","custom-ccy","purchase-date","dlc","dlc-ccy","gtaplus-months","courtesy-month","iva","percepcion","iibb","fx-buy","fx-now","display-ccy","fund-rate"];
 const SITE_URL = "https://gta6.lcaitech.com/";
 
+// Compact keys for shared links; long keys still accepted (old links).
+const SHORT = { edition: "e", store: "s", "custom-amount": "a", "custom-ccy": "c", "purchase-date": "d", dlc: "dl", "dlc-ccy": "dc", "gtaplus-months": "g", "courtesy-month": "cm", iva: "i", percepcion: "p", iibb: "ib", "fx-buy": "fb", "fx-now": "fn", "display-ccy": "v", "fund-rate": "f" };
+const VAL_SHORT = { edition: { standard: "s", ultimate: "u", "xbox-upgrade": "x" }, store: { ps: "ps", xbox: "xb", official: "of" } };
+const MODE_SHORT = { official: "o", custom: "c", missing: "n" };
+let DEFAULTS = null;
+function fieldValue(el) { return el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value; }
+function captureDefaults() {
+  DEFAULTS = {};
+  STATE_IDS.forEach((id) => { const el = $(id); if (el) DEFAULTS[id] = fieldValue(el); });
+}
+
 function saveStateToUrl() {
+  if (!DEFAULTS) captureDefaults();
   const q = new URLSearchParams();
   STATE_IDS.forEach((id) => {
     const el = $(id);
     if (!el) return;
-    q.set(id, el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value);
+    if ((id === "custom-amount" || id === "custom-ccy") && amountMode !== "custom") return;
+    const v = fieldValue(el);
+    if (v === DEFAULTS[id] && id !== "edition" && id !== "store") return;
+    if ((id === "edition" || id === "store") && v === DEFAULTS[id]) return;
+    q.set(SHORT[id], (VAL_SHORT[id] && VAL_SHORT[id][v]) || v);
   });
-  q.set("binance-iva", binanceIva ? "1" : "0");
-  q.set("amount-mode", amountMode);
-  history.replaceState(null, "", `${location.pathname}?${q.toString()}${location.hash}`);
+  if (!binanceIva) q.set("bi", "0");
+  if (amountMode === "custom") q.set("m", "c");
+  const qs = q.toString();
+  history.replaceState(null, "", `${location.pathname}${qs ? "?" + qs : ""}${location.hash}`);
 }
 
 let urlAmountMode = null;
 function loadStateFromUrl() {
+  captureDefaults();
   const q = new URLSearchParams(location.search);
   const legacyCustom = q.get("edition") === "custom";
-  if (legacyCustom) q.set("edition", "ultimate"); // legacy links
   if (![...q.keys()].length) return;
   STATE_IDS.forEach((id) => {
     const el = $(id);
-    if (!el || !q.has(id)) return;
-    const v = q.get(id);
+    if (!el) return;
+    let v = q.has(SHORT[id]) ? q.get(SHORT[id]) : q.get(id);
+    if (v == null) return;
+    if (VAL_SHORT[id]) {
+      const back = Object.entries(VAL_SHORT[id]).find(([, s]) => s === v);
+      if (back) v = back[0];
+    }
+    if (id === "edition" && v === "custom") v = "ultimate";
     if (el.type === "checkbox") el.checked = v === "1";
     else if (el.tagName === "SELECT") { if ([...el.options].some((o) => o.value === v)) el.value = v; }
     else el.value = v.slice(0, 32);
   });
-  if (q.has("binance-iva")) binanceIva = q.get("binance-iva") === "1";
-  urlAmountMode = q.get("amount-mode") || (legacyCustom ? "custom" : null);
+  const bi = q.get("bi") ?? q.get("binance-iva");
+  if (bi != null) binanceIva = bi === "1";
+  const m = q.get("m");
+  const mode = m ? Object.keys(MODE_SHORT).find((k) => MODE_SHORT[k] === m) : q.get("amount-mode");
+  urlAmountMode = mode || (legacyCustom ? "custom" : null);
 }
 
 function shareUrl() {
@@ -668,23 +694,36 @@ function shareUrl() {
 }
 
 // ---------- Share card ----------
+function dmy(iso) {
+  const [y, m, d] = String(iso).split("-");
+  return d && m && y ? `${d}/${m}/${y}` : iso;
+}
+
 function shareFacts() {
   const m = lastModel;
   if (!m) return null;
-  const edition = $("edition").selectedOptions[0].text.replace(/\s*\(.*\)\s*/, "").trim();
-  const pct = m.spendUsd ? ((m.valueNowUsd - m.spendUsd) / m.spendUsd) * 100 : 0;
-  const pctTxt = `${pct >= 0 ? "+" : "−"}${fmtAR.format(Math.abs(pct)).replace(/,00$/, "")}%`;
+  const ed = { standard: "Estándar", ultimate: "Ultimate", "xbox-upgrade": "mejora a Ultimate" }[$("edition").value] || "";
+  const hasDlc = m.dlcUsd > 0;
+  const what = `GTA VI ${ed}${hasDlc ? " + DLC" : ""}`;
+  const paid = m.listCcy === "ARS"
+    ? `ARS ${Math.round(m.listArs + m.dlcUsd * m.fxBuy).toLocaleString("es-AR")}`
+    : `US$ ${fmtAR.format(m.listUsd + m.dlcUsd)}`;
+  const withTax = `US$ ${fmtAR.format(m.spendUsd)}`;
+  const diff = m.valueNowUsd - m.spendUsd;
+  const pct = m.spendUsd ? (diff / m.spendUsd) * 100 : 0;
+  const up = pct >= 0;
+  const pctTxt = `${up ? "+" : "−"}${fmtAR.format(Math.abs(pct)).replace(/,00$/, "")}%`;
   const valTxt = `US$ ${Math.round(m.valueNowUsd).toLocaleString("es-AR")}`;
-  const spentTxt = `US$ ${fmtAR.format(m.spendUsd)}`;
+  const glTxt = `${up ? "ganarías" : "perderías"} US$ ${fmtAR.format(Math.abs(diff))}`;
   const c = lastCompare;
-  const saveTxt = c && c.save > 0 ? `Pagándolo con la ${c.best.name} me ahorro ${money(c.save, "ARS")} (${fmtAR.format(c.savePct)}%) vs tarjeta del banco` : "";
-  return { edition, pct, pctTxt, valTxt, spentTxt, saveTxt, date: m.entry.date };
+  const saveTxt = c && c.save > 0 ? `Pagándolo con la ${c.best.name} me ahorraba ${money(c.save, "ARS")} frente a la tarjeta del banco` : "";
+  return { what, paid, withTax, pct, up, pctTxt, valTxt, glTxt, saveTxt, date: dmy(m.entry.date) };
 }
 
 function shareText() {
   const f = shareFacts();
   if (!f) return "";
-  return `Mi GTA 6 ${f.edition} hoy valdría ${f.valTxt} en acciones de Take-Two (${f.pctTxt}).${f.saveTxt ? " " + f.saveTxt + "." : ""} Calculá el tuyo:`;
+  return `Compré ${f.what} por ${f.paid}. Si hubiera comprado acciones de Take-Two (TTWO), hoy valdrían ${f.valTxt} (${f.pctTxt}).${f.saveTxt ? " " + f.saveTxt + "." : ""} Calculá el tuyo:`;
 }
 
 let logoImg = null;
@@ -733,18 +772,29 @@ async function drawShareCard(canvas) {
   if (logo) { ctx.save(); ctx.shadowColor = "#f976b0"; ctx.shadowBlur = 40; ctx.drawImage(logo, 840, 60, 300, 300 * logo.height / logo.width); ctx.restore(); }
   const font = '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif';
   ctx.textBaseline = "alphabetic";
-  ctx.fillStyle = "#ffdf80"; ctx.font = `700 34px ${font}`;
-  ctx.fillText(`MI GTA 6 ${f ? f.edition.toUpperCase() : ""}`, 80, 110);
-  ctx.fillStyle = "#f6f0ea"; ctx.font = `500 26px Figtree, system-ui, sans-serif`;
-  ctx.fillText(f ? `Gasté ${f.spentTxt} el ${f.date}. Hoy en TTWO valdría:` : "", 80, 160);
-  ctx.save(); ctx.shadowColor = f && f.pct >= 0 ? "#9ed39a" : "#f976b0"; ctx.shadowBlur = 30;
-  ctx.fillStyle = f && f.pct >= 0 ? "#b9f0b4" : "#ffdf80"; ctx.font = `800 128px ${font}`;
-  ctx.fillText(f ? f.valTxt : "", 76, 290); ctx.restore();
-  ctx.fillStyle = f && f.pct >= 0 ? "#9ed39a" : "#ff8a9a"; ctx.font = `700 52px ${font}`;
-  ctx.fillText(f ? `(${f.pctTxt})` : "", 80, 355);
+  const fit = (txt, weight, size, fam, maxW) => {
+    let s = size;
+    do { ctx.font = `${weight} ${s}px ${fam}`; s -= 2; } while (ctx.measureText(txt).width > maxW && s > 14);
+  };
+  const body = "Figtree, system-ui, sans-serif";
+  if (f) {
+    const head = `Compré ${f.what} por ${f.paid}`;
+    ctx.fillStyle = "#ffdf80"; ctx.save(); ctx.shadowColor = "#f976b0"; ctx.shadowBlur = 14;
+    fit(head.toUpperCase(), 800, 44, font, 690); ctx.fillText(head.toUpperCase(), 80, 105); ctx.restore();
+    ctx.fillStyle = "#d4cbe0"; ctx.font = `500 19px ${body}`;
+    ctx.fillText(`el ${f.date} · ${f.withTax} con impuestos`, 80, 136);
+    ctx.fillStyle = "#f6f0ea"; fit("Si hubiera comprado acciones de Take-Two Interactive (TTWO), hoy valdrían:", 500, 24, body, 690);
+    ctx.fillText("Si hubiera comprado acciones de Take-Two Interactive (TTWO), hoy valdrían:", 80, 180);
+    const col = f.up ? "#9ed39a" : "#ff8a9a";
+    ctx.save(); ctx.shadowColor = f.up ? "#9ed39a" : "#f976b0"; ctx.shadowBlur = 30;
+    ctx.fillStyle = f.up ? "#c8f5c3" : "#ffdf80"; ctx.font = `800 120px ${font}`;
+    ctx.fillText(f.valTxt, 76, 290); ctx.restore();
+    ctx.fillStyle = col; ctx.font = `700 40px ${font}`;
+    ctx.fillText(`${f.pctTxt}  ·  ${f.glTxt.toUpperCase()}`, 80, 345);
+  }
   if (f && f.saveTxt && lastCompare) {
-    ctx.fillStyle = "rgba(255,223,128,0.12)"; roundRect(ctx, 70, 390, 700, 140, 20); ctx.fill();
-    ctx.strokeStyle = "#ffdf80"; ctx.lineWidth = 2; roundRect(ctx, 70, 390, 700, 140, 20); ctx.stroke();
+    ctx.fillStyle = "rgba(255,223,128,0.12)"; roundRect(ctx, 70, 392, 700, 140, 20); ctx.fill();
+    ctx.strokeStyle = "#ffdf80"; ctx.lineWidth = 2; roundRect(ctx, 70, 392, 700, 140, 20); ctx.stroke();
     ctx.fillStyle = "#ffdf80"; ctx.font = `700 26px ${font}`;
     ctx.fillText(`AHORRO CON ${lastCompare.best.name.toUpperCase()}`, 95, 430);
     ctx.fillStyle = "#fff"; ctx.font = `800 58px ${font}`;
@@ -773,7 +823,6 @@ function renderShare() {
   const url = shareUrl();
   $("share-x").href = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
   $("share-wa").href = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
-  $("share-preview-text").textContent = `${text} ${url}`;
 }
 
 function canvasBlob() {
@@ -790,8 +839,15 @@ function bindShare() {
     track("share-download");
   });
   $("share-copy").addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(shareUrl()); $("share-status").textContent = "Link copiado."; }
-    catch { $("share-status").textContent = shareUrl(); }
+    let ok = true;
+    try { await navigator.clipboard.writeText(shareUrl()); }
+    catch {
+      try {
+        const ta = document.createElement("textarea"); ta.value = shareUrl(); document.body.appendChild(ta);
+        ta.select(); ok = document.execCommand("copy"); ta.remove();
+      } catch { ok = false; }
+    }
+    toast(ok ? "Link copiado" : "No se pudo copiar el link");
     track("share-copy");
   });
   const nativeBtn = $("share-native");
@@ -905,4 +961,12 @@ function applyOfficialPrice(flash) {
 function markCustom() {
   amountMode = "custom";
   renderPriceHint();
+}
+
+let toastTimer = null;
+function toast(msg) {
+  let el = document.getElementById("toast");
+  if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
 }

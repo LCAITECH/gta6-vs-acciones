@@ -9,3 +9,4 @@ share-sample.png
 .stats-key
 analytics-worker/.wrangler/
 analytics-worker/node_modules/
+share-sample-*.png
