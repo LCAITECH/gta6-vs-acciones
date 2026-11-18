@@ -14,6 +14,16 @@
   <meta property="og:locale" content="es_AR">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://lcaitech.github.io/gta6-vs-acciones/assets/og.png">
+  <meta name="twitter:title" content="GTA 6 vs. acciones de Take-Two — LCA ITECH">
+  <meta name="twitter:description" content="¿Cuánto valdría lo que gastaste en GTA 6 si lo ponías en TTWO? Y cuánto ahorrás pagando con tarjeta cripto en Argentina.">
+  <meta name="twitter:site" content="@LCA_ITECH">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="GTA 6 vs acciones de Take-Two: calculadora de LCA ITECH">
+  <link rel="canonical" href="https://lcaitech.github.io/gta6-vs-acciones/">
+  <!-- Cookieless analytics (GoatCounter). Needs a free account: replace CODE and uncomment.
+  <script data-goatcounter="https://CODE.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -121,6 +131,7 @@
         <a href="#calculadora">Calculadora</a>
         <a href="#pago">Pago real</a>
         <a href="#cripto-vs-banco">Cripto vs banco</a>
+        <a href="#compartir">Compartir</a>
         <a href="#fuentes">Fuentes</a>
       </nav>
     </header>
@@ -268,6 +279,23 @@
       <div id="savings"></div>
       <div class="pay-grid" id="compare-grid"></div>
       <p class="muted" id="compare-note"></p>
+    </section>
+
+    <section id="compartir">
+      <h2>Compartí tu resultado</h2>
+      <p class="lede">Generamos una imagen con tus números. El link guarda tu cálculo: quien lo abra ve lo mismo.</p>
+      <div class="share-layout panel">
+        <canvas id="share-canvas" width="1200" height="675" aria-label="Imagen para compartir con tu resultado"></canvas>
+        <div class="share-actions">
+          <button type="button" class="cta" id="share-download">Descargar imagen</button>
+          <a class="cta alt" id="share-x" href="https://x.com/intent/post" target="_blank" rel="noopener noreferrer">Compartir en X</a>
+          <a class="cta alt" id="share-wa" href="https://wa.me/" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <button type="button" class="cta alt" id="share-native" hidden>Compartir…</button>
+          <button type="button" class="cta alt" id="share-copy">Copiar link</button>
+          <p class="muted" id="share-status" aria-live="polite"></p>
+          <p class="muted">X y WhatsApp comparten solo texto y link (no permiten adjuntar imágenes desde la web); descargá la imagen y subila vos. Texto: <span id="share-preview-text"></span></p>
+        </div>
+      </div>
     </section>
 
     <section id="impuestos">

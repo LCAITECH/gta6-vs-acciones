@@ -469,6 +469,7 @@ function renderCompare(model) {
   $("fx-meta").innerHTML = `Oficial venta <strong>${fmtAR.format(oficial)}</strong> · Tarjeta ${fmtAR.format(fxVenta("tarjeta"))} · Blue ${fmtAR.format(fxVenta("blue"))} · MEP ${fmtAR.format(fxVenta("bolsa"))} · Cripto <strong>${fmtAR.format(fxVenta("cripto"))}</strong>. ${updated ? `Actualizado <strong>${updated}</strong> (hora Argentina). Fuente: <a href="https://dolarapi.com" target="_blank" rel="noopener noreferrer">DolarApi https://dolarapi.com</a>.` : "Sin conexión a la fuente: usamos valores de referencia del 18/11/2026."}`;
 
   const pos = save > 0;
+  lastCompare = { save, savePct, best, fund, bankArs };
   $("savings").innerHTML = `
     <div class="savings-box ${pos ? "" : "neg"}">
       <div class="savings-inner">
@@ -501,6 +502,8 @@ function renderCompare(model) {
 let quotes = [];
 let latestQuote = null;
 let fx = null;
+let lastCompare = null;
+let lastModel = null;
 let chartFrame = 0;
 
 async function boot() {
@@ -521,7 +524,10 @@ async function boot() {
     fx = null;
   }
   $("purchase-date").min = quotes[0].date;
+  loadStateFromUrl();
   bind();
+  bindShare();
+  bindTracking();
   bindParallax();
   update();
 }
@@ -608,6 +614,9 @@ function update() {
   renderStats(model);
   renderPay(model);
   renderCompare(model);
+  lastModel = model;
+  saveStateToUrl();
+  renderShare();
   const startForSeries = purchase < entry.date ? entry.date : purchase;
   const pts = seriesFrom(quotes, startForSeries, shares, spend.spendUsd, spend.fxNow, ccy, latestQuote);
   drawChart(pts, ccy);
@@ -626,3 +635,201 @@ function update() {
 boot().catch((err) => {
   $("stats").innerHTML = `<div class="stat"><div class="k">Error</div><div class="s">${err.message}</div></div>`;
 });
+
+
+// ---------- Shared state in the URL ----------
+const STATE_IDS = ["edition","store","custom-amount","custom-ccy","purchase-date","dlc","dlc-ccy","gtaplus-months","courtesy-month","iva","percepcion","iibb","fx-buy","fx-now","display-ccy","fund-rate"];
+const SITE_URL = "https://lcaitech.github.io/gta6-vs-acciones/";
+
+function saveStateToUrl() {
+  const q = new URLSearchParams();
+  STATE_IDS.forEach((id) => {
+    const el = $(id);
+    if (!el) return;
+    q.set(id, el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value);
+  });
+  q.set("binance-iva", binanceIva ? "1" : "0");
+  history.replaceState(null, "", `${location.pathname}?${q.toString()}${location.hash}`);
+}
+
+function loadStateFromUrl() {
+  const q = new URLSearchParams(location.search);
+  if (![...q.keys()].length) return;
+  STATE_IDS.forEach((id) => {
+    const el = $(id);
+    if (!el || !q.has(id)) return;
+    const v = q.get(id);
+    if (el.type === "checkbox") el.checked = v === "1";
+    else if (el.tagName === "SELECT") { if ([...el.options].some((o) => o.value === v)) el.value = v; }
+    else el.value = v.slice(0, 32);
+  });
+  if (q.has("binance-iva")) binanceIva = q.get("binance-iva") === "1";
+  $("custom-row").hidden = $("edition").value !== "custom";
+}
+
+function shareUrl() {
+  return SITE_URL + location.search;
+}
+
+// ---------- Share card ----------
+function shareFacts() {
+  const m = lastModel;
+  if (!m) return null;
+  const edition = $("edition").selectedOptions[0].text.replace(/\s*\(.*\)\s*/, "").trim();
+  const pct = m.spendUsd ? ((m.valueNowUsd - m.spendUsd) / m.spendUsd) * 100 : 0;
+  const pctTxt = `${pct >= 0 ? "+" : "−"}${fmtAR.format(Math.abs(pct)).replace(/,00$/, "")}%`;
+  const valTxt = `US$ ${Math.round(m.valueNowUsd).toLocaleString("es-AR")}`;
+  const spentTxt = `US$ ${fmtAR.format(m.spendUsd)}`;
+  const c = lastCompare;
+  const saveTxt = c && c.save > 0 ? `Pagándolo con la ${c.best.name} me ahorro ${money(c.save, "ARS")} (${fmtAR.format(c.savePct)}%) vs tarjeta del banco` : "";
+  return { edition, pct, pctTxt, valTxt, spentTxt, saveTxt, date: m.entry.date };
+}
+
+function shareText() {
+  const f = shareFacts();
+  if (!f) return "";
+  return `Mi GTA 6 ${f.edition} hoy valdría ${f.valTxt} en acciones de Take-Two (${f.pctTxt}).${f.saveTxt ? " " + f.saveTxt + "." : ""} Calculá el tuyo:`;
+}
+
+let logoImg = null;
+function loadLogo() {
+  if (logoImg) return Promise.resolve(logoImg);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => { logoImg = img; resolve(img); };
+    img.onerror = () => resolve(null);
+    img.src = "assets/vi-logo.png";
+  });
+}
+
+async function drawShareCard(canvas) {
+  const W = 1200, H = 675;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  const f = shareFacts();
+  // sky
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#1a0b2e"); sky.addColorStop(0.45, "#7a2a6b"); sky.addColorStop(0.7, "#f4717c"); sky.addColorStop(1, "#ffb36b");
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+  // sun with stripes
+  const sx = 930, sy = 470, sr = 210;
+  const sun = ctx.createLinearGradient(0, sy - sr, 0, sy + sr);
+  sun.addColorStop(0, "#ffe9a0"); sun.addColorStop(1, "#f976b0");
+  ctx.save(); ctx.shadowColor = "#ffdf80"; ctx.shadowBlur = 80;
+  ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fillStyle = sun; ctx.fill(); ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.clip();
+  ctx.fillStyle = "#c2457e";
+  for (let i = 0; i < 7; i++) ctx.fillRect(sx - sr, sy + 20 + i * 26, sr * 2, 4 + i * 2);
+  ctx.restore();
+  // ocean
+  const sea = ctx.createLinearGradient(0, 560, 0, H);
+  sea.addColorStop(0, "#3b1a5a"); sea.addColorStop(1, "#0d0820");
+  ctx.fillStyle = sea; ctx.fillRect(0, 560, W, H - 560);
+  ctx.strokeStyle = "#f976b055"; ctx.lineWidth = 2;
+  for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(0, 575 + i * 18); ctx.lineTo(W, 575 + i * 18); ctx.stroke(); }
+  // dark panel for readability
+  ctx.fillStyle = "rgba(8,5,16,0.78)";
+  roundRect(ctx, 40, 40, 760, 595, 28); ctx.fill();
+  ctx.strokeStyle = "#f976b0"; ctx.lineWidth = 3; ctx.shadowColor = "#f976b0"; ctx.shadowBlur = 24;
+  roundRect(ctx, 40, 40, 760, 595, 28); ctx.stroke(); ctx.shadowBlur = 0;
+  // logo
+  const logo = await loadLogo();
+  if (logo) { ctx.save(); ctx.shadowColor = "#f976b0"; ctx.shadowBlur = 40; ctx.drawImage(logo, 840, 60, 300, 300 * logo.height / logo.width); ctx.restore(); }
+  const font = '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif';
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#ffdf80"; ctx.font = `700 34px ${font}`;
+  ctx.fillText(`MI GTA 6 ${f ? f.edition.toUpperCase() : ""}`, 80, 110);
+  ctx.fillStyle = "#f6f0ea"; ctx.font = `500 26px Figtree, system-ui, sans-serif`;
+  ctx.fillText(f ? `Gasté ${f.spentTxt} el ${f.date}. Hoy en TTWO valdría:` : "", 80, 160);
+  ctx.save(); ctx.shadowColor = f && f.pct >= 0 ? "#9ed39a" : "#f976b0"; ctx.shadowBlur = 30;
+  ctx.fillStyle = f && f.pct >= 0 ? "#b9f0b4" : "#ffdf80"; ctx.font = `800 128px ${font}`;
+  ctx.fillText(f ? f.valTxt : "", 76, 290); ctx.restore();
+  ctx.fillStyle = f && f.pct >= 0 ? "#9ed39a" : "#ff8a9a"; ctx.font = `700 52px ${font}`;
+  ctx.fillText(f ? `(${f.pctTxt})` : "", 80, 355);
+  if (f && f.saveTxt && lastCompare) {
+    ctx.fillStyle = "rgba(255,223,128,0.12)"; roundRect(ctx, 70, 390, 700, 140, 20); ctx.fill();
+    ctx.strokeStyle = "#ffdf80"; ctx.lineWidth = 2; roundRect(ctx, 70, 390, 700, 140, 20); ctx.stroke();
+    ctx.fillStyle = "#ffdf80"; ctx.font = `700 26px ${font}`;
+    ctx.fillText(`AHORRO CON ${lastCompare.best.name.toUpperCase()}`, 95, 430);
+    ctx.fillStyle = "#fff"; ctx.font = `800 58px ${font}`;
+    ctx.fillText(`${money(lastCompare.save, "ARS")}`, 95, 492);
+    ctx.fillStyle = "#e8dfef"; ctx.font = `500 22px Figtree, system-ui, sans-serif`;
+    ctx.fillText(`${fmtAR.format(lastCompare.savePct)}% menos que con tarjeta bancaria`, 95, 520);
+  }
+  ctx.fillStyle = "#99ccff"; ctx.font = `600 24px Figtree, system-ui, sans-serif`;
+  ctx.fillText(SITE_URL.replace("https://", ""), 80, 590);
+  ctx.fillStyle = "#d4cbe0"; ctx.font = `400 16px Figtree, system-ui, sans-serif`;
+  ctx.fillText("Educativo, no es consejo financiero. Sin afiliación con Rockstar/Take-Two.", 80, 616);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+let shareTimer = null;
+function renderShare() {
+  const canvas = $("share-canvas");
+  if (!canvas) return;
+  clearTimeout(shareTimer);
+  shareTimer = setTimeout(() => drawShareCard(canvas), 150);
+  const text = shareText();
+  const url = shareUrl();
+  $("share-x").href = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+  $("share-wa").href = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
+  $("share-preview-text").textContent = `${text} ${url}`;
+}
+
+function canvasBlob() {
+  return new Promise((resolve) => $("share-canvas").toBlob(resolve, "image/png"));
+}
+
+function bindShare() {
+  $("share-download").addEventListener("click", async () => {
+    await drawShareCard($("share-canvas"));
+    const blob = await canvasBlob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "mi-gta6-vs-ttwo.png"; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    track("share-download");
+  });
+  $("share-copy").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(shareUrl()); $("share-status").textContent = "Link copiado."; }
+    catch { $("share-status").textContent = shareUrl(); }
+    track("share-copy");
+  });
+  const nativeBtn = $("share-native");
+  if (navigator.share) {
+    nativeBtn.hidden = false;
+    nativeBtn.addEventListener("click", async () => {
+      await drawShareCard($("share-canvas"));
+      const blob = await canvasBlob();
+      const file = new File([blob], "mi-gta6-vs-ttwo.png", { type: "image/png" });
+      const data = { title: "GTA 6 vs acciones", text: shareText(), url: shareUrl() };
+      if (navigator.canShare && navigator.canShare({ files: [file] })) data.files = [file];
+      try { await navigator.share(data); track("share-native"); } catch { /* cancelled */ }
+    });
+  }
+  $("share-x").addEventListener("click", () => track("share-x"));
+  $("share-wa").addEventListener("click", () => track("share-whatsapp"));
+}
+
+// ---------- Cookieless analytics hooks ----------
+// Set window.GOATCOUNTER_ENDPOINT via the <script data-goatcounter> tag in index.html once an account exists.
+function track(name) {
+  try {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: `event/${name}`, title: name, event: true });
+    }
+  } catch { /* no-op */ }
+}
+
+function bindTracking() {
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("a.cta");
+    if (!a) return;
+    const href = a.getAttribute("href") || "";
+    if (href.includes("bingx.com")) track("cta-bingx");
+    else if (href.includes("binance.com")) track("cta-binance");
+  });
+}

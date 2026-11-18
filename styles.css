@@ -705,3 +705,12 @@ label, .muted, .hint, .check, .stat .k, .stat .s, .legend, .ticker .meta,
     background: linear-gradient(120deg, #ffdf80, #f976b0, #9b89f5, #f4717c, #ffdf80);
   }
 }
+
+/* ----- Share block ----- */
+.share-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, 1fr); gap: 22px; align-items: start; }
+#share-canvas { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 0 30px #f976b055; display: block; }
+.share-actions { display: flex; flex-direction: column; gap: 10px; }
+.share-actions .cta { border: 0; cursor: pointer; font: inherit; font-weight: 700; margin-top: 0; }
+.cta.alt { background: linear-gradient(90deg, #9b89f5, #f976b0); }
+.share-actions .muted { word-break: break-word; }
+@media (max-width: 900px) { .share-layout { grid-template-columns: 1fr; } }
