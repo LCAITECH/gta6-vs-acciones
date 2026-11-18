@@ -1,6 +1,6 @@
 // Hash routing between views: #calculadora, #jodita, #desafio, #encuesta, #fuentes.
 // Any other hash (e.g. #pago, #esperar) opens the view that contains that element and scrolls to it.
-const VIEWS = ["calculadora", "jodita", "desafio", "encuesta", "fuentes"];
+const VIEWS = ["calculadora", "jodita", "conviene", "ttwo", "desafio", "encuesta", "fuentes"];
 let current = null;
 
 function viewFor(hash) {
@@ -29,7 +29,7 @@ function show(hash, initial) {
   document.querySelectorAll("[data-tab]").forEach((a) => {
     if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
   });
-  const titles = { calculadora: "Calculadora", jodita: "La jodita", desafio: "Desafío PC", encuesta: "Encuesta", fuentes: "Fuentes" };
+  const titles = { calculadora: "Calculadora", jodita: "La jodita", conviene: "¿Me conviene?", ttwo: "TTWO", desafio: "Desafío PC", encuesta: "Encuesta", fuentes: "Fuentes" };
   document.title = `${titles[view]} · GTA 6 vs. acciones de Take-Two — LCA ITECH`;
   if (el) requestAnimationFrame(() => el.scrollIntoView({ block: "start" }));
   else if (changed && !initial) {
@@ -37,6 +37,8 @@ function show(hash, initial) {
     const top = tabs ? tabs.getBoundingClientRect().top + window.scrollY - 8 : 0;
     window.scrollTo({ top: Math.min(window.scrollY, top), behavior: "auto" });
   }
+  const tab = document.querySelector(`[data-tab="${view}"]`);
+  if (tab && tab.scrollIntoView) tab.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "auto" });
   if (changed) { current = view; track("view_" + view); window.dispatchEvent(new CustomEvent("gta:view", { detail: view })); }
 }
 

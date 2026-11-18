@@ -128,7 +128,7 @@
     </header>
 
     <nav class="tabs" aria-label="Secciones">
-      <a href="#calculadora" data-tab="calculadora">Calculadora</a><a href="#jodita" data-tab="jodita">La jodita</a><a href="#desafio" data-tab="desafio">Desafío PC</a><a href="#encuesta" data-tab="encuesta">Encuesta</a>
+      <a href="#calculadora" data-tab="calculadora">Calculadora</a><a href="#jodita" data-tab="jodita">La jodita</a><a href="#conviene" data-tab="conviene">¿Me conviene?</a><a href="#ttwo" data-tab="ttwo">TTWO</a><a href="#desafio" data-tab="desafio">Desafío PC</a><a href="#encuesta" data-tab="encuesta">Encuesta</a>
     </nav>
     <main id="views">
       <div class="view" data-view="calculadora">
@@ -372,9 +372,50 @@
           </div>
         </div>
       </div>
+      <div class="panel scen-break" id="j-scenarios">
+        <h3>Escenarios: con o sin consola, con o sin tele</h3>
+        <p class="hint">Solo compras locales en pesos (la consola, la caja, la tele, otros). Lo digital (PS Store, Game Pass, PS Plus) va aparte: un solo pago, sin cuotas.</p>
+        <div class="scen-break-grid" id="j-scen-grid"></div>
+        <p class="j-scen-digital" id="j-scen-digital"></p>
+        <p class="j-scen-resumen" id="j-scen-resumen"></p>
+      </div>
     </section>
 
       </div>
+
+      <div class="view" data-view="conviene" hidden>
+    <section id="conviene">
+      <h2>¿Me conviene esta consola para el GTA VI?</h2>
+      <p class="lede">Rendimiento según Digital Foundry (18/11/2026): todas apuntan a 30 fps y no hay modo 40 ni 60. Los precios en pesos son los de hoy en Argentina (18/11/2026), de las tiendas que ya citamos. Digital y Standard de la PS5 Slim rinden igual: cambia el almacenamiento y la lectora.</p>
+      <div class="panel table-wrap conv-wrap">
+        <p class="swipe-hint">Deslizá la tabla →</p>
+        <table class="j-table conv-table" id="conv-table"></table>
+      </div>
+      <p class="hint" id="conv-cite">Fuente de rendimiento: <a href="https://www.digitalfoundry.net/features/gta-6-ps5-vs-ps5-pro-xbox-series-x-and-series-s-which-console-plays-best" target="_blank" rel="noopener noreferrer">Digital Foundry, “GTA 6: PS5 vs PS5 Pro, Xbox Series X and Series S: Which Console Plays Best?”, Oliver Mackenzie, 18/11/2026</a>. Xbox One (solo nube): <a href="https://www.digitalfoundry.net/news/2026/11/you-can-play-gta-6-on-xbox-one" target="_blank" rel="noopener noreferrer">Digital Foundry, 10/11/2026</a>, citando a Rockstar (ajustes de Series S; la conexión puede afectar el stream). PC: sin versión anunciada. Los veredictos resumidos son de DF, no un consejo de compra nuestro.</p>
+    </section>
+      </div>
+
+      <div class="view" data-view="ttwo" hidden>
+    <section id="ttwo">
+      <h2>TTWO, la acción de Take-Two</h2>
+      <p class="lede">Cierres diarios de Take-Two Interactive (NASDAQ: TTWO). Pasá el dedo o el mouse por la línea para ver fecha y precio.</p>
+      <div class="panel ttwo-panel">
+        <div class="chips" id="ttwo-range" role="group" aria-label="Rango del gráfico">
+          <button type="button" data-r="1M">1M</button>
+          <button type="button" data-r="3M">3M</button>
+          <button type="button" data-r="6M" aria-pressed="true">6M</button>
+          <button type="button" data-r="1A">1A</button>
+          <button type="button" data-r="MAX">Máx</button>
+        </div>
+        <div class="ttwo-readout" id="ttwo-readout" aria-live="polite"></div>
+        <div class="ttwo-chart-wrap">
+          <canvas id="ttwo-chart" width="1100" height="420" role="img" aria-label="Gráfico de cierres diarios de TTWO"></canvas>
+        </div>
+        <p class="hint" id="ttwo-note"></p>
+      </div>
+    </section>
+      </div>
+
       <div class="view" data-view="desafio" hidden>
     <section id="desafio">
       <div class="desafio-hero">
@@ -499,8 +540,10 @@
             <tr><td>GTA+ PlayStation Store AR</td><td>US$ 7,99 / mes</td><td>18/11/2026</td><td><a href="https://store.playstation.com/es-ar/product/UP1004-PPSA16755_00-GTAPLUS00001T01M">Ficha oficial</a></td></tr>
             <tr><td>GTA+ Xbox Store AR</td><td>ARS 6.670 / mes</td><td>18/11/2026</td><td><a href="https://www.xbox.com/es-AR/games/store/gta-xbox-series-xs/cfq7ttc0hx8w">Ficha oficial</a></td></tr>
             <tr><td>DLC de historia / Shark Cards de GTA 6</td><td>no publicado</td><td>18/11/2026</td><td>—</td></tr>
-            <tr><td>Precio físico en cadenas argentinas</td><td>no publicado (no verificamos góndola)</td><td>18/11/2026</td><td>—</td></tr>
-            <tr><td>Versión de PC al lanzamiento</td><td>no publicado</td><td>18/11/2026</td><td>El anuncio oficial cubre PS5 y Xbox Series X|S</td></tr>
+            <tr><td>GTA VI en caja (cadenas AR)</td><td>PS5 caja con código ARS 219.999 (Frávega) · Xbox caja ARS 239.999 (Game Sense). Otras ediciones o cadenas: no verificadas.</td><td>18/11/2026</td><td><a href="https://www.fravega.com/p/juego-ps5-grand-theft-auto-vi-formato-fisico-con-codigo-342114/">Frávega</a> · Game Sense</td></tr>
+            <tr><td>Versión de PC al lanzamiento</td><td>no publicado (sin fecha oficial; 2027 es rumor)</td><td>18/11/2026</td><td>El anuncio oficial cubre PS5 y Xbox Series X|S</td></tr>
+            <tr><td>Rendimiento por consola (resolución, upscaler, fps)</td><td>PS5 / Pro / Series X: 1440p → 4K (PSSR en Pro; TAA espacial de Rockstar en Slim y Series X). Series S: 720p → ~1080p con FSR 4. Todas a 30 fps, sin modo 40/60. Pro: 30 casi siempre (bajones cortos a 24). Slim y Series X: tirones a 20 altos (peor caso 20 bajos). Series S: a menudo 25–30 (peor caso ~20).</td><td>18/11/2026</td><td><a href="https://www.digitalfoundry.net/features/gta-6-ps5-vs-ps5-pro-xbox-series-x-and-series-s-which-console-plays-best">Digital Foundry, Oliver Mackenzie, 18/11/2026</a></td></tr>
+            <tr><td>Xbox One (GTA VI)</td><td>No hay versión nativa. Solo Xbox Cloud Gaming, con ajustes de Series S. La conexión puede afectar el stream. DF no publicó un test del stream al 18/11/2026.</td><td>18/11/2026</td><td><a href="https://www.digitalfoundry.net/news/2026/11/you-can-play-gta-6-on-xbox-one">Digital Foundry, William Judd, 10/11/2026</a> · <a href="https://news.xbox.com/en-us/2026/11/10/grand-theft-auto-6-comes-to-xbox-cloud-gaming-november-19/">Xbox Wire, 10/11/2026</a></td></tr>
             <tr><td>IVA servicios digitales</td><td>Alícuota general 21%; régimen de percepción RG 4240/2018</td><td>18/11/2026</td><td><a href="https://www.afip.gov.ar/iva/servicios-digitales/reg-percepcion-4240.asp">ARCA / RG 4240</a></td></tr>
             <tr><td>Percepción 30% dólar tarjeta</td><td>30% (RG 5617). Excluida para PSN, Microsoft y Rockstar Games desde el 16/04/2025 (RG 5677, anexo oficial)</td><td>18/11/2026</td><td><a href="https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-5677-2025-411846/texto">RG 5677/2025</a> · <a href="https://www.arca.gob.ar/regimen-devolucion-percepciones/percepcion/importe.asp">ARCA, alícuota 30%</a></td></tr>
             <tr><td>Dólar BNA billete</td><td>Compra 1.525,00 · Venta 1.575,00</td><td>18/11/2026</td><td><a href="https://www.bna.com.ar/Personas">Banco Nación, Cotización Billetes</a></td></tr>
@@ -549,5 +592,6 @@
   <script src="router.js" type="module"></script>
   <script src="app.js" type="module"></script>
   <script src="extras.js" type="module"></script>
+  <script src="ttwo-chart.js" type="module"></script>
 </body>
 </html>

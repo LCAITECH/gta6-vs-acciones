@@ -121,3 +121,14 @@ La Digital de la tienda oficial Sony (ARS 1.869.999) no se usa como precio de re
 ## Imagen del Desafío PC
 
 `assets/desafio-pc-*.{webp,jpg}`: imagen generada con IA (PC gamer neón, atardecer synthwave, palmeras; sin texto ni logos).
+
+
+## Rendimiento por consola (¿Me conviene?)
+
+Fuente principal, verificada el 18/11/2026 (hora Argentina):
+
+- [Digital Foundry — “GTA 6: PS5 vs PS5 Pro, Xbox Series X and Series S: Which Console Plays Best?”, Oliver Mackenzie, 18/11/2026](https://www.digitalfoundry.net/features/gta-6-ps5-vs-ps5-pro-xbox-series-x-and-series-s-which-console-plays-best). Resolución (PS5 / Pro / Series X: 1440p → 4K; Series S: 720p → ~1080p), upscalers (PSSR en Pro, TAA espacial de Rockstar en Slim y Series X, FSR 4 en Series S), objetivo de 30 fps sin modo 40/60, y las mediciones de estabilidad citadas en la tabla.
+- [Digital Foundry — “You Can Play GTA 6 on Xbox One”, William Judd, 10/11/2026](https://www.digitalfoundry.net/news/2026/11/you-can-play-gta-6-on-xbox-one), citando a Rockstar: en Xbox One solo hay Xbox Cloud Gaming, con ajustes de Series S; la conexión puede afectar el stream. Al 18/11/2026 DF no había publicado un test del stream.
+- PC: sin versión anunciada ni fecha oficial (el “2027” es rumor; no se da por hecho).
+
+Los precios en ARS de esa tabla son los mismos de “Cuotas y precios por tienda”, no de Digital Foundry.

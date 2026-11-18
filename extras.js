@@ -95,6 +95,7 @@ const DISCLAIMER_SHORT = "No es asesoramiento financiero: puede salir bien o mal
 
 const G = () => window.__gta;
 const ars = (n) => `ARS ${Math.round(n).toLocaleString("es-AR")}`;
+const moneyAR = (n) => `ARS ${G().fmtAR.format(n)}`;
 const usd = (n) => `US$ ${G().fmtAR.format(n)}`;
 const usd0 = (n) => `US$ ${Math.round(n).toLocaleString("es-AR")}`;
 const num = (id) => Math.max(0, Number($(id).value) || 0);
@@ -223,7 +224,163 @@ function renderJodita() {
     ? `La jodita del GTA VI me sale ${ars(bank)} con la tarjeta del banco. Usando la ${best.name} donde conviene me ahorro ${ars(best.save)}. Calculá la tuya:`
     : `La jodita del GTA VI me sale ${ars(bank)}. Calculá la tuya:`;
   setShare("j", text, "#jodita");
+  renderScenarios(items, r);
   debounceTrack("cost_builder_calc");
+}
+
+
+function localCash(it) {
+  return it.type === "local" ? it.amount : 0;
+}
+function digitalLine(items, r) {
+  const dig = items.filter((i) => i.type === "digital");
+  if (!dig.length) return "No hay ítems digitales en este combo (PS Store / Game Pass / PS Plus).";
+  const parts = dig.map((i) => {
+    if (i.ccy === "USD") return `${i.label}: ${usd(i.amount)} + IVA, un solo pago`;
+    return `${i.label}: ${ars(i.amount)}${i.noIva ? "" : " + IVA (si aplica)"}, un solo pago`;
+  });
+  return "Lo digital (sin cuotas): " + parts.join(" · ") + ".";
+}
+function bestCuotaFor(consoleKey) {
+  if (!consoleKey || consoleKey === "none" || consoleKey === "custom") return null;
+  const { si, best } = bestOffer(consoleKey);
+  if (!si) return null;
+  return { n: si.n, cuota: si.cuota, store: si.store, cond: si.cond, price: si.price, cash: best ? best.amount : si.price };
+}
+function scenarioCard(title, localItems, cuota, active) {
+  const cash = localItems.reduce((s, i) => s + i.amount, 0);
+  let cuotaHtml = "<span class=\"muted\">Sin cuotas sin interés verificadas para estos ítems.</span>";
+  if (cuota && localItems.some((i) => i.key === "consola")) {
+    const rest = localItems.filter((i) => i.key !== "consola").reduce((s, i) => s + i.amount, 0);
+    cuotaHtml = `<strong>${cuota.n} × ${moneyAR(cuota.cuota)}</strong> <span class="fine-inline">${cuota.store}, ${cuota.cond}${cuota.price && cuota.cash && cuota.price !== cuota.cash ? ` · sobre ${moneyAR(cuota.price)}` : ""}</span>` +
+      (rest ? `<br><span class="fine-inline">El resto al contado: ${ars(rest)} (sin cuotas verificadas).</span>` : "");
+  } else if (!localItems.length) {
+    cuotaHtml = "<span class=\"muted\">No hay compras locales en este escenario.</span>";
+  }
+  const list = localItems.length ? localItems.map((i) => `${i.label}: ${ars(i.amount)}`).join(" · ") : "Sin ítems locales";
+  return `<article class="scen-card${active ? " on" : ""}"><h4>${title}</h4><p class="scen-cash">${cash ? ars(cash) : "—" } <span>contado</span></p><p class="fine-inline">${list}</p><p class="scen-cuotas">${cuotaHtml}</p></article>`;
+}
+function renderScenarios(items, r) {
+  const grid = $("j-scen-grid");
+  if (!grid) return;
+  const cKey = $("j-console").value;
+  const cuota = bestCuotaFor(cKey);
+  const hasConsole = items.some((i) => i.key === "consola");
+  const hasTv = items.some((i) => i.key === "tele");
+  const baseLocal = items.filter((i) => i.type === "local" && i.key !== "consola" && i.key !== "tele");
+  const consola = items.find((i) => i.key === "consola");
+  const tele = items.find((i) => i.key === "tele");
+  const variants = [];
+  const add = (title, extra, on) => variants.push(scenarioCard(title, baseLocal.concat(extra), cuota, on));
+  if (hasConsole && hasTv) {
+    add("Con consola y tele", [consola, tele], true);
+    add("Con consola, sin tele", [consola], false);
+    add("Sin consola, con tele", [tele], false);
+    add("Sin consola ni tele", [], false);
+  } else if (hasConsole) {
+    add("Con consola", [consola], true);
+    add("Sin consola", [], false);
+  } else if (hasTv) {
+    add("Con tele (sin consola)", [tele], true);
+    add("Sin tele ni consola", [], false);
+  } else {
+    add("Sin consola ni tele", [], true);
+  }
+  grid.innerHTML = variants.join("");
+  $("j-scen-digital").textContent = digitalLine(items, r);
+  const activeLocal = items.filter((i) => i.type === "local");
+  const cash = activeLocal.reduce((s, i) => s + i.amount, 0);
+  let resumen = "";
+  if (!cash && !items.some((i) => i.type === "digital")) resumen = "Elegí al menos un ítem para ver el resumen.";
+  else if (!cash) resumen = `En este combo no hay compras locales en pesos. ${digitalLine(items, r)}`;
+  else if (cuota && hasConsole) {
+    const rest = activeLocal.filter((i) => i.key !== "consola").reduce((s, i) => s + i.amount, 0);
+    resumen = rest
+      ? `Te sale ${ars(cash)} en efectivo, o ${cuota.n} cuotas de ${moneyAR(cuota.cuota)} con ${cuota.store} (${cuota.cond}) por la consola y ${ars(rest)} al contado del resto.`
+      : `Te sale ${ars(cash)} en efectivo o ${cuota.n} cuotas de ${moneyAR(cuota.cuota)} con ${cuota.store} (${cuota.cond}).`;
+  } else {
+    resumen = `Te sale ${ars(cash)} en efectivo. No hay cuotas sin interés verificadas para estos ítems locales.`;
+  }
+  $("j-scen-resumen").textContent = resumen;
+}
+
+function convPrice(key) {
+  const o = bestOffer(key);
+  if (o && o.best) return { ars: o.best.amount, how: o.best.how };
+  const c = CONSOLES[key];
+  return c && c.ars ? { ars: c.ars, how: `precio de lista en ${c.src}` } : null;
+}
+function renderConviene() {
+  const table = $("conv-table");
+  if (!table) return;
+  const slimD = convPrice("ps5-digital");
+  const slimS = convPrice("ps5-standard");
+  const pro = convPrice("ps5-pro");
+  const xs = convPrice("xbox-s");
+  const xx = convPrice("xbox-x");
+  const slimPrice = slimD && slimS
+    ? `Digital ${ars(slimD.ars)} <span class="tag">${slimD.how}</span>Standard ${ars(slimS.ars)} <span class="tag">${slimS.how}</span>`
+    : "—";
+  const rows = [
+    {
+      name: "PS5 Slim (Digital / Standard)",
+      render: "1440p", out: "4K", up: "TAA espacial de Rockstar",
+      fps: "30 fps (tirones a los 20 altos; peor caso, 20 bajos)",
+      stab: "Sólida, un poco más floja que la Pro",
+      price: slimPrice,
+      verd: "Se ve y se juega bien; la imagen es más blanda que en la Pro y puede haber algún bajón.",
+    },
+    {
+      name: "PS5 Pro",
+      render: "1440p", out: "4K", up: "PSSR (upscaler de IA temporal)",
+      fps: "30 fps (bajones cortos a 24 fps con lanzagranadas; recupera rápido)",
+      stab: "La más firme (~75 h de prueba en 30, casi siempre)",
+      price: pro ? `${ars(pro.ars)} <span class="tag">${pro.how}</span>` : "—",
+      verd: "La mejor opción según DF: imagen tipo 4K, sombras con ray tracing y el 30 fps más estable.",
+    },
+    {
+      name: "Xbox Series X",
+      render: "1440p", out: "4K", up: "TAA espacial de Rockstar",
+      fps: "30 fps (tirones a los 20 altos; peor caso, 20 bajos)",
+      stab: "A la par de la PS5 Slim (el sistema permite un contenedor VRR a 120 Hz)",
+      price: xx ? `${ars(xx.ars)} <span class="tag">${xx.how}</span>` : "—",
+      verd: "Se ve y se juega bien, al nivel de la PS5 Slim; misma resolución y un upscaler espacial similar.",
+    },
+    {
+      name: "Xbox Series S",
+      render: "720p", out: "~1080p", up: "AMD FSR 4 (temporal)",
+      fps: "A menudo 25–30 fps (peor caso ~20; con explosivos puede irse a los teens)",
+      stab: "La menos estable de las cuatro: el 30 más flojo",
+      price: xs ? `${ars(xs.ars)} <span class="tag">${xs.how}</span>` : "—",
+      verd: "La más difícil de recomendar según DF: salida a 1080p, recortes visuales y bajones a los 20 medios.",
+    },
+    {
+      name: "Xbox One (solo nube)",
+      render: "720p (Series S, en el servidor)", out: "~1080p, comprimido por el stream", up: "FSR 4 en el servidor + compresión de la nube",
+      fps: "El de Series S, vía Xbox Cloud Gaming (sin medición de DF al 18/11/2026)",
+      stab: "Depende de tu conexión; no hay test publicado del stream",
+      price: "— <span class=\"tag\">no hay versión nativa; usás la consola que ya tenés</span>",
+      verd: "La única forma de jugarlo en One. Ajustes de Series S; Rockstar advierte que la conexión puede afectar el rendimiento. DF no midió el stream (nota del 10/11/2026).",
+    },
+    {
+      name: "PC",
+      render: "TBA", out: "TBA", up: "TBA",
+      fps: "TBA",
+      stab: "TBA",
+      price: "— <span class=\"tag\">sin versión anunciada</span>",
+      verd: "No hay fecha oficial. Lo de 2027 es rumor; no lo damos por hecho.",
+    },
+  ];
+  table.innerHTML = `<thead><tr><th>Plataforma</th><th>Render / salida</th><th>Upscaler</th><th>FPS</th><th>Estabilidad</th><th class="n">Precio ARS hoy</th><th>Veredicto</th></tr></thead><tbody>` +
+    rows.map((row) => `<tr>
+      <th scope="row">${row.name}</th>
+      <td data-label="Render / salida">${row.render} → ${row.out}</td>
+      <td data-label="Upscaler">${row.up}</td>
+      <td data-label="FPS">${row.fps}</td>
+      <td data-label="Estabilidad">${row.stab}</td>
+      <td class="n" data-label="Precio ARS hoy">${row.price}</td>
+      <td data-label="Veredicto">${row.verd}</td>
+    </tr>`).join("") + `</tbody>`;
 }
 
 function syncConsolePrice(force) {
@@ -522,7 +679,7 @@ function init() {
   $("poll-options").addEventListener("click", (e) => { const b = e.target.closest(".poll-btn"); if (b) vote(b.dataset.opt); });
   renderPollButtons();
 
-  g.listeners.push(() => { renderJodita(); renderDesafio(); renderWait(); });
+  g.listeners.push(() => { renderJodita(); renderDesafio(); renderWait(); renderConviene(); });
   const waitQuotes = () => (g.quotes && g.quotes.length ? (($("d-start").min = g.quotes[0].date), ($("d-start").max = g.quotes[g.quotes.length - 1].date), renderAll()) : setTimeout(waitQuotes, 100));
   waitQuotes();
 }

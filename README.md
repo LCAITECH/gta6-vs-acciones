@@ -55,9 +55,11 @@ El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-w
 
 ## Secciones extra
 
-La navegación es por vistas con hash (`#calculadora`, `#jodita`, `#desafio`, `#encuesta`, `#fuentes`); los links y el botón atrás abren la vista correcta.
+La navegación es por vistas con hash (`#calculadora`, `#jodita`, `#conviene`, `#ttwo`, `#desafio`, `#encuesta`, `#fuentes`); los links y el botón atrás abren la vista correcta.
 
-- **La jodita del GTA VI**: consola (PS5 Slim Digital y Standard, Pro, Series S/X) + juego digital o en caja + membresía + upgrade + tele + otros, en pesos, con cuotas por tienda, tarjeta del banco vs BingX vs Binance, y qué valdría el ahorro en TTWO.
+- **La jodita del GTA VI**: consola (PS5 Slim Digital y Standard, Pro, Series S/X) + juego digital o en caja + membresía + upgrade + tele + otros, en pesos, con cuotas por tienda, tarjeta del banco vs BingX vs Binance, escenarios con/sin consola y con/sin tele, y qué valdría el ahorro en TTWO.
+- **¿Me conviene?**: tabla de rendimiento por plataforma (Digital Foundry, 18/11/2026) más el precio ARS de hoy.
+- **TTWO**: gráfico interactivo de cierres diarios (rangos 1M–Máx) a partir de `data/ttwo-daily.json`.
 - **Desafío PC**: meta (placas de referencia o propia), monto inicial y aportes mensuales, resultado real con TTWO, escenarios hipotéticos, y un simulador de proyección (aportes mensuales a un precio interpolado en línea recta).
 - **Consola hoy vs esperar la PC**: misma lógica, con una fecha de PC elegida por el usuario (no hay fecha oficial) o un modo “esperar a fin de noviembre (Black Friday)” que muestra el mejor precio verificado de hoy, sin inventar descuentos.
 - **Encuesta**: votos en D1 vía el Worker de analítica.

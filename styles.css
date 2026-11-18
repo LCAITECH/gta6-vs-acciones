@@ -811,15 +811,12 @@ section[id] { scroll-margin-top: 70px; }
 .cuotas-box.pending { border-color: #ffdf8055; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .view-in { animation: none; } }
 @media (max-width: 600px) { .hero-layout { gap: 4px; } .vi-mark { width: min(56vw, 220px); } .hero h1 { font-size: 40px; } }
-@media (max-width: 520px) {
-  .tabs { gap: 2px; padding: 4px; }
-  .tabs a { padding: 7px 9px; font-size: 12.5px; }
+@media (max-width: 900px) {
+  .tabs { flex-wrap: wrap; justify-content: center; border-radius: 22px; overflow: visible; gap: 4px; padding: 4px; }
+  .tabs a { padding: 6px 10px; font-size: 12.5px; }
 }
 @media (max-width: 360px) {
-  .tabs a { padding: 6px 7px; font-size: 12px; }
-}
-@media (max-width: 330px) {
-  .tabs a { padding: 6px 6px; font-size: 11.5px; }
+  .tabs a { padding: 6px 8px; font-size: 12px; }
 }
 
 
@@ -857,3 +854,46 @@ section[id] { scroll-margin-top: 70px; }
 .sim-goal { grid-column: 1 / -1; font-size: 14px; font-weight: 700; padding: 6px 10px; border-radius: 10px; }
 .sim-goal.up { color: #c8f5c3; background: rgba(158,211,154,0.12); } .sim-goal.down { color: #ffb3bb; background: rgba(244,113,124,0.12); }
 @media (max-width: 700px) { .sim-grid, .sim-out { grid-template-columns: 1fr 1fr; } .sim-cell strong { font-size: 20px; } }
+
+/* ----- ¿Me conviene? + TTWO + escenarios jodita ----- */
+.conv-table { min-width: 860px; font-size: 13px; }
+.conv-table th, .conv-table td { vertical-align: top; }
+.conv-table th[scope="row"] { color: var(--gold); font-weight: 650; white-space: nowrap; }
+.scen-break { margin-top: 18px; }
+.scen-break h3 { margin-bottom: 4px; }
+.scen-break-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.scen-card { border-radius: 14px; padding: 12px 14px; background: rgba(8,5,16,0.85); border: 1px solid #ffffff18; }
+.scen-card.on { border-color: var(--pink); box-shadow: 0 0 16px #f976b033; }
+.scen-card h4 { font-family: var(--font-body); font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--gold); margin: 0 0 6px; }
+.scen-cash { font-family: var(--font-display); font-size: 28px; line-height: 1.1; margin: 0 0 4px; }
+.scen-cash span { font-family: var(--font-body); font-size: 12px; color: var(--dim); margin-left: 6px; text-transform: uppercase; letter-spacing: .05em; }
+.scen-cuotas { font-size: 13px; margin: 8px 0 0; }
+.j-scen-digital, .j-scen-resumen { margin: 10px 0 0; }
+.j-scen-resumen { font-size: 16px; font-weight: 650; color: var(--text); background: rgba(255,223,128,0.08); border: 1px solid #ffdf8044; border-radius: 12px; padding: 10px 12px; }
+.ttwo-panel { padding: 14px 16px 12px; }
+.ttwo-chart-wrap { position: relative; height: 300px; margin: 8px 0 4px; border-radius: 14px; background: rgba(8,5,16,0.7); border: 1px solid #f976b033; overflow: hidden; }
+#ttwo-chart { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+.ttwo-readout { min-height: 1.4em; font-size: 15px; margin: 4px 0 0; text-shadow: 0 1px 2px #000; }
+.ttwo-readout .up { color: #c8f5c3; } .ttwo-readout .down { color: #ff9aa6; }
+@media (max-width: 700px) {
+  .scen-break-grid { grid-template-columns: 1fr; }
+  .ttwo-chart-wrap { height: 230px; }
+  .scen-cash { font-size: 24px; }
+  .conv-table { min-width: 720px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ttwo-chart { transition: none; }
+}
+
+@media (max-width: 700px) {
+  .conv-wrap .swipe-hint { display: none; }
+  .conv-table { min-width: 0 !important; }
+  .conv-table thead { display: none; }
+  .conv-table, .conv-table tbody, .conv-table tr, .conv-table th, .conv-table td { display: block; width: 100%; }
+  .conv-table tbody { display: flex; flex-direction: column; gap: 8px; }
+  .conv-table tr { margin: 0; padding: 10px 12px; border: 1px solid #f976b044; border-radius: 14px; background: rgba(8,5,16,0.85); }
+  .conv-table th, .conv-table td { border: 0; padding: 2px 0; white-space: normal; text-align: left; font-size: 13px; line-height: 1.35; }
+  .conv-table th[scope="row"] { font-size: 15px; margin-bottom: 2px; }
+  .conv-table td::before { content: attr(data-label); display: inline; color: var(--gold); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-right: 6px; }
+  .conv-table td.n { text-align: left; white-space: normal; }
+}
