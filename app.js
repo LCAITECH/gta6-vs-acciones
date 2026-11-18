@@ -129,11 +129,19 @@ function computeSpend() {
   };
 }
 
-function seriesFrom(quotes, startDate, shares, spendUsd, fxNow, displayCcy) {
-  const pts = quotes.filter((q) => q.date >= startDate);
+function seriesFrom(quotes, startDate, shares, spendUsd, fxNow, displayCcy, live) {
+  const pts = quotes.filter((q) => q.date >= startDate).map((q) => ({ date: q.date, close: q.close }));
   if (pts.length === 0) {
     const last = closeOnOrBefore(quotes, startDate) || quotes[quotes.length - 1];
-    pts.push(last);
+    pts.push({ date: last.date, close: last.close });
+  }
+  if (live && typeof live.price === "number" && live.asOfDate) {
+    const last = pts[pts.length - 1];
+    if (live.asOfDate > last.date) {
+      pts.push({ date: live.asOfDate, close: live.price });
+    } else if (live.asOfDate === last.date && live.price !== last.close) {
+      last.close = live.price;
+    }
   }
   return pts.map((q) => {
     const invUsd = shares * q.close;
@@ -144,6 +152,36 @@ function seriesFrom(quotes, startDate, shares, spendUsd, fxNow, displayCcy) {
       close: q.close,
     };
   });
+}
+
+function clockFromArt(stamp) {
+  if (!stamp || !stamp.includes(" ")) return "";
+  return stamp.split(" ")[1];
+}
+
+function renderTicker() {
+  const el = $("ticker");
+  if (!el) return;
+  const last = quotes[quotes.length - 1];
+  const q = latestQuote;
+  const price = q && typeof q.price === "number" ? q.price : last && last.close;
+  if (price == null) {
+    el.textContent = "No pudimos cargar la cotización de TTWO. Reintentá más tarde.";
+    return;
+  }
+  const ch = q && typeof q.change === "number" ? q.change : null;
+  const pct = q && typeof q.changePercent === "number" ? q.changePercent : null;
+  const up = (ch ?? 0) >= 0;
+  const states = { REGULAR: "En el mercado", PRE: "Preapertura", POST: "After hours", CLOSED: "Mercado cerrado" };
+  const state = states[(q && q.marketState) || ""] || "Último dato";
+  const updated = clockFromArt(q && q.updatedAtArt);
+  const quoteArt = q && q.quoteTimeArt;
+  const chLabel = ch == null ? "—" : `${up ? "+" : "−"}US$ ${fmtAR.format(Math.abs(ch))} (${up ? "+" : "−"}${fmtInt.format(Math.abs(pct || 0))}%)`;
+  el.innerHTML = `
+    <div class="k">TTWO ahora</div>
+    <div class="price">US$ ${fmtAR.format(price)}</div>
+    <div class="chg ${up ? "up" : "down"}">${chLabel}</div>
+    <div class="meta">${state}. Actualizado <strong>${updated || "—"}</strong> (hora Argentina)${quoteArt ? ` · dato de cotización: ${quoteArt}` : ""}. Snapshot de Yahoo Finance, no es un tick en vivo. Si falta el dato, usamos el último cierre.</div>`;
 }
 
 function renderStats(model) {
@@ -164,7 +202,7 @@ function renderStats(model) {
     <div class="stat ${cls}">
       <div class="k">Hoy en TTWO</div>
       <div class="v">${money(now, ccy)}</div>
-      <div class="s">Cierre ${model.lastClose.date}: US$ ${fmtAR.format(model.lastClose.close)}</div>
+      <div class="s">${model.priceLabel}</div>
     </div>
     <div class="stat ${cls}">
       <div class="k">Diferencia</div>
@@ -381,6 +419,7 @@ function drawChart(points, ccy) {
 }
 
 let quotes = [];
+let latestQuote = null;
 let chartFrame = 0;
 
 async function boot() {
@@ -388,9 +427,41 @@ async function boot() {
   if (!res.ok) throw new Error("No se pudo cargar el histórico de TTWO");
   const data = await res.json();
   quotes = data.quotes;
+  try {
+    const liveRes = await fetch("data/ttwo-latest.json", { cache: "no-store" });
+    if (liveRes.ok) latestQuote = await liveRes.json();
+  } catch (err) {
+    latestQuote = null;
+  }
   $("purchase-date").min = quotes[0].date;
   bind();
+  bindParallax();
   update();
+}
+
+function bindParallax() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const sun = document.querySelector(".sun-wrap");
+  const reflect = document.querySelector(".sun-reflect");
+  const left = document.querySelector(".palm-left");
+  const right = document.querySelector(".palm-right");
+  if (!sun) return;
+  let px = 0;
+  let py = 0;
+  const apply = () => {
+    const scroll = window.scrollY || 0;
+    sun.style.transform = `translate(calc(-50% + ${px * 12}px), ${scroll * 0.08 + py * 8}px)`;
+    if (reflect) reflect.style.transform = `translate(calc(-50% + ${px * 10}px), ${py * 6}px) scaleY(-1)`;
+    if (left) left.style.transform = `translate(${px * -16}px, ${scroll * 0.04}px)`;
+    if (right) right.style.transform = `scaleX(-1) rotate(-4deg) translate(${px * -16}px, ${scroll * 0.03}px)`;
+  };
+  window.addEventListener("scroll", apply, { passive: true });
+  window.addEventListener("pointermove", (event) => {
+    px = event.clientX / window.innerWidth - 0.5;
+    py = event.clientY / window.innerHeight - 0.5;
+    apply();
+  }, { passive: true });
+  apply();
 }
 
 function bind() {
@@ -430,25 +501,30 @@ function update() {
   const purchase = $("purchase-date").value || "2026-06-25";
   const entry = closeOnOrBefore(quotes, purchase);
   const lastClose = quotes[quotes.length - 1];
+  const livePrice = latestQuote && typeof latestQuote.price === "number" ? latestQuote.price : lastClose.close;
   const shares = entry.close ? spend.spendUsd / entry.close : 0;
-  const valueNowUsd = shares * lastClose.close;
+  const valueNowUsd = shares * livePrice;
   const ccy = $("display-ccy").value;
+  const updated = clockFromArt(latestQuote && latestQuote.updatedAtArt);
   const model = {
     ...spend,
     entry,
     lastClose,
+    livePrice,
     shares,
     valueNowUsd,
     sharesLabel: `${fmtInt.format(shares)} acciones a US$ ${fmtAR.format(entry.close)} el ${entry.date}`,
+    priceLabel: `TTWO US$ ${fmtAR.format(livePrice)}${updated ? ` · actualizado ${updated} (hora Argentina)` : ""}`,
   };
+  renderTicker();
   renderStats(model);
   renderPay(model);
   const startForSeries = purchase < entry.date ? entry.date : purchase;
-  const pts = seriesFrom(quotes, startForSeries, shares, spend.spendUsd, spend.fxNow, ccy);
+  const pts = seriesFrom(quotes, startForSeries, shares, spend.spendUsd, spend.fxNow, ccy, latestQuote);
   drawChart(pts, ccy);
   const bits = [];
   if (spend.note) bits.push(spend.note);
-  bits.push(`Snapshot de TTWO del 18/11/2026, último cierre ${lastClose.date}. No es una cotización en vivo.`);
+  bits.push(`Histórico diario hasta ${lastClose.date}. La valuación de hoy usa la última cotización disponible (US$ ${fmtAR.format(livePrice)}). No es un tick en vivo.`);
   if (purchase > lastClose.date) {
     bits.push("La fecha de compra es posterior al último cierre del snapshot: usamos ese cierre como entrada y todavía no hay recorrido posterior.");
   }

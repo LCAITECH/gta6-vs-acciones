@@ -1,0 +1,34 @@
+name: Refresh TTWO quote
+
+on:
+  schedule:
+    # Every 15 minutes during US regular hours, in UTC.
+    # Mon–Fri 14:00–21:45 UTC ≈ 11:00–18:45 America/Buenos_Aires
+    # (covers the 9:30–16:00 America/New_York session, including after the close print).
+    - cron: "*/15 14-21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch quote snapshot
+        run: python3 scripts/refresh-ttwo.py --quote
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ttwo-latest.json data/ttwo-daily.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Refresh TTWO quote snapshot"
+          git push

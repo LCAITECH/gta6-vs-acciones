@@ -18,15 +18,14 @@ Abrí `http://localhost:8080`. El histórico de TTWO se carga desde `data/ttwo-d
 
 ## Datos de mercado
 
-El gráfico usa un **snapshot estático** de cierres diarios, compilado el 18/11/2026 (America/Buenos_Aires) desde la API de gráficos de Yahoo Finance y contrastado con las cotizaciones históricas de Nasdaq. El último cierre del corte es **US$ 203,93 el 17/11/2026** (coinciden ambas fuentes).
+El gráfico usa un **snapshot estático** de cierres diarios. Además, `data/ttwo-latest.json` guarda la última cotización de TTWO (precio, variación del día y hora de actualización en America/Buenos_Aires).
 
-El sitio **no llama APIs en el navegador**. Yahoo y Nasdaq suelen restringir la redistribución comercial de datos de mercado: este archivo es un recorte ilustrativo, con atribución y fecha de corte, no un producto de datos.
+No hay una API gratuita, con CORS y términos claros, que el navegador pueda consultar desde GitHub Pages. Yahoo Finance no envía `Access-Control-Allow-Origin`, y sus términos (como los de Nasdaq) suelen restringir la redistribución. Por eso el sitio **no llama APIs en el cliente**.
 
-Para actualizar el snapshot (en tu máquina):
+Un workflow de GitHub Actions (`refresh-ttwo.yml`) corre cada 15 minutos, de lunes a viernes, entre las 14:00 y las 21:45 UTC (aprox. 11:00–18:45 hora Argentina), cubriendo la rueda de Nasdaq. Trae el dato en el servidor, lo guarda en el JSON y hace commit. También se puede disparar a mano (`workflow_dispatch`) o correr `python3 scripts/refresh-ttwo.py --quote` en local.
 
-```bash
-python3 scripts/refresh-ttwo.py
-```
+El recuadro **TTWO ahora** muestra ese snapshot y la hora: “actualizado hh:mm (hora Argentina)”. Si el archivo no está, la calculadora cae al último cierre diario.
+
 
 ## Pagos con tarjeta cripto
 

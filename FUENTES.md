@@ -31,6 +31,9 @@ La calculadora suma los tributos en forma aditiva: `lista × (1 + IVA + percepci
 
 ## TTWO
 
+- Cotización “casi en vivo”: `data/ttwo-latest.json`, generado en el servidor (GitHub Actions cada 15 minutos en horario de Nasdaq, o `scripts/refresh-ttwo.py --quote`). Fuente: Yahoo Finance, sin llamadas desde el navegador (no hay CORS habilitado y los términos no prestan para un feed en el cliente). La tarjeta “TTWO ahora” muestra precio, variación del día y “actualizado hh:mm (hora Argentina)”. Si falta el snapshot, se usa el último cierre.
+
+
 - Último cierre: **US$ 203,93 el 17/11/2026**. Coincide en [Nasdaq](https://www.nasdaq.com/market-activity/stocks/ttwo/historical) y [Yahoo Finance](https://finance.yahoo.com/quote/TTWO/history/).
 - Snapshot de 501 ruedas (18/11/2024 a 17/11/2026) en `data/ttwo-daily.json`.
 - Se eligió un corte estático de build, no un feed en vivo, para no exponer una API en el cliente y para no depender de un servicio pago. Las condiciones de Yahoo y Nasdaq suelen restringir la redistribución de datos de mercado; el archivo se publica solo como recorte ilustrativo, con atribución y fecha. Stooq se descartó porque su [términos](https://stooq.com/terms.html) prohíben redistribuir sin consentimiento.

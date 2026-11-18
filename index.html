@@ -6,11 +6,21 @@
   <title>GTA 6 vs. acciones de Take-Two — LCA ITECH</title>
   <meta name="description" content="Calculadora educativa: qué habría pasado si, en vez de comprar GTA 6 y los DLC, invertías esa plata en acciones de Take-Two (TTWO) el mismo día.">
   <meta name="theme-color" content="#0d0c1a">
+  <meta property="og:title" content="GTA 6 vs. acciones de Take-Two — LCA ITECH">
+  <meta property="og:description" content="Calculadora educativa: comprar Grand Theft Auto VI versus invertir esa plata en acciones de Take-Two (TTWO).">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lcaitech.github.io/gta6-vs-acciones/">
+  <meta property="og:image" content="https://lcaitech.github.io/gta6-vs-acciones/assets/og.png">
+  <meta property="og:locale" content="es_AR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://lcaitech.github.io/gta6-vs-acciones/assets/og.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0c1a'/%3E%3Cpath d='M10 42 L26 26 L38 34 L54 16' stroke='%23f976b0' stroke-width='5' fill='none'/%3E%3Cpath d='M10 48 H54' stroke='%23ffdf80' stroke-width='4' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
 <body>
   <div class="miami-scene" aria-hidden="true">
@@ -40,9 +50,13 @@
         <circle cx="100" cy="100" r="92" fill="url(#sunFill)" mask="url(#sunStripes)"/>
       </svg>
     </div>
+    <div class="sun-reflect"></div>
     <div class="horizon"></div>
-    <div class="ocean"></div>
+    <div class="ocean">
+      <div class="water-sheen"></div>
+    </div>
     <div class="grid-floor"></div>
+    <div class="haze"></div>
     <svg class="palm palm-far palm-far-l" viewBox="0 0 220 520" xmlns="http://www.w3.org/2000/svg">
       <path fill="#120814" d="M110 520c-6-110 8-210-8-312-6-40 6-78-2-118 8-2 18-2 16 6 6 38-6 74 2 122 16 104 4 200 10 302z"/>
       <path fill="#120814" d="M106 92c-86-8-118-58-92-92 26 42 64 64 94 82z"/>
@@ -113,26 +127,10 @@
     <section class="hero">
       <div class="hero-layout">
         <div class="vi-mark">
-          <svg viewBox="0 0 330 240" role="img" aria-label="VI, sello estilizado propio, no es el logo oficial">
-            <defs>
-              <linearGradient id="viGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#fff1b8"/>
-                <stop offset="28%" stop-color="#ffdf80"/>
-                <stop offset="62%" stop-color="#f4717c"/>
-                <stop offset="100%" stop-color="#f976b0"/>
-              </linearGradient>
-            </defs>
-            <path d="M30 32 L116 208 L202 32" fill="none" stroke="#3a1028" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
-            <path class="vi-stroke" d="M30 32 L116 208 L202 32" fill="none" stroke="url(#viGrad)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M30 32 L116 208 L202 32" fill="none" stroke="#fff6d8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".42"/>
-            <path d="M278 32 L278 208" fill="none" stroke="#3a1028" stroke-width="38" stroke-linecap="round"/>
-            <path class="vi-stroke" d="M278 32 L278 208" fill="none" stroke="url(#viGrad)" stroke-width="30" stroke-linecap="round"/>
-            <path d="M278 32 L278 208" fill="none" stroke="#fff6d8" stroke-width="7" stroke-linecap="round" opacity=".42"/>
-            <path d="M16 226 H314" fill="none" stroke="#ffdf80" stroke-width="2" opacity=".75"/>
-            <path d="M24 232 H306" fill="none" stroke="#f976b0" stroke-width="1.2" opacity=".55"/>
-            <circle cx="16" cy="226" r="3.2" fill="#ffdf80"/>
-            <circle cx="314" cy="226" r="3.2" fill="#ffdf80"/>
-          </svg>
+          <picture>
+            <source srcset="assets/vi-logo.webp" type="image/webp">
+            <img src="assets/vi-logo.png" width="650" height="486" alt="VI, marca de Grand Theft Auto VI. Este sitio no está afiliado a Rockstar ni a Take-Two.">
+          </picture>
         </div>
         <div class="hero-copy">
           <div class="pill">GTA 6 · TTWO · Argentina</div>
@@ -231,6 +229,7 @@
       </form>
 
       <div>
+        <article class="ticker" id="ticker" aria-live="polite">Cargando cotización de TTWO…</article>
         <div class="results" id="stats"></div>
         <div class="panel">
           <div class="chart-wrap"><canvas id="chart" width="1400" height="720" aria-label="Gráfico comparativo del dinero gastado y del valor de TTWO en el tiempo"></canvas></div>
