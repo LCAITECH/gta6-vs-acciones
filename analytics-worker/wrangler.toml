@@ -10,3 +10,9 @@ database_name = "gta6-analytics"
 database_id = "0768854c-d3b6-4d3c-b378-6378629945f8"
 
 # Secret (not committed): STATS_KEY  ->  npx wrangler secret put STATS_KEY
+
+# Native rate limiting for poll votes (keys are not stored).
+[[ratelimits]]
+name = "POLL_LIMITER"
+namespace_id = "1001"
+simple = { limit = 3, period = 60 }

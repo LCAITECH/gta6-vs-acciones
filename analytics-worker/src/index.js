@@ -10,7 +10,21 @@ const ALLOWED_ORIGINS = new Set([
 const EVENTS = new Set([
   "pageview", "calc", "share", "share_download", "share_copy", "share_native",
   "share_x", "share_whatsapp", "click_bingx", "click_binance",
+  "poll_vote", "challenge_calc", "cost_builder_calc", "wait_calc",
+  "share_challenge_x", "share_challenge_whatsapp", "share_challenge_copy",
+  "share_jodita_x", "share_jodita_whatsapp", "share_jodita_copy",
 ]);
+const POLLS = { "pc-o-consola": ["consola", "pc", "acciones", "ambas", "tengo-todo"] };
+// Light, in-memory (per isolate) burst limiter. Keys are never stored.
+const recent = new Map();
+function burstLimited(key, max = 5, windowMs = 60000) {
+  const now = Date.now();
+  const arr = (recent.get(key) || []).filter((t) => now - t < windowMs);
+  arr.push(now);
+  recent.set(key, arr);
+  if (recent.size > 5000) recent.clear();
+  return arr.length > max;
+}
 const MAX_BODY = 1024;
 
 function cors(origin) {
@@ -83,6 +97,44 @@ async function collect(request, env, origin) {
   return new Response(null, { status: 204, headers: cors(origin) });
 }
 
+async function pollVote(request, env, origin) {
+  if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "origin" }, 403, origin);
+  const text = await request.text();
+  if (text.length > 256) return json({ error: "too large" }, 413, origin);
+  let body;
+  try { body = JSON.parse(text); } catch { return json({ error: "bad json" }, 400, origin); }
+  const poll = String(body.poll || "");
+  const option = String(body.option || "");
+  if (!POLLS[poll] || !POLLS[poll].includes(option)) return json({ error: "option" }, 400, origin);
+  if (deviceClass(request.headers.get("User-Agent")) === "bot") return json({ error: "bot" }, 403, origin);
+  const rawIp = request.headers.get("CF-Connecting-IP") || "";
+  // IPv6: group by /64 (one home/device network). Never stored.
+  const ip = rawIp.includes(":") ? rawIp.split(":").slice(0, 4).join(":") : rawIp;
+  if (ip) {
+    if (env.POLL_LIMITER) {
+      const { success } = await env.POLL_LIMITER.limit({ key: "poll:" + ip });
+      if (!success) return json({ error: "slow down" }, 429, origin);
+    } else if (burstLimited(ip)) return json({ error: "slow down" }, 429, origin);
+  }
+  const now = Date.now();
+  const country = (request.cf && request.cf.country) || null;
+  await env.DB.prepare("INSERT INTO poll_votes (poll, option, ts, day, country) VALUES (?, ?, ?, ?, ?)")
+    .bind(poll, option, now, new Date(now).toISOString().slice(0, 10), country).run();
+  return pollResults(env, origin, poll);
+}
+
+async function pollResults(env, origin, poll) {
+  if (!POLLS[poll]) return json({ error: "poll" }, 404, origin);
+  const rows = (await env.DB.prepare("SELECT option, COUNT(*) n FROM poll_votes WHERE poll = ? GROUP BY option").bind(poll).all()).results;
+  const counts = Object.fromEntries(POLLS[poll].map((o) => [o, 0]));
+  rows.forEach((r) => { if (r.option in counts) counts[r.option] = r.n; });
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  return new Response(JSON.stringify({ poll, total, counts }), {
+    status: 200,
+    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=15", ...cors(origin) },
+  });
+}
+
 async function stats(request, env, origin) {
   const auth = request.headers.get("Authorization") || "";
   const key = auth.startsWith("Bearer ") ? auth.slice(7) : new URL(request.url).searchParams.get("key");
@@ -99,7 +151,8 @@ async function stats(request, env, origin) {
     q("SELECT country, COUNT(*) n FROM events WHERE event='pageview' AND country IS NOT NULL AND day >= ? GROUP BY country ORDER BY n DESC LIMIT 15", d30),
     q("SELECT device, COUNT(*) n FROM events WHERE event='pageview' AND day >= ? GROUP BY device ORDER BY n DESC", d30),
   ]);
-  return json({ generatedAt: new Date().toISOString(), total, last7, last30, daily, referrers, countries, devices }, 200, origin);
+  const poll = await q("SELECT option, COUNT(*) n FROM poll_votes GROUP BY option ORDER BY n DESC");
+  return json({ generatedAt: new Date().toISOString(), total, last7, last30, daily, referrers, countries, devices, poll }, 200, origin);
 }
 
 export default {
@@ -109,6 +162,8 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(origin) });
     try {
       if (url.pathname === "/e" && request.method === "POST") return await collect(request, env, origin);
+      if (url.pathname === "/poll" && request.method === "POST") return await pollVote(request, env, origin);
+      if (url.pathname === "/poll/results" && request.method === "GET") return await pollResults(env, origin, url.searchParams.get("poll") || "pc-o-consola");
       if (url.pathname === "/stats" && request.method === "GET") return await stats(request, env, origin);
       if (url.pathname === "/") return new Response("gta6-analytics: ok", { headers: { "Content-Type": "text/plain" } });
     } catch (err) {

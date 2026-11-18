@@ -10,6 +10,28 @@ const PRICES = {
 };
 
 const GTAPLUS = { psUsd: 7.99, xboxArs: 6670 };
+// Memberships (pre-tax), relevadas 18/11/2026. PS Plus AR en USD por período; Game Pass AR en ARS por mes.
+const MEMBERSHIPS = {
+  "ps-essential": { label: "PS Plus Essential", ccy: "USD", periods: { 1: 8.99, 3: 22.99, 12: 64.99 } },
+  "ps-extra": { label: "PS Plus Extra", ccy: "USD", periods: { 1: 13.49, 3: 37.99, 12: 107.99 } },
+  "ps-deluxe": { label: "PS Plus Deluxe", ccy: "USD", periods: { 1: 15.99, 3: 43.99, 12: 124.99 } },
+  "gp-essential": { label: "Game Pass Essential", ccy: "ARS", monthly: 8999 },
+  "gp-premium": { label: "Game Pass Premium", ccy: "ARS", monthly: 11999 },
+  "gp-ultimate": { label: "Game Pass Ultimate", ccy: "ARS", monthly: 18999 },
+  "pc-gp": { label: "PC Game Pass", ccy: "ARS", monthly: 13999 },
+};
+let gpIva = true; // Game Pass AR: IVA incluido sin confirmar -> sumamos IVA por defecto (conservador)
+function membershipCost(plan, months) {
+  const m = MEMBERSHIPS[plan];
+  if (!m || !months) return null;
+  if (m.ccy === "USD") {
+    const p = m.periods[months];
+    if (p != null) return { amount: p, ccy: "USD", label: `${m.label} ${months} ${months === 1 ? "mes" : "meses"}` };
+    const p1 = m.periods[1];
+    return { amount: p1 * months, ccy: "USD", label: `${m.label} ${months} × 1 mes` };
+  }
+  return { amount: m.monthly * months, ccy: "ARS", label: `${m.label} ${months} ${months === 1 ? "mes" : "meses"}` };
+}
 const BINGX = { fee: 0.015, cashback: 0.02 };
 const BINANCE = { cashback: 0.03, cashbackUntil: "2026-12-31" };
 
@@ -90,8 +112,19 @@ function computeSpend() {
   const plusTaxUsd = plusUsd * factor;
   const plusTaxArs = plusArs * factor;
 
-  const spendUsd = taxedUsd + dlcTaxUsd + plusTaxUsd;
-  const spendArs = taxedArs + dlcTaxArs + plusTaxArs;
+  let membUsd = 0;
+  let membTaxUsd = 0;
+  if ($("memb-on") && $("memb-on").checked) {
+    const mc = membershipCost($("memb-plan").value, Number($("memb-months").value));
+    if (mc) {
+      membUsd = mc.ccy === "ARS" ? mc.amount / fxBuy : mc.amount;
+      const isGp = mc.ccy === "ARS";
+      const f = isGp && !gpIva ? factor - ($("iva").checked ? 0.21 : 0) : factor;
+      membTaxUsd = membUsd * f;
+    }
+  }
+  const spendUsd = taxedUsd + dlcTaxUsd + plusTaxUsd + membTaxUsd;
+  const spendArs = taxedArs + dlcTaxArs + plusTaxArs + membTaxUsd * fxBuy;
 
   return {
     edition,
@@ -105,6 +138,7 @@ function computeSpend() {
     taxedUsd,
     taxedArs,
     dlcUsd,
+    membUsd,
     plusUsd,
     spendUsd,
     spendArs,
@@ -425,7 +459,7 @@ function renderCompare(model) {
   const ivaBank = 0.21;
 
   const xboxArs = model.listCcy === "ARS";
-  const extrasUsd = model.dlcUsd + model.plusUsd;
+  const extrasUsd = model.dlcUsd + model.plusUsd + (model.membUsd || 0);
   let bankArs;
   let usdEquiv;
   if (xboxArs) {
@@ -510,6 +544,8 @@ async function boot() {
   }
   $("purchase-date").min = quotes[0].date;
   loadStateFromUrl();
+  $("memb-fields").hidden = !$("memb-on").checked;
+  syncMembMonths();
   if (urlAmountMode === "custom") { amountMode = "custom"; renderPriceHint(); }
   else applyOfficialPrice(false);
   bind();
@@ -571,7 +607,12 @@ function bind() {
     "fx-now",
     "display-ccy",
     "fund-rate",
+    "memb-on",
+    "memb-plan",
+    "memb-months",
   ].forEach((id) => $(id).addEventListener("input", update));
+  $("memb-on").addEventListener("change", () => { $("memb-fields").hidden = !$("memb-on").checked; update(); });
+  $("memb-plan").addEventListener("change", () => { syncMembMonths(); update(); });
   $("courtesy-month").addEventListener("change", update);
   $("pay-grid").addEventListener("change", (event) => {
     if (event.target && event.target.id === "binance-iva") {
@@ -609,6 +650,7 @@ function update() {
   lastModel = model;
   saveStateToUrl();
   renderShare();
+  (window.__gta ? window.__gta.listeners : []).forEach((fn) => { try { fn(model); } catch (e) { console.error(e); } });
   const startForSeries = purchase < entry.date ? entry.date : purchase;
   const pts = seriesFrom(quotes, startForSeries, shares, spend.spendUsd, spend.fxNow, ccy, latestQuote);
   drawChart(pts, ccy);
@@ -630,11 +672,11 @@ boot().catch((err) => {
 
 
 // ---------- Shared state in the URL ----------
-const STATE_IDS = ["edition","store","custom-amount","custom-ccy","purchase-date","dlc","dlc-ccy","gtaplus-months","courtesy-month","iva","percepcion","iibb","fx-buy","fx-now","display-ccy","fund-rate"];
+const STATE_IDS = ["edition","store","custom-amount","custom-ccy","purchase-date","dlc","dlc-ccy","gtaplus-months","courtesy-month","iva","percepcion","iibb","fx-buy","fx-now","display-ccy","fund-rate","memb-on","memb-plan","memb-months"];
 const SITE_URL = "https://gta6.lcaitech.com/";
 
 // Compact keys for shared links; long keys still accepted (old links).
-const SHORT = { edition: "e", store: "s", "custom-amount": "a", "custom-ccy": "c", "purchase-date": "d", dlc: "dl", "dlc-ccy": "dc", "gtaplus-months": "g", "courtesy-month": "cm", iva: "i", percepcion: "p", iibb: "ib", "fx-buy": "fb", "fx-now": "fn", "display-ccy": "v", "fund-rate": "f" };
+const SHORT = { edition: "e", store: "s", "custom-amount": "a", "custom-ccy": "c", "purchase-date": "d", dlc: "dl", "dlc-ccy": "dc", "gtaplus-months": "g", "courtesy-month": "cm", iva: "i", percepcion: "p", iibb: "ib", "fx-buy": "fb", "fx-now": "fn", "display-ccy": "v", "fund-rate": "f", "memb-on": "mo", "memb-plan": "mp", "memb-months": "mm" };
 const VAL_SHORT = { edition: { standard: "s", ultimate: "u", "xbox-upgrade": "x" }, store: { ps: "ps", xbox: "xb", official: "of" } };
 const MODE_SHORT = { official: "o", custom: "c", missing: "n" };
 let DEFAULTS = null;
@@ -657,6 +699,8 @@ function saveStateToUrl() {
     q.set(SHORT[id], (VAL_SHORT[id] && VAL_SHORT[id][v]) || v);
   });
   if (!binanceIva) q.set("bi", "0");
+  if (!gpIva) q.set("gi", "0");
+  if (window.__gtaExtraState) window.__gtaExtraState(q);
   if (amountMode === "custom") q.set("m", "c");
   const qs = q.toString();
   history.replaceState(null, "", `${location.pathname}${qs ? "?" + qs : ""}${location.hash}`);
@@ -682,6 +726,7 @@ function loadStateFromUrl() {
     else if (el.tagName === "SELECT") { if ([...el.options].some((o) => o.value === v)) el.value = v; }
     else el.value = v.slice(0, 32);
   });
+  if (q.get("gi") === "0") gpIva = false;
   const bi = q.get("bi") ?? q.get("binance-iva");
   if (bi != null) binanceIva = bi === "1";
   const m = q.get("m");
@@ -970,3 +1015,32 @@ function toast(msg) {
   el.textContent = msg; el.classList.add("show");
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
 }
+
+function syncMembMonths() {
+  const plan = $("memb-plan").value;
+  const sel = $("memb-months");
+  const ps = MEMBERSHIPS[plan] && MEMBERSHIPS[plan].ccy === "USD";
+  const opts = ps ? [1, 3, 12] : [1, 2, 3, 6, 12];
+  const cur = Number(sel.value) || 1;
+  sel.innerHTML = opts.map((n) => `<option value="${n}"${n === cur ? " selected" : ""}>${n} ${n === 1 ? "mes" : "meses"}</option>`).join("");
+  if (!opts.includes(cur)) sel.value = "1";
+  const mc = membershipCost(plan, Number(sel.value));
+  $("memb-hint").textContent = mc
+    ? `${mc.label}: ${mc.ccy === "USD" ? "US$ " + fmtAR.format(mc.amount) : "ARS " + mc.amount.toLocaleString("es-AR")} sin impuestos.${mc.ccy === "ARS" ? (gpIva ? " Sumamos IVA (sin confirmar si el precio lo incluye)." : " Sin sumar IVA.") : ""} Para la campaña de GTA VI no hace falta: es para un jugador y no está en el catálogo.`
+    : "";
+}
+
+// ---------- API for extras.js ----------
+window.__gta = {
+  get model() { return lastModel; },
+  get quotes() { return quotes; },
+  get latestQuote() { return latestQuote; },
+  get compare() { return lastCompare; },
+  get binanceIva() { return binanceIva; },
+  get gpIva() { return gpIva; },
+  setGpIva(v) { gpIva = !!v; syncMembMonths(); update(); },
+  fxVenta, money, fmtAR, fmtInt, track, closeOnOrBefore, membershipCost, toast, dmy,
+  MEMBERSHIPS, BINGX, BINANCE, PRICES,
+  listeners: [],
+  refreshUrl() { saveStateToUrl(); },
+};

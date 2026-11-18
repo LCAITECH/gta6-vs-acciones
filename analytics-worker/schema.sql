@@ -10,3 +10,12 @@ CREATE TABLE IF NOT EXISTS events (
 );
 CREATE INDEX IF NOT EXISTS idx_events_day ON events(day);
 CREATE INDEX IF NOT EXISTS idx_events_event ON events(event);
+CREATE TABLE IF NOT EXISTS poll_votes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  poll TEXT NOT NULL,
+  option TEXT NOT NULL,
+  ts INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  country TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_poll ON poll_votes(poll, option);

@@ -52,3 +52,10 @@ MIT. Ver `LICENSE`.
 ## Privacidad y estadísticas
 
 El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo.
+
+## Secciones extra
+
+- **La jodita del GTA VI**: consola + juego + membresía + upgrade + tele + otros, en pesos, tarjeta del banco vs BingX vs Binance, y qué valdría el ahorro en TTWO.
+- **Desafío PC**: meta (placas de referencia o propia), monto inicial y aportes mensuales, resultado real con TTWO y escenarios hipotéticos.
+- **Consola hoy vs esperar la PC**: misma lógica, con una fecha de PC elegida por el usuario (no hay fecha oficial).
+- **Encuesta**: votos en D1 vía el Worker de analítica.

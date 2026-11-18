@@ -69,3 +69,32 @@ En el sitio se usan fuentes libres (Big Shoulders Display y Figtree) con una est
 ## Privacidad y estadísticas
 
 El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo.
+
+## La jodita, membresías y Desafío PC (relevado 18/11/2026)
+
+| Dato | Valor | Fuente |
+| --- | --- | --- |
+| PS5 Slim Digital bundle (Astro Bot + GT7) | ARS 1.899.999 (vendido por Frávega), ~11:15 hora Argentina | [Frávega, consolas PS5](https://www.fravega.com/l/videojuegos/consolas/?tipo-de-consola=ps5) |
+| PS5 Slim Standard bundle (Astro Bot + GT7) | ARS 1.999.999 (vendido por Frávega) | Misma página |
+| PS5 Pro Digital | ARS 2.859.999 (vendido por Sony, tienda oficial en Frávega) | Misma página |
+| Xbox Series S 512 GB | ARS 1.294.000 | [Game Sense](https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/) |
+| Xbox Series X 1 TB | ARS 2.386.000 | [Game Sense](https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/) |
+| Nota consolas | Sony y Microsoft no venden consolas directo en Argentina: son precios de referencia de tiendas (IVA incluido), editables. | — |
+| PS Plus AR (USD, sin impuestos) | Essential 8,99 / 22,99 / 64,99 · Extra 13,49 / 37,99 / 107,99 · Deluxe 15,99 / 43,99 / 124,99 (1/3/12 meses). IVA 21%, sin el 30% (RG 5677/2025) | [playstation.com/es-ar/ps-plus](https://www.playstation.com/es-ar/ps-plus/) · [Essential 1 mes](https://store.playstation.com/es-ar/product/IP9101-PPSA06916_00-PLUS1T01M0000000) · [Essential 12 meses](https://store.playstation.com/es-ar/product/IP9101-PPSA06916_00-PLUS1T12M0000000) |
+| Game Pass AR (ARS/mes) | Essential 8.999 · Premium 11.999 · Ultimate 18.999 · PC Game Pass 13.999. Si incluye IVA: sin confirmar; el sitio lo suma por defecto (interruptor) | [xbox.com/es-AR/xbox-game-pass](https://www.xbox.com/es-AR/xbox-game-pass) |
+| GTA VI y membresías | Campaña para un jugador; no está en PS Plus ni Game Pass; no hace falta membresía para la campaña | Rockstar / tiendas oficiales |
+| Xbox Cloud | GTA VI disponible desde el día 1 comprándolo aparte | [Xbox Wire, 10/11/2026](https://news.xbox.com/en-us/2026/11/10/grand-theft-auto-6-comes-to-xbox-cloud-gaming-november-19/) |
+| PC | Sin fecha oficial. “2027” es rumor: el sitio nunca lo muestra como dato | — |
+| RTX 5060 8 GB (referencia) | ARS 979.999 | [Venex](https://www.venex.com.ar/componentes-de-pc/placas-de-video/placa-de-video-gigabyte-nvidia-geforce-rtx-5060-8gb-windforce-2-max-oc.html) |
+| RTX 5070 12 GB (referencia) | ARS 1.789.650 | [FullH4rd](https://fullh4rd.com.ar/prod/30259/placa-de-video-geforce-rtx-5070-12gb-gigabyte-gaming-oc) |
+| Precio sugerido NVIDIA | RTX 5060 US$ 299 · RTX 5070 US$ 549 | NVIDIA |
+
+Reglas de cálculo de La jodita:
+- **Digital del exterior** (juego, upgrade, membresías): tarjeta del banco = oficial venta + IVA 21% (+IIBB si lo cargás), sin el 30%. Tarjeta cripto = USD × (1 + comisión − cashback) × dólar de fondeo elegido; Binance suma IVA si el interruptor está prendido.
+- **Compra local en pesos** (consola, tele, otros): el precio ya trae IVA; sin impuestos de compra en el exterior. Con tarjeta cripto se aproxima la conversión de la red al oficial y se paga con USDT al dólar de fondeo: en general sale más caro que la tarjeta del banco. El ahorro usa la tarjeta cripto solo donde conviene.
+- “Si ese ahorro lo ponés en Take-Two”: ahorro / dólar MEP, comprado al cierre de la fecha de compra de la calculadora, valuado a la última cotización.
+- Desafío PC y Consola vs PC: resultado real con cierres diarios de TTWO; escenarios ×2, +50%, +30%, igual, −30%, −50% son hipotéticos. Metas en pesos se pasan a USD al MEP.
+
+## Encuesta
+
+Votos en la misma base D1 del Worker (`POST /poll`, `GET /poll/results`). Se guarda: opción, fecha y país. Sin IPs ni cookies; un voto por navegador (localStorage) y límite de ritmo nativo de Cloudflare (la clave no se guarda).
