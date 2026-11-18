@@ -32,11 +32,11 @@ python3 scripts/refresh-ttwo.py
 
 En “Cuánto pagás de verdad” se compara el total de la tienda (con los impuestos que el usuario tilde) contra pagar el precio de lista con la **BingX Card**. El 2% de cashback y el 1,5% de comisión se muestran como dato informado por el dueño del sitio, alineado con la tarifa oficial de transacción de 1,50% y el cashback del tramo inicial; hay que verificarlo en la app.
 
-El enlace “Págalo con la BingX card” es de referido. La Binance Card queda como placeholder hasta tener el link.
+El enlace “Págalo con la BingX card” es de referido de la tarjeta. El de “Págalo con la Binance Card” es un referido general de alta en Binance, no un referido específico de la Card.
 
 ## Placeholders y huecos
 
-- Link de referido de Binance: todavía no está.
+- Comisión de la Binance Card: no publicada / no verificada (no se inventa). El IVA en esa tarjeta está sin confirmar; el comparador lo suma por defecto y se puede apagar.
 - Precios de DLC de historia o add-ons pagos de GTA 6: no publicados al 18/11/2026. El usuario puede cargarlos a mano.
 - Precio físico en cadenas argentinas: no verificado.
 - Versión de PC al lanzamiento: no publicada.

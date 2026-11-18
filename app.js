@@ -1,5 +1,7 @@
 const BINGX_URL =
   "https://bingx.com/act/general/1998331776/?ref=NZP9WN&source=agent_partner&ch=bingx_featuredevents_main_link";
+const BINANCE_URL =
+  "https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=es-LA&ref=GRO_28502_9GVXD&utm_source=referral_entrance";
 
 const PRICES = {
   standard: { usd: 79.99, xboxArs: 113299, label: "Estándar" },
@@ -9,6 +11,9 @@ const PRICES = {
 
 const GTAPLUS = { psUsd: 7.99, xboxArs: 6670 };
 const BINGX = { fee: 0.015, cashback: 0.02 };
+const BINANCE = { cashback: 0.03, cashbackUntil: "2026-12-31" };
+
+let binanceIva = true;
 
 const fmtAR = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 const fmtInt = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
@@ -178,14 +183,22 @@ function renderPay(model) {
   const bingxNet = bingxGross - bingxCashback;
   const bingxVsStore = storeUsd - bingxNet;
 
+  const purchase = $("purchase-date").value || "2026-06-25";
+  const binanceCashbackRate = purchase <= BINANCE.cashbackUntil ? BINANCE.cashback : 0;
+  const binanceIvaAmt = binanceIva ? listUsd * 0.21 : 0;
+  const binanceCashback = listUsd * binanceCashbackRate;
+  const binanceNet = listUsd + binanceIvaAmt - binanceCashback;
+  const binanceVsStore = storeUsd - binanceNet;
+  const cheapest = Math.min(storeUsd, bingxNet, binanceNet);
+
   $("pay-grid").innerHTML = `
-    <article class="pay-card">
+    <article class="pay-card${storeUsd === cheapest ? " best" : ""}">
       <h3>En la tienda</h3>
       <div class="price">${money(storeUsd, "USD")}</div>
       <p class="muted">${money(storeArs, "ARS")} al tipo de cambio de compra que cargaste. Incluye los impuestos que tildaste (IVA, percepción, IIBB) sobre el precio de lista, DLC y GTA+ extra.</p>
       <p class="muted">En PlayStation Store y en el precio oficial la base está en USD. En Xbox, la base está en pesos y la pasamos a dólares con tu tipo de cambio.</p>
     </article>
-    <article class="pay-card best">
+    <article class="pay-card${bingxNet === cheapest ? " best" : ""}">
       <h3>BingX Card</h3>
       <div class="price">${money(bingxNet, "USD")}</div>
       <p>Neto estimado: lista ${money(listUsd, "USD")} + 1,5% de comisión − 2% de cashback = ${money(bingxNet, "USD")}.</p>
@@ -193,11 +206,15 @@ function renderPay(model) {
       <p class="muted">Frente a la tienda con los impuestos tildados: ${bingxVsStore >= 0 ? "ahorrás" : "sale"} ${money(Math.abs(bingxVsStore), "USD")} ${bingxVsStore >= 0 ? "" : "más"}.</p>
       <a class="cta" href="${BINGX_URL}" rel="noopener noreferrer sponsored" target="_blank">Págalo con la BingX card</a>
     </article>
-    <article class="pay-card">
+    <article class="pay-card${binanceNet === cheapest ? " best" : ""}">
       <h3>Binance Card</h3>
-      <div class="price">Próximamente</div>
-      <p class="muted">La tarjeta existe para residentes argentinos, pero el link de referido todavía no está cargado y no pudimos verificar la tabla oficial de comisiones en esta consulta. Cuando esté el link, va a aparecer acá.</p>
-      <span class="cta disabled" aria-disabled="true">Págalo con la Binance card</span>
+      <div class="price">${money(binanceNet, "USD")}</div>
+      <p>Neto estimado: lista ${money(listUsd, "USD")}${binanceIva ? " + IVA 21%" : " sin IVA"} − ${binanceCashbackRate ? "3% de cashback" : "sin cashback"} = ${money(binanceNet, "USD")}.</p>
+      <p class="muted">Dato informado por el dueño del sitio: 3% de cashback instantáneo hasta el 31/12/2026${purchase <= BINANCE.cashbackUntil ? "" : " (la fecha de compra es posterior, no lo sumamos)"} y no se aplica la percepción del 30% de Ganancias. IVA: sin confirmar. La comisión de la tarjeta no está publicada (no inventamos una). Según condiciones vigentes, verificá en la app.</p>
+      <label class="check"><input type="checkbox" id="binance-iva"${binanceIva ? " checked" : ""}> Sumar IVA 21% (sin confirmar; prendido por defecto, estimación conservadora)</label>
+      <p class="muted">Frente a la tienda con los impuestos tildados: ${binanceVsStore >= 0 ? "ahorrás" : "sale"} ${money(Math.abs(binanceVsStore), "USD")}${binanceVsStore >= 0 ? "" : " más"}.</p>
+      <a class="cta" href="${BINANCE_URL}" rel="noopener noreferrer sponsored" target="_blank">Págalo con la Binance Card</a>
+      <p class="muted">El link es un referido general de registro en Binance, no un referido específico de la Card.</p>
     </article>`;
 }
 
@@ -399,6 +416,12 @@ function bind() {
     "display-ccy",
   ].forEach((id) => $(id).addEventListener("input", update));
   $("courtesy-month").addEventListener("change", update);
+  $("pay-grid").addEventListener("change", (event) => {
+    if (event.target && event.target.id === "binance-iva") {
+      binanceIva = event.target.checked;
+      update();
+    }
+  });
 }
 
 function update() {
