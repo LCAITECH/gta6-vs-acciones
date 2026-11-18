@@ -331,7 +331,7 @@ function renderConviene() {
       verd: "Se ve y se juega bien; la imagen es más blanda que en la Pro y puede haber algún bajón.",
     },
     {
-      name: "PS5 Pro",
+      name: "PS5 Pro", best: true,
       render: "1440p", out: "4K", up: "PSSR (upscaler de IA temporal)",
       fps: "30 fps (bajones cortos a 24 fps con lanzagranadas; recupera rápido)",
       stab: "La más firme (~75 h de prueba en 30, casi siempre)",
@@ -372,8 +372,8 @@ function renderConviene() {
     },
   ];
   table.innerHTML = `<thead><tr><th>Plataforma</th><th>Render / salida</th><th>Upscaler</th><th>FPS</th><th>Estabilidad</th><th class="n">Precio ARS hoy</th><th>Veredicto</th></tr></thead><tbody>` +
-    rows.map((row) => `<tr>
-      <th scope="row">${row.name}</th>
+    rows.map((row) => `<tr${row.best ? ' class="conv-best"' : ""}>
+      <th scope="row">${row.name}${row.best ? ' <span class="conv-badge" title="Según Digital Foundry, 18/11/2026">mejor opción</span>' : ""}</th>
       <td data-label="Render / salida">${row.render} → ${row.out}</td>
       <td data-label="Upscaler">${row.up}</td>
       <td data-label="FPS">${row.fps}</td>

@@ -1034,3 +1034,116 @@ section[id] { scroll-margin-top: 70px; }
 @media (prefers-reduced-motion: reduce) {
   .m-win, .m-bar div { animation: none; transition: none; }
 }
+
+/* ¿Me conviene? — recuadro neón que se note (borde animado + pulso, sin sumar alto) */
+.conv-wrap.panel {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(18, 12, 28, 0.97), rgba(8, 5, 14, 0.95)) padding-box,
+    linear-gradient(90deg, #f976b0, #ff9a3c, #ffdf80, #3ef0d4, #f976b0) border-box;
+  background-size: auto, 300% 100%;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 0 24px #f976b0bb, 0 0 56px #3ef0d466, 0 0 20px #ff9a3c88, 0 18px 40px #00000080, inset 0 0 18px #f976b024;
+  animation: conv-border 4.5s linear infinite, conv-pulse 2.4s ease-in-out infinite;
+}
+.conv-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: calc(var(--radius) + 3px);
+  padding: 3px;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(90deg, #f976b0, #ff9a3c, #ffdf80, #3ef0d4, #9b89f5, #f976b0);
+  background-size: 300% 100%;
+  animation: conv-border-shift 4.5s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+.conv-scroll { overflow-x: auto; }
+.conv-table th[scope="row"] {
+  color: #ffe9a8;
+  text-shadow: 0 1px 2px #000, 0 0 8px #ffdf80cc, 0 0 16px #f976b099;
+}
+.conv-table tbody tr {
+  transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease, border-color .2s ease, filter .2s ease;
+}
+.conv-table tbody tr:hover,
+.conv-table tbody tr:focus-within,
+.conv-table tbody tr:active {
+  background: rgba(249, 118, 176, 0.12);
+  box-shadow: 0 0 22px #f976b077, 0 4px 16px #3ef0d444;
+  filter: drop-shadow(0 0 8px #f976b066);
+}
+.conv-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  border-radius: 999px;
+  color: #140c16;
+  background: linear-gradient(90deg, #ffdf80, #f976b0);
+  box-shadow: 0 0 10px #f976b0aa, 0 0 6px #ffdf8088;
+  text-shadow: none;
+  white-space: nowrap;
+}
+.conv-table tr.conv-best {
+  background: rgba(255, 223, 128, 0.07);
+  box-shadow: 0 0 20px #ffdf8066, 0 0 14px #f976b044;
+}
+.conv-table tr.conv-best:hover,
+.conv-table tr.conv-best:focus-within,
+.conv-table tr.conv-best:active {
+  background: rgba(255, 223, 128, 0.12);
+  box-shadow: 0 0 26px #ffdf8088, 0 0 18px #f976b066, 0 4px 16px #3ef0d444;
+}
+@keyframes conv-border {
+  0% { background-position: 0 0, 0% 50%; }
+  100% { background-position: 0 0, 200% 50%; }
+}
+@keyframes conv-border-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes conv-pulse {
+  0%, 100% { box-shadow: 0 0 22px #f976b099, 0 0 48px #3ef0d455, 0 0 16px #ff9a3c77, 0 18px 40px #00000080, inset 0 0 16px #f976b020; }
+  50% { box-shadow: 0 0 36px #f976b0cc, 0 0 80px #3ef0d477, 0 0 28px #ff9a3caa, 0 18px 40px #00000080, inset 0 0 22px #ff9a3c33; }
+}
+@media (max-width: 700px) {
+  .conv-table tbody tr:hover,
+  .conv-table tbody tr:focus-within,
+  .conv-table tbody tr:active {
+    transform: translateY(-2px);
+    border-color: #f976b0aa;
+  }
+  .conv-table tr.conv-best {
+    border-color: #ffdf80aa;
+    box-shadow: 0 0 22px #ffdf8077, 0 0 14px #f976b055;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .conv-wrap.panel,
+  .conv-wrap::before,
+  .conv-table tbody tr {
+    animation: none !important;
+    transition: none;
+  }
+  .conv-wrap.panel {
+    background-position: 0 0, 35% 50%;
+    box-shadow: 0 0 26px #f976b0aa, 0 0 56px #3ef0d466, 0 0 16px #ff9a3c88, 0 18px 40px #00000080, inset 0 0 18px #f976b024;
+  }
+  .conv-wrap::before { background-position: 35% 50%; }
+  .conv-table tbody tr:hover,
+  .conv-table tbody tr:active { transform: none; }
+}
