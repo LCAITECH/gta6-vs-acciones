@@ -70,7 +70,7 @@ En el sitio se usan fuentes libres (Big Shoulders Display y Figtree) con una est
 
 El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo.
 
-## La jodita, membresías y Desafío PC (relevado 18/11/2026)
+## La jodita, membresías y Desafío Gordo Compu (relevado 18/11/2026)
 
 | Dato | Valor | Fuente |
 | --- | --- | --- |
@@ -93,7 +93,7 @@ Reglas de cálculo de La jodita:
 - **Digital del exterior** (juego, upgrade, membresías): tarjeta del banco = oficial venta + IVA 21% (+IIBB si lo cargás), sin el 30%. Tarjeta cripto = USD × (1 + comisión − cashback) × dólar de fondeo elegido; Binance suma IVA si el interruptor está prendido.
 - **Compra local en pesos** (consola, tele, otros): el precio ya trae IVA; sin impuestos de compra en el exterior. Con tarjeta cripto se aproxima la conversión de la red al oficial y se paga con USDT al dólar de fondeo: en general sale más caro que la tarjeta del banco. El ahorro usa la tarjeta cripto solo donde conviene.
 - “Si ese ahorro lo ponés en Take-Two”: ahorro / dólar MEP, comprado al cierre de la fecha de compra de la calculadora, valuado a la última cotización.
-- Desafío PC y Consola vs PC: resultado real con cierres diarios de TTWO; escenarios ×2, +50%, +30%, igual, −30%, −50% son hipotéticos. Metas en pesos se pasan a USD al MEP.
+- Desafío Gordo Compu y Consola vs PC: resultado real con cierres diarios de TTWO; escenarios ×2, +50%, +30%, igual, −30%, −50% son hipotéticos. Metas en pesos se pasan a USD al MEP.
 
 ## Encuesta
 
@@ -118,7 +118,7 @@ La Digital de la tienda oficial Sony (ARS 1.869.999) no se usa como precio de re
 
 “Esperar hasta fin de noviembre (Black Friday)”: usa el precio de hoy como referencia; no se suponen descuentos.
 
-## Imagen del Desafío PC
+## Imagen del Desafío Gordo Compu
 
 `assets/desafio-pc-*.{webp,jpg}`: imagen generada con IA (PC gamer neón, atardecer synthwave, palmeras; sin texto ni logos).
 

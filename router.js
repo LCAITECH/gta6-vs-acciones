@@ -29,7 +29,7 @@ function show(hash, initial) {
   document.querySelectorAll("[data-tab]").forEach((a) => {
     if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
   });
-  const titles = { calculadora: "Calculadora", jodita: "La jodita", conviene: "¿Me conviene?", ttwo: "TTWO", desafio: "Desafío PC", encuesta: "Encuesta", fuentes: "Fuentes" };
+  const titles = { calculadora: "Calculadora", jodita: "La jodita", conviene: "¿Me conviene?", ttwo: "TTWO", desafio: "Desafío Gordo Compu", encuesta: "Encuesta", fuentes: "Fuentes" };
   document.title = `${titles[view]} · GTA 6 vs. acciones de Take-Two — LCA ITECH`;
   if (el) requestAnimationFrame(() => el.scrollIntoView({ block: "start" }));
   else if (changed && !initial) {

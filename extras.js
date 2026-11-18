@@ -1,4 +1,4 @@
-// Secciones extra: La jodita (cost builder), Desafío PC, Consola hoy vs esperar la PC, Encuesta.
+// Secciones extra: La jodita (cost builder), Desafío Gordo Compu, Consola hoy vs esperar la PC, Encuesta.
 // Precios: ver FUENTES.md (relevados 18/11/2026). Nada inventado: si no hay precio publicado, lo carga el usuario.
 
 const $ = (id) => document.getElementById(id);
@@ -425,7 +425,7 @@ function syncJMembMonths() {
   $("j-gp-iva").checked = G().gpIva;
 }
 
-// ================= DESAFÍO PC =================
+// ================= DESAFÍO GORDO COMPU =================
 function goalUsd(r) {
   const k = $("d-goal").value;
   const gdef = GOALS[k];
@@ -485,7 +485,7 @@ function renderDesafio() {
       <div class="s">Pusiste ${usd(sim.put)} desde el ${g.dmy(start)}${monthly ? ` (${sim.n} aportes mensuales de ${usd(monthly)})` : ""} · ${up ? "+" : "−"}${g.fmtAR.format(Math.abs((sim.value / sim.put - 1) * 100))}% · meta ${goalTxt}: ${Math.round((sim.value / goal.usd) * 100) || 0}%</div></div>`;
   $("d-scen-lead").textContent = `Escenarios hipotéticos sobre lo que pusiste (${usd0(sim.put)}). Meta: ${goalTxt}.`;
   $("d-scen").innerHTML = scenarioCards(sim.put, goal.usd);
-  desafioText = `Desafío PC con TTWO: pongo ${usd0(sim.put)} para una meta de ${usd0(goal.usd)}. Si Take-Two duplica: ${usd0(sim.put * 2)}. Si cae 50%: ${usd0(sim.put * 0.5)}.`;
+  desafioText = `Desafío Gordo Compu con TTWO: pongo ${usd0(sim.put)} para una meta de ${usd0(goal.usd)}. Si Take-Two duplica: ${usd0(sim.put * 2)}. Si cae 50%: ${usd0(sim.put * 0.5)}.`;
   setShare("d", `${desafioText} ${DISCLAIMER_SHORT}`, "#desafio", `${desafioText}\n\n${DISCLAIMER}`);
   debounceTrack("challenge_calc");
   renderWait();
