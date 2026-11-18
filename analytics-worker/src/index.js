@@ -10,7 +10,8 @@ const ALLOWED_ORIGINS = new Set([
 const EVENTS = new Set([
   "pageview", "calc", "share", "share_download", "share_copy", "share_native",
   "share_x", "share_whatsapp", "click_bingx", "click_binance",
-  "poll_vote", "challenge_calc", "cost_builder_calc", "wait_calc",
+  "view_calculadora", "view_jodita", "view_desafio", "view_encuesta", "view_fuentes",
+  "poll_vote", "challenge_calc", "projection_calc", "cost_builder_calc", "wait_calc",
   "share_challenge_x", "share_challenge_whatsapp", "share_challenge_copy",
   "share_jodita_x", "share_jodita_whatsapp", "share_jodita_copy",
 ]);

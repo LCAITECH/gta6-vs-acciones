@@ -16,6 +16,64 @@ const CONSOLES = {
   "xbox-x": { label: "Xbox Series X 1 TB", ars: 2386000, src: "Game Sense" },
   custom: { label: "Otra / la cargo yo", ars: null },
 };
+// Cuotas y precios por tienda, verificados el 18/11/2026 (hora Argentina) en páginas oficiales de cada tienda.
+const D = "18/11/2026";
+const OFFERS = {
+  "ps5-digital": [
+    { store: "Cetrogar", price: 1899999, url: "https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p",
+      plans: [{ n: 18, cuota: 105555.5, si: true, cond: "Visa / Mastercard (CFT 0%)" }, { n: 12, cuota: 158333.25, si: true, cond: "Visa / Mastercard" }, { n: 6, cuota: 316666.5, si: true, cond: "Visa / Mastercard" }],
+      note: "Naranja: 6/9/12/18 sin interés; Amex/Sol hasta 12; Cabal/Tuya hasta 9." },
+    { store: "Frávega", price: 1899999, url: "https://www.fravega.com/promociones/bancarias",
+      plans: [{ n: 6, cuota: 1899999 / 6, si: true, cond: "Banco Provincia, si aplica en el checkout" }] },
+  ],
+  "ps5-standard": [
+    { store: "Frávega", price: 1999999, url: "https://www.fravega.com/promociones/bancarias",
+      plans: [{ n: 6, cuota: 1999999 / 6, si: true, cond: "Banco Provincia, si aplica en el checkout" }] },
+    { store: "Cetrogar", price: 2099999, url: "https://www.cetrogar.com.ar/consola-ps5-playstation-standard-bundle-gt7-astrobot-el3000/p",
+      plans: [{ n: 18, cuota: 116666.61, si: true, cond: "Visa / Mastercard (CFT 0%)" }, { n: 12, cuota: 174999.91, si: true, cond: "Visa / Mastercard" }],
+      note: "Naranja: 6/9/12/18 sin interés; Amex/Sol hasta 12; Cabal/Tuya hasta 9." },
+  ],
+  "ps5-pro": [
+    { store: "Tienda oficial Sony en Frávega", price: 2859999, url: "https://www.fravega.com/l/videojuegos/consolas/?tipo-de-consola=ps5", plans: [], note: "Cuotas sin interés: no confirmadas." },
+  ],
+  "xbox-s": [
+    { store: "Game Sense", price: 1294000, url: "https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/",
+      cash: 1035200, transfer: 1164600,
+      plans: [{ n: 6, cuota: 284981.93, si: false, cond: "Mercado Pago (total ARS 1.709.891,60)" }, { n: 12, cuota: 167562.22, si: false, cond: "Mercado Pago (total ARS 2.010.746,60)" }],
+      note: "Con Mercado Pago solo 1 pago es sin interés." },
+  ],
+  "xbox-x": [
+    { store: "Game Sense", price: 2386000, url: "https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/",
+      cash: 1908800, transfer: 2147400,
+      plans: [{ n: 6, cuota: 525476.73, si: false, cond: "Mercado Pago (total ARS 3.152.860,40)" }, { n: 12, cuota: 308967.12, si: false, cond: "Mercado Pago (total ARS 3.707.605,40)" }],
+      note: "Con Mercado Pago solo 1 pago es sin interés." },
+  ],
+};
+// Juego en caja (ARS, compra local, entra en cuotas de la tienda)
+const BOXED = {
+  ps: { label: "GTA VI PS5 caja con código (Frávega)", ars: 219999, url: "https://www.fravega.com/p/juego-ps5-grand-theft-auto-vi-formato-fisico-con-codigo-342114/" },
+  xbox: { label: "GTA VI Xbox caja (Game Sense)", ars: 239999, url: "https://gamesenseargentina.com/" },
+};
+
+function bestOffer(key) {
+  const offers = OFFERS[key] || [];
+  let best = null;
+  offers.forEach((o) => {
+    const cashPrice = o.cash || o.price;
+    if (!best || cashPrice < best.amount) best = { amount: cashPrice, how: o.cash ? `efectivo en ${o.store} (−20%)` : `precio de lista en ${o.store}`, offer: o };
+  });
+  const si = offers.flatMap((o) => o.plans.filter((p) => p.si).map((p) => ({ ...p, store: o.store, url: o.url, price: o.price }))).sort((a, b) => b.n - a.n)[0];
+  return { best, si };
+}
+
+function cuotasHtml(key) {
+  const offers = OFFERS[key];
+  if (!CONSOLES[key] || !CONSOLES[key].ars) return "";
+  if (!offers) return `<div class="cuotas-box pending"><strong>Cuotas:</strong> pendiente de verificar. Mirá las condiciones de tu banco.</div>`;
+  const fmt = (n) => `ARS ${G().fmtAR.format(n)}`;
+  return `<div class="cuotas-box"><strong>Precio y cuotas por tienda</strong> (${D}):<ul>${offers.map((o) => `<li><strong>${o.store}</strong>: ${fmt(o.price)}${o.cash ? ` · efectivo ${fmt(o.cash)} · transferencia ${fmt(o.transfer)}` : ""}${o.plans.length ? "<br>" + o.plans.map((p) => `${p.n} cuotas ${p.si ? "sin interés" : "con interés"} de <strong>${fmt(p.cuota)}</strong> <span class="fine-inline">(${p.cond})</span>`).join("<br>") : ""}${o.note ? `<br><span class="fine-inline">${o.note}</span>` : ""} · <a href="${o.url}" target="_blank" rel="noopener noreferrer">ver</a></li>`).join("")}</ul><span class="fine">Las condiciones cambian según banco, tarjeta y día. Confirmá en el checkout.</span></div>`;
+}
+
 // Metas del desafío (referencias, no requisitos). ARS = tiendas AR 18/11/2026; USD = precio sugerido de NVIDIA.
 const GOALS = {
   "5060-ar": { label: "RTX 5060 8 GB · Venex · ARS 979.999 (18/11/2026)", amount: 979999, ccy: "ARS" },
@@ -93,7 +151,10 @@ function joditaItems() {
     const a = num("j-console-price");
     if (a) items.push({ key: "consola", label: c === "custom" ? "Consola" : CONSOLES[c].label, type: "local", ccy: "ARS", amount: a });
   }
-  if ($("j-game").checked && m) {
+  if ($("j-game").checked && m && $("j-game-format").value === "box") {
+    const bx = BOXED[$("store").value === "xbox" ? "xbox" : "ps"];
+    items.push({ key: "juego", label: bx.label, type: "local", ccy: "ARS", amount: bx.ars });
+  } else if ($("j-game").checked && m) {
     const extrasUsd = m.dlcUsd + m.plusUsd;
     if (m.listCcy === "ARS") items.push({ key: "juego", label: `GTA VI (${$("edition").selectedOptions[0].text})${extrasUsd ? " + extras" : ""}`, type: "digital", ccy: "ARS", amount: m.listArs + extrasUsd * rates().oficial });
     else items.push({ key: "juego", label: `GTA VI (${$("edition").selectedOptions[0].text})${extrasUsd ? " + extras" : ""}`, type: "digital", ccy: "USD", amount: m.listUsd + extrasUsd });
@@ -175,6 +236,7 @@ function syncConsolePrice(force) {
   $("j-console-hint").innerHTML = info.ars
     ? `Referencia: ${ars(info.ars)} en ${info.src} (18/11/2026, IVA incluido). Editalo si conseguiste otro precio.`
     : c === "custom" ? "Cargá el precio que pagaste o encontraste." : "";
+  $("j-cuotas").innerHTML = cuotasHtml(c);
 }
 
 function syncUpgradeDefaults() {
@@ -273,9 +335,38 @@ function renderDesafio() {
 }
 
 // ================= CONSOLA HOY VS ESPERAR =================
+function renderBlackFriday() {
+  const g = G();
+  const r = rates();
+  const m = g.model;
+  let gameBest = 0, gameHow = "";
+  if (m) {
+    const extrasUsd = m.dlcUsd + m.plusUsd;
+    const item = m.listCcy === "ARS" ? { type: "digital", ccy: "ARS", amount: m.listArs + extrasUsd * r.oficial } : { type: "digital", ccy: "USD", amount: m.listUsd + extrasUsd };
+    const c = itemCosts(item, r);
+    [gameHow, gameBest] = [["tarjeta del banco", c.bank], ["BingX Card", c.bingx], ["Binance Card", c.binance]].sort((a, b) => a[1] - b[1])[0];
+  }
+  const rows = Object.keys(OFFERS).map((k) => ({ k, ...bestOffer(k) })).filter((x) => x.best).sort((a, b) => a.best.amount - b.best.amount);
+  const cheapest = rows[0];
+  const fmt = (n) => `ARS ${g.fmtAR.format(n)}`;
+  $("w-out").innerHTML = `
+    <div class="results">
+      <div class="stat up"><div class="k">Lo más barato verificado hoy</div><div class="v">${ars(cheapest.best.amount + gameBest)}</div><div class="s">${CONSOLES[cheapest.k].label} ${fmt(cheapest.best.amount)} (${cheapest.best.how}) + GTA VI ${fmt(gameBest)} con ${gameHow}</div></div>
+    </div>
+    <div class="panel table-wrap"><p class="swipe-hint">Deslizá la tabla →</p><table class="j-table"><thead><tr><th>Consola</th><th class="n">Mejor precio de contado</th><th class="n">Mejor cuota sin interés</th><th class="n">+ juego (total)</th></tr></thead><tbody>
+      ${rows.map((x) => `<tr><td>${CONSOLES[x.k].label}<span class="tag">${x.best.how}</span></td><td class="n">${fmt(x.best.amount)}</td><td class="n">${x.si ? `${x.si.n} × ${fmt(x.si.cuota)}<span class="tag">${x.si.store}, ${x.si.cond}${x.si.price && x.si.price !== x.best.amount ? ` · sobre ${fmt(x.si.price)}` : ""}</span>` : "—"}</td><td class="n">${ars(x.best.amount + gameBest)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="warn">Precio de hoy (${D}) como referencia: puede cambiar para el 27–30/11. No inventamos descuentos de Black Friday; si aparece una oferta real, cargala en La jodita. El juego digital no tiene cuotas (PS Store cobra un pago en USD + IVA; Game Pass es mensual).</p>`;
+  $("w-scen-lead").textContent = "";
+  $("w-scen").innerHTML = "";
+}
+
 function renderWait() {
   const g = G();
   if (!g || !joditaResult) return;
+  const bf = $("w-mode").value === "bf";
+  $("w-pc-fields").hidden = bf;
+  if (bf) { renderBlackFriday(); return; }
   const r = rates();
   const nowArs = joditaResult.best.save > 0 ? joditaResult.best.mix : joditaResult.bank;
   const nowUsd = nowArs / r.mep;
@@ -349,9 +440,9 @@ function setShare(prefix, text, anchor, longText) {
 }
 
 const XKEYS = {
-  "j-console": "jc", "j-console-price": "jp", "j-game": "jg", "j-upgrade": "ju", "j-upgrade-price": "jup", "j-upgrade-ccy": "juc",
+  "j-console": "jc", "j-console-price": "jp", "j-game": "jg", "j-game-format": "jf", "j-upgrade": "ju", "j-upgrade-price": "jup", "j-upgrade-ccy": "juc",
   "j-memb": "jm", "j-memb-plan": "jmp", "j-memb-months": "jmm", "j-tv": "jt", "j-other": "jo",
-  "d-goal": "pg", "d-goal-amount": "pa", "d-goal-ccy": "pc", "d-lump": "pl", "d-monthly": "pmo", "d-start": "pd", "w-pcdate": "wd",
+  "w-mode": "wm", "d-goal": "pg", "d-goal-amount": "pa", "d-goal-ccy": "pc", "d-lump": "pl", "d-monthly": "pmo", "d-start": "pd", "w-pcdate": "wd",
 };
 let XDEF = null;
 const val = (el) => (el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value);
@@ -417,7 +508,7 @@ function init() {
   $("j-memb").addEventListener("change", () => { $("j-memb-fields").hidden = !$("j-memb").checked; renderAll(); });
   $("j-memb-plan").addEventListener("change", () => { syncJMembMonths(); renderAll(); });
   $("j-gp-iva").addEventListener("change", (e) => g.setGpIva(e.target.checked));
-  ["j-game", "j-upgrade-ccy", "j-memb-months", "j-tv", "j-other", "d-goal", "d-goal-amount", "d-goal-ccy", "d-lump", "d-monthly", "d-start", "w-pcdate"]
+  ["j-game", "j-game-format", "j-upgrade-ccy", "j-memb-months", "j-tv", "j-other", "d-goal", "d-goal-amount", "d-goal-ccy", "d-lump", "d-monthly", "d-start", "w-pcdate", "w-mode"]
     .forEach((id) => $(id).addEventListener("input", renderAll));
   ["j", "d"].forEach((p) => {
     const name = p === "j" ? "jodita" : "challenge";
@@ -436,3 +527,72 @@ function init() {
   waitQuotes();
 }
 init();
+
+
+// ================= SIMULADOR DE PROYECCIÓN =================
+let simMonths = 6;
+let simInitDone = false;
+function livePrice() {
+  const g = G();
+  if (g.latestQuote && typeof g.latestQuote.price === "number") return g.latestQuote.price;
+  return g.quotes && g.quotes.length ? g.quotes[g.quotes.length - 1].close : 0;
+}
+function renderSim() {
+  const g = G();
+  if (!g || !g.model || !g.quotes || !g.quotes.length) return;
+  const live = livePrice();
+  if (!simInitDone) {
+    $("s-initial").value = (g.model.listUsd || 99.99).toFixed(2);
+    $("s-target").value = live.toFixed(2);
+    simInitDone = true;
+  }
+  const r = rates();
+  const initial = num("s-initial"), monthly = num("s-monthly");
+  const target = Math.max(0.01, Number($("s-target").value) || live);
+  const H = simMonths;
+  let shares = live ? initial / live : 0;
+  for (let k = 1; k <= H; k++) {
+    const p = live + ((target - live) * k) / H;
+    shares += monthly / p;
+  }
+  const put = initial + monthly * H;
+  const value = shares * target;
+  const diff = value - put;
+  const pct = put ? (diff / put) * 100 : 0;
+  const up = diff >= 0;
+  const goal = goalUsd(r).usd;
+  const pctTarget = live ? (target / live - 1) * 100 : 0;
+  $("s-slider-val").textContent = `${pctTarget >= 0 ? "+" : "−"}${Math.abs(Math.round(pctTarget))}% (US$ ${g.fmtAR.format(target)})`;
+  const end = new Date(($("s-start").value || "2026-11-18") + "T12:00:00Z"); end.setUTCMonth(end.getUTCMonth() + H);
+  $("s-out").innerHTML = `
+    <div class="sim-cell"><span>Total aportado</span><strong>${usd(put)}</strong></div>
+    <div class="sim-cell"><span>Acciones</span><strong>${g.fmtAR.format(shares)}</strong></div>
+    <div class="sim-cell ${up ? "up" : "down"}"><span>Valor al ${g.dmy(end.toISOString().slice(0, 10))}</span><strong>${usd(value)}</strong><em>${ars(value * r.mep)}</em></div>
+    <div class="sim-cell ${up ? "up" : "down"}"><span>${up ? "Ganancia" : "Pérdida"}</span><strong>${up ? "+" : "−"}${usd(Math.abs(diff)).replace("US$ ", "US$ ")}</strong><em>${up ? "+" : "−"}${g.fmtAR.format(Math.abs(pct))}%</em></div>
+    <div class="sim-goal ${value >= goal ? "up" : "down"}">${value >= goal ? `Llegás a la meta de ${usd0(goal)}` : `Te faltan ${usd0(goal - value)} para la meta de ${usd0(goal)} (${Math.round((value / goal) * 100)}%)`}</div>`;
+  debounceTrack("projection_calc");
+}
+function initSim() {
+  ["s-initial", "s-monthly", "s-start"].forEach((id) => $(id).addEventListener("input", renderSim));
+  $("s-target").addEventListener("input", () => {
+    const live = livePrice();
+    const pct = live ? (Number($("s-target").value) / live - 1) * 100 : 0;
+    $("s-slider").value = String(Math.max(-50, Math.min(100, Math.round(pct / 5) * 5)));
+    renderSim();
+  });
+  $("s-slider").addEventListener("input", () => {
+    $("s-target").value = (livePrice() * (1 + Number($("s-slider").value) / 100)).toFixed(2);
+    renderSim();
+  });
+  $("s-horizon").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-m]"); if (!b) return;
+    simMonths = Number(b.dataset.m);
+    $("s-horizon").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    renderSim();
+  });
+  $("sim").addEventListener("toggle", () => { if ($("sim").open) renderSim(); });
+  G().listeners.push(renderSim);
+  renderSim();
+}
+const waitSim = () => (G() && G().quotes && G().quotes.length && G().model ? initSim() : setTimeout(waitSim, 150));
+waitSim();

@@ -98,3 +98,26 @@ Reglas de cálculo de La jodita:
 ## Encuesta
 
 Votos en la misma base D1 del Worker (`POST /poll`, `GET /poll/results`). Se guarda: opción, fecha y país. Sin IPs ni cookies; un voto por navegador (localStorage) y límite de ritmo nativo de Cloudflare (la clave no se guarda).
+
+## Cuotas y precios por tienda (verificado 18/11/2026, hora Argentina)
+
+| Tienda / producto | Precio | Cuotas | Fuente |
+| --- | --- | --- | --- |
+| Cetrogar · PS5 Slim Digital Bundle (GT7 + Astro Bot) | ARS 1.899.999 | Visa/Mastercard hasta 18 sin interés (CFT 0%): 18 × 105.555,50 · 12 × 158.333,25 · 6 × 316.666,50. Naranja 6/9/12/18 s/i; Amex/Sol hasta 12; Cabal/Tuya hasta 9 | [Cetrogar](https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p) |
+| Cetrogar · PS5 Slim Standard Bundle | ARS 2.099.999 | Mismos planes: 18 × 116.666,61 · 12 × 174.999,91 | [Cetrogar](https://www.cetrogar.com.ar/consola-ps5-playstation-standard-bundle-gt7-astrobot-el3000/p) |
+| Frávega (vende Frávega) · PS5 Digital / Standard | ARS 1.899.999 / 1.999.999 | Banco Provincia 6 cuotas sin interés en todo el sitio (si aplica en el checkout) | [Promociones bancarias](https://www.fravega.com/promociones/bancarias) |
+| Tienda oficial Sony en Frávega · PS5 Slim Digital / Pro | ARS 1.869.999 / 2.859.999 | Cuotas no confirmadas | [Frávega PS5](https://www.fravega.com/l/videojuegos/consolas/?tipo-de-consola=ps5) |
+| Frávega · GTA VI PS5 caja con código | ARS 219.999 | Según promos de la tienda | [Frávega](https://www.fravega.com/p/juego-ps5-grand-theft-auto-vi-formato-fisico-con-codigo-342114/) |
+| Game Sense · Xbox Series S 512 GB / Series X 1 TB | ARS 1.294.000 / 2.386.000 | Mercado Pago: solo 1 pago sin interés (6 y 12 cuotas con recargo). Efectivo −20% (S ARS 1.035.200 · X ARS 1.908.800); transferencia −10% | [Series S](https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/) · [Series X](https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/) |
+| Game Sense · GTA VI Xbox caja | ARS 239.999 | — | [Game Sense](https://gamesenseargentina.com/) |
+| PS Store (juego digital, upgrade, PS Plus) | USD + IVA | Sin cuotas: un solo pago | — |
+| Game Pass | ARS mensual | Sin cuotas | — |
+| Mercado Crédito “cuotas sin tarjeta” | — | Con interés (no es sin interés) | — |
+
+La Digital de la tienda oficial Sony (ARS 1.869.999) no se usa como precio de referencia del bundle de Cetrogar/Frávega: no está confirmado que sea el mismo SKU (consola sola vs. bundle Astro Bot + GT7). Cuotas de esa ficha no confirmadas.
+
+“Esperar hasta fin de noviembre (Black Friday)”: usa el precio de hoy como referencia; no se suponen descuentos.
+
+## Imagen del Desafío PC
+
+`assets/desafio-pc-*.{webp,jpg}`: imagen generada con IA (PC gamer neón, atardecer synthwave, palmeras; sin texto ni logos).

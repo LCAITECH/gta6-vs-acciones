@@ -41,7 +41,7 @@ El enlace “Págalo con la BingX card” es de referido de la tarjeta. El de �
 
 - Comisión de la Binance Card: no publicada / no verificada (no se inventa). El IVA en esa tarjeta está sin confirmar; el comparador lo suma por defecto y se puede apagar.
 - Precios de DLC de historia o add-ons pagos de GTA 6: no publicados al 18/11/2026. El usuario puede cargarlos a mano.
-- Precio físico en cadenas argentinas: no verificado.
+- Precio físico en otras cadenas o de otras ediciones: si no está en FUENTES.md, el usuario lo carga a mano.
 - Versión de PC al lanzamiento: no publicada.
 - Alícuota de Ingresos Brutos: no hay una única nacional; queda en 0 para que cada quien complete la de su provincia.
 
@@ -55,7 +55,9 @@ El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-w
 
 ## Secciones extra
 
-- **La jodita del GTA VI**: consola + juego + membresía + upgrade + tele + otros, en pesos, tarjeta del banco vs BingX vs Binance, y qué valdría el ahorro en TTWO.
-- **Desafío PC**: meta (placas de referencia o propia), monto inicial y aportes mensuales, resultado real con TTWO y escenarios hipotéticos.
-- **Consola hoy vs esperar la PC**: misma lógica, con una fecha de PC elegida por el usuario (no hay fecha oficial).
+La navegación es por vistas con hash (`#calculadora`, `#jodita`, `#desafio`, `#encuesta`, `#fuentes`); los links y el botón atrás abren la vista correcta.
+
+- **La jodita del GTA VI**: consola (PS5 Slim Digital y Standard, Pro, Series S/X) + juego digital o en caja + membresía + upgrade + tele + otros, en pesos, con cuotas por tienda, tarjeta del banco vs BingX vs Binance, y qué valdría el ahorro en TTWO.
+- **Desafío PC**: meta (placas de referencia o propia), monto inicial y aportes mensuales, resultado real con TTWO, escenarios hipotéticos, y un simulador de proyección (aportes mensuales a un precio interpolado en línea recta).
+- **Consola hoy vs esperar la PC**: misma lógica, con una fecha de PC elegida por el usuario (no hay fecha oficial) o un modo “esperar a fin de noviembre (Black Friday)” que muestra el mejor precio verificado de hoy, sin inventar descuentos.
 - **Encuesta**: votos en D1 vía el Worker de analítica.

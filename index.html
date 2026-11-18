@@ -124,15 +124,14 @@
   <div class="wrap">
     <header class="site-header">
       <div class="brand">LCA ITECH<span>Calculadora educativa</span></div>
-      <nav class="nav">
-        <a href="#calculadora">Calculadora</a>
-        <a href="#jodita">La jodita</a>
-        <a href="#desafio">Desafío PC</a>
-        <a href="#encuesta">Encuesta</a>
-        <a href="#fuentes">Fuentes</a>
-      </nav>
+      <nav class="nav"><a href="#fuentes">Fuentes</a></nav>
     </header>
 
+    <nav class="tabs" aria-label="Secciones">
+      <a href="#calculadora" data-tab="calculadora">Calculadora</a><a href="#jodita" data-tab="jodita">La jodita</a><a href="#desafio" data-tab="desafio">Desafío PC</a><a href="#encuesta" data-tab="encuesta">Encuesta</a>
+    </nav>
+    <main id="views">
+      <div class="view" data-view="calculadora">
     <section class="hero">
       <div class="hero-layout">
         <div class="vi-mark">
@@ -149,13 +148,7 @@
       </div>
     </section>
 
-    <div class="legal-box">
-      Este sitio es un proyecto independiente de <strong>LCA ITECH</strong>. No está afiliado, asociado, autorizado ni respaldado por Rockstar Games, Take-Two Interactive Software, Inc., PlayStation, Microsoft, BingX ni Binance. El logo de VI y las marcas de Grand Theft Auto pertenecen a Take-Two Interactive Software, Inc. / Rockstar Games y se usan solo como referencia e identificación, sin afiliación.
-    </div>
 
-    <nav class="tabs" aria-label="Secciones">
-      <a href="#calculadora">Calculadora</a><a href="#jodita">La jodita</a><a href="#desafio">Desafío PC</a><a href="#encuesta">Encuesta</a>
-    </nav>
 
     <section id="calculadora" class="grid">
       <form class="panel" id="form" autocomplete="off">
@@ -322,6 +315,8 @@
       </div>
     </section>
 
+      </div>
+      <div class="view" data-view="jodita" hidden>
     <section id="jodita">
       <h2>¿Cuánto te sale la jodita del GTA VI?</h2>
       <p class="lede">Consola + juego + membresía + upgrade + la tele. Todo junto, en pesos, y cuánto te ahorrás pagando lo que conviene con tarjeta cripto.</p>
@@ -334,8 +329,14 @@
             <label for="j-console-price">Precio de la consola (ARS, con IVA)</label>
             <input id="j-console-price" type="number" min="0" step="1" inputmode="numeric">
             <p class="hint" id="j-console-hint"></p>
+            <div class="cuotas" id="j-cuotas"></div>
           </div>
-          <label class="check"><input type="checkbox" id="j-game" checked> El juego (usa la edición y tienda de la calculadora de arriba)</label>
+          <label class="check"><input type="checkbox" id="j-game" checked> El juego</label>
+          <select id="j-game-format" aria-label="Formato del juego">
+            <option value="digital">Digital (edición y tienda de la Calculadora)</option>
+            <option value="box">En caja: PS5 ARS 219.999 (Frávega) / Xbox ARS 239.999 (Game Sense)</option>
+          </select>
+          <p class="hint">La caja es compra local en pesos y entra en las cuotas de la tienda. La edición digital se paga en un solo pago (sin cuotas).</p>
           <label class="check"><input type="checkbox" id="j-upgrade"> Upgrade a Ultimate después</label>
           <div id="j-upgrade-fields" hidden>
             <div class="row">
@@ -373,9 +374,37 @@
       </div>
     </section>
 
+      </div>
+      <div class="view" data-view="desafio" hidden>
     <section id="desafio">
-      <h2>Desafío: ¿me sale la PC (o la placa) con TTWO?</h2>
-      <p class="lede">Ponés una plata en Take-Two y mirás si llegás a tu meta. Con datos reales hasta hoy y escenarios hipotéticos, para arriba y para abajo.</p>
+      <div class="desafio-hero">
+        <picture>
+          <source type="image/webp" srcset="assets/desafio-pc-640.webp 640w, assets/desafio-pc-1280.webp 1280w" sizes="(max-width: 700px) 100vw, 1180px">
+          <img src="assets/desafio-pc-1280.jpg" srcset="assets/desafio-pc-640.jpg 640w, assets/desafio-pc-1280.jpg 1280w" sizes="(max-width: 700px) 100vw, 1180px" width="1280" height="720" alt="Una PC gamer con luces neón frente a un atardecer synthwave con palmeras" loading="lazy" decoding="async">
+        </picture>
+        <div class="desafio-hero-text">
+          <h2>Desafío: ¿me sale la PC (o la placa) con TTWO?</h2>
+          <p class="lede">Ponés una plata en Take-Two y mirás si llegás a tu meta: datos reales hasta hoy y escenarios para arriba y para abajo.</p>
+          <ul class="paths"><li>Comprar la PC</li><li>Meter en Take-Two</li><li>Ni una ni otra / esperar</li></ul>
+        </div>
+      </div>
+      <details class="sim panel" id="sim">
+        <summary><strong>Simulador de proyección</strong> <span class="fine-inline">· simulación hipotética, no es consejo de inversión</span></summary>
+        <div class="sim-grid">
+          <div><label for="s-initial">Monto inicial (US$)</label><input id="s-initial" type="number" min="0" step="0.01"></div>
+          <div><label for="s-monthly">Aporte mensual (US$)</label><input id="s-monthly" type="number" min="0" step="1" value="20"></div>
+          <div><label for="s-start">Fecha de inicio</label><input id="s-start" type="date" value="2026-11-18"></div>
+          <div><label for="s-target">Precio TTWO al final (US$)</label><input id="s-target" type="number" min="1" step="0.01"></div>
+        </div>
+        <div class="chips" id="s-horizon" role="radiogroup" aria-label="Horizonte">
+          <span class="fine-inline">Horizonte:</span>
+          <button type="button" data-m="1">1 m</button><button type="button" data-m="2">2 m</button><button type="button" data-m="3">3 m</button><button type="button" data-m="4">4 m</button><button type="button" data-m="5">5 m</button><button type="button" data-m="6" aria-pressed="true">6 m</button><button type="button" data-m="12">12 m</button>
+        </div>
+        <label for="s-slider" class="slider-label">Variación de TTWO: <strong id="s-slider-val">0%</strong></label>
+        <input id="s-slider" type="range" min="-50" max="100" step="5" value="0">
+        <div class="sim-out" id="s-out"></div>
+        <p class="fine-inline" id="s-note">Supuesto: el monto inicial compra al precio actual; cada aporte mensual compra en su fecha a un precio interpolado en línea recta entre el actual y el precio final que elegiste. Es una simulación hipotética, no es consejo de inversión ni un pronóstico.</p>
+      </details>
       <div class="grid">
         <form class="panel" id="d-form" autocomplete="off">
           <h3>Tu meta</h3>
@@ -410,8 +439,15 @@
       <h3 id="esperar" style="margin-top:34px">Consola hoy vs. esperar la PC</h3>
       <p class="muted">Compará jugar ya (tu jodita de arriba) contra guardar esa plata en TTWO hasta que salga en PC. No hay fecha oficial para PC: elegí una vos.</p>
       <div class="panel wait-panel">
-        <label for="w-pcdate">¿Hasta cuándo esperarías? (fecha tuya, no oficial)</label>
-        <input id="w-pcdate" type="date" value="2027-06-30" min="2026-11-19">
+        <label for="w-mode">¿Qué querés comparar?</label>
+        <select id="w-mode">
+          <option value="pc">Esperar el lanzamiento en PC (fecha tuya, no oficial)</option>
+          <option value="bf">Esperar hasta fin de noviembre (27–30/11/2026, Black Friday)</option>
+        </select>
+        <div id="w-pc-fields">
+          <label for="w-pcdate">¿Hasta cuándo esperarías? (fecha tuya, no oficial)</label>
+          <input id="w-pcdate" type="date" value="2027-06-30" min="2026-11-19">
+        </div>
         <p class="danger-line" id="w-disclaimer"></p>
         <div id="w-out"></div>
         <p class="muted" id="w-scen-lead"></p>
@@ -419,6 +455,8 @@
       </div>
     </section>
 
+      </div>
+      <div class="view" data-view="encuesta" hidden>
     <section id="encuesta">
       <h2>Encuesta: ¿vas a esperar al lanzamiento en PC o vas a comprar consola?</h2>
       <div class="panel poll-panel">
@@ -428,6 +466,8 @@
       </div>
     </section>
 
+      </div>
+      <div class="view" data-view="fuentes" hidden>
     <section id="impuestos">
       <h2>Cómo está armada la cuenta</h2>
       <div class="panel">
@@ -483,7 +523,15 @@
       </div>
     </section>
 
+      </div>
+    </main>
+
     <footer class="site-footer">
+      <details class="legal-compact"><summary>Aviso legal: proyecto independiente, sin afiliación con Rockstar ni Take-Two</summary>    <div class="legal-text">
+      Este sitio es un proyecto independiente de <strong>LCA ITECH</strong>. No está afiliado, asociado, autorizado ni respaldado por Rockstar Games, Take-Two Interactive Software, Inc., PlayStation, Microsoft, BingX ni Binance. El logo de VI y las marcas de Grand Theft Auto pertenecen a Take-Two Interactive Software, Inc. / Rockstar Games y se usan solo como referencia e identificación, sin afiliación.
+    </div>
+</details>
+      <p><a href="#fuentes">Fuentes y metodología</a></p>
       <p>Precios, impuestos y cotizaciones relevados el 18/11/2026 (America/Buenos_Aires). Pueden cambiar. Contrastá el total en la tienda y en tu resumen antes de pagar.</p>
       <p>Esta herramienta es solo educativa e ilustrativa. No es oferta, recomendación ni asesoramiento financiero, impositivo ni de inversión. El rendimiento pasado de TTWO no anticipa resultados futuros. Las acciones pueden subir o bajar, y el juego lo jugás: son cosas distintas.</p>
       <p class="disclaimer-short">No es asesoramiento financiero ni una recomendación de inversión. Los escenarios son hipotéticos: puede salir bien o puede salir mal. La plata que no estás dispuesto a perder, dejala afuera.</p>
@@ -498,6 +546,7 @@
       </div>
     </footer>
   </div>
+  <script src="router.js" type="module"></script>
   <script src="app.js" type="module"></script>
   <script src="extras.js" type="module"></script>
 </body>
