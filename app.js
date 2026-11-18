@@ -265,7 +265,7 @@ function drawChart(points, ccy) {
 
   if (!points.length) return;
 
-  const pad = { t: 36, r: 40, b: 70, l: 110 };
+  const pad = { t: 36, r: 70, b: 70, l: 150 };
   const vals = points.flatMap((p) => [p.spent, p.invested]);
   let min = Math.min(...vals);
   let max = Math.max(...vals);
@@ -286,7 +286,9 @@ function drawChart(points, ccy) {
 
   const gridCount = 4;
   ctx.font = "22px Figtree, sans-serif";
-  ctx.fillStyle = "#8e85a3";
+  ctx.fillStyle = "#efe8f6";
+  ctx.shadowColor = "#000000";
+  ctx.shadowBlur = 8;
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   for (let i = 0; i <= gridCount; i += 1) {
@@ -306,6 +308,8 @@ function drawChart(points, ccy) {
   ctx.textBaseline = "top";
   ctx.fillText(first, x(0), h - pad.b + 16);
   ctx.fillText(last, x(points.length - 1), h - pad.b + 16);
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = "transparent";
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const duration = reduce ? 0 : 1100;
@@ -418,8 +422,85 @@ function drawChart(points, ccy) {
   chartFrame = requestAnimationFrame(tick);
 }
 
+// Fallback = values Leandro saw 18/11/2026 ~10:03 ART (aggregator screenshot).
+const FX_FALLBACK = { oficial: 1575, tarjeta: 2047.5, blue: 1605, bolsa: 1603.3, cripto: 1688.58 };
+
+function fxVenta(key) {
+  const r = fx && fx.rates && fx.rates[key];
+  return r && typeof r.venta === "number" ? r.venta : FX_FALLBACK[key];
+}
+
+function renderCompare(model) {
+  const fundKey = $("fund-rate").value;
+  const oficial = fxVenta("oficial");
+  const fund = fxVenta(fundKey);
+  const iibb = Math.max(0, Number($("iibb").value) || 0) / 100;
+  const store = model.store;
+  // PSN, Microsoft and Rockstar are excluded from the 30% percepción (RG 5677/2025).
+  const percApplies = false;
+  const ivaBank = 0.21;
+
+  const xboxArs = store === "xbox" || model.edition === "xbox-upgrade";
+  const extrasUsd = model.dlcUsd + model.plusUsd;
+  let bankArs;
+  let usdEquiv;
+  if (xboxArs) {
+    const arsBase = model.listArs + extrasUsd * oficial;
+    bankArs = arsBase * (1 + ivaBank + iibb);
+    usdEquiv = arsBase / oficial;
+  } else {
+    usdEquiv = model.listUsd + extrasUsd;
+    bankArs = usdEquiv * oficial * (1 + ivaBank + (percApplies ? 0.3 : 0) + iibb);
+  }
+
+  const purchase = $("purchase-date").value || "2026-06-25";
+  const bxUsd = usdEquiv * (1 + BINGX.fee - BINGX.cashback);
+  const bnCash = purchase <= BINANCE.cashbackUntil ? BINANCE.cashback : 0;
+  const bnUsd = usdEquiv * (1 + (binanceIva ? 0.21 : 0) - bnCash);
+  const bxArs = bxUsd * fund;
+  const bnArs = bnUsd * fund;
+
+  const best = bxArs <= bnArs ? { name: "BingX Card", ars: bxArs, usd: bxUsd } : { name: "Binance Card", ars: bnArs, usd: bnUsd };
+  const save = bankArs - best.ars;
+  const savePct = bankArs ? (save / bankArs) * 100 : 0;
+  const fundLabel = { cripto: "dólar cripto", bolsa: "dólar MEP", blue: "dólar blue", oficial: "dólar oficial" }[fundKey];
+
+  const updated = fx && fx.updatedAtArt ? fx.updatedAtArt.split(" ")[1] : null;
+  $("fx-meta").innerHTML = `Oficial venta <strong>${fmtAR.format(oficial)}</strong> · Tarjeta ${fmtAR.format(fxVenta("tarjeta"))} · Blue ${fmtAR.format(fxVenta("blue"))} · MEP ${fmtAR.format(fxVenta("bolsa"))} · Cripto <strong>${fmtAR.format(fxVenta("cripto"))}</strong>. ${updated ? `Actualizado <strong>${updated}</strong> (hora Argentina). Fuente: <a href="https://dolarapi.com" target="_blank" rel="noopener noreferrer">DolarApi https://dolarapi.com</a>.` : "Sin conexión a la fuente: usamos valores de referencia del 18/11/2026."}`;
+
+  const pos = save > 0;
+  $("savings").innerHTML = `
+    <div class="savings-box ${pos ? "" : "neg"}">
+      <div class="savings-inner">
+        <div class="k">${pos ? `Ahorro pagando con ${best.name}` : "Con estos valores, la tarjeta cripto no ahorra"}</div>
+        <div class="big">${pos ? "" : "−"}${money(Math.abs(save), "ARS")}</div>
+        <div class="sub">≈ ${money(Math.abs(save) / fund, "USD")} · ${fmtInt.format(Math.abs(savePct))}% ${pos ? "menos" : "más"} que con tarjeta bancaria</div>
+        <div class="fine">Tarjeta bancaria ${money(bankArs, "ARS")} vs ${best.name} ${money(best.ars, "ARS")} (fondeada a ${fundLabel} ${fmtAR.format(fund)}). Cashback y comisiones: dato informado por el dueño, según condiciones vigentes; verificá en la app.</div>
+      </div>
+    </div>`;
+
+  const row = (name, ars, detail, cls = "") => `
+    <article class="pay-card ${cls}">
+      <h3>${name}</h3>
+      <div class="price">${money(ars, "ARS")}</div>
+      <p class="muted">${detail}</p>
+    </article>`;
+  const ivaTxt = `IVA 21%${iibb ? ` + IIBB ${fmtInt.format(iibb * 100)}%` : ""}`;
+  $("compare-grid").innerHTML =
+    row("Tarjeta bancaria", bankArs, xboxArs
+      ? `Precio en pesos de Xbox Store + ${ivaTxt}. Sin percepción del 30%: Microsoft está excluida (RG 5677/2025).`
+      : `US$ ${fmtAR.format(usdEquiv)} × oficial venta ${fmtAR.format(oficial)} + ${ivaTxt}. No usamos el dólar tarjeta (${fmtAR.format(fxVenta("tarjeta"))}) porque PSN, Microsoft y Rockstar están excluidas de la percepción del 30% (RG 5677/2025).`) +
+    row("BingX Card", bxArs, `US$ ${fmtAR.format(usdEquiv)} + 1,5% comisión − 2% cashback = US$ ${fmtAR.format(bxUsd)} × ${fundLabel} ${fmtAR.format(fund)}. Sin impuestos argentinos (dato del dueño).`, best.name === "BingX Card" && pos ? "best" : "") +
+    row("Binance Card", bnArs, `US$ ${fmtAR.format(usdEquiv)}${binanceIva ? " + IVA 21% (sin confirmar)" : " sin IVA"} − ${bnCash ? "3% cashback" : "sin cashback"} = US$ ${fmtAR.format(bnUsd)} × ${fundLabel} ${fmtAR.format(fund)}. El IVA se prende/apaga en la tarjeta de arriba.`, best.name === "Binance Card" && pos ? "best" : "");
+
+  $("compare-note").textContent = xboxArs
+    ? "En Xbox Store el precio está en pesos: para la tarjeta cripto lo pasamos a USD al oficial venta (aproximación del tipo de cambio de la red de la tarjeta)."
+    : "El ahorro sale de no pagar IVA (y IIBB) con la cripto; el dólar cripto es más caro que el oficial, así que con Binance e IVA prendido puede salir más caro.";
+}
+
 let quotes = [];
 let latestQuote = null;
+let fx = null;
 let chartFrame = 0;
 
 async function boot() {
@@ -432,6 +513,12 @@ async function boot() {
     if (liveRes.ok) latestQuote = await liveRes.json();
   } catch (err) {
     latestQuote = null;
+  }
+  try {
+    const fxRes = await fetch("data/fx-ar.json", { cache: "no-store" });
+    if (fxRes.ok) fx = await fxRes.json();
+  } catch (err) {
+    fx = null;
   }
   $("purchase-date").min = quotes[0].date;
   bind();
@@ -485,6 +572,7 @@ function bind() {
     "fx-buy",
     "fx-now",
     "display-ccy",
+    "fund-rate",
   ].forEach((id) => $(id).addEventListener("input", update));
   $("courtesy-month").addEventListener("change", update);
   $("pay-grid").addEventListener("change", (event) => {
@@ -519,6 +607,7 @@ function update() {
   renderTicker();
   renderStats(model);
   renderPay(model);
+  renderCompare(model);
   const startForSeries = purchase < entry.date ? entry.date : purchase;
   const pts = seriesFrom(quotes, startForSeries, shares, spend.spendUsd, spend.fxNow, ccy, latestQuote);
   drawChart(pts, ccy);

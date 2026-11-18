@@ -27,6 +27,13 @@ Cada cifra usada en el sitio tiene URL y fecha. Si no había un dato publicado, 
 | BNA billete (18/11/2026) | Compra 1.525,00 · Venta 1.575,00 | [bna.com.ar/Personas](https://www.bna.com.ar/Personas) |
 | BNA divisas (18/11/2026) | Compra 1.543,00 · Venta 1.552,00 | Misma página |
 
+
+| Cotizaciones (refresco automático) | oficial, tarjeta, blue, MEP (bolsa), CCL, cripto (USDT/USDC) en `data/fx-ar.json` | [DolarApi https://dolarapi.com](https://dolarapi.com) · [Uso de los datos](https://dolarapi.com/docs/uso) (cita requerida; permite copia local y publicación; sugiere 1 consulta cada 3 h por serie) |
+| Dólar tarjeta genérico | Oficial venta × 1,30 = 2.047,50 el 18/11/2026. **No se usa** para PSN / Microsoft / Rockstar (excluídos de la percepción 30% por RG 5677/2025). El comparador banco vs cripto usa oficial venta + IVA 21% (+ IIBB si lo cargás). | DolarApi · coincide con un agregado visto por el dueño ~10:03 (hora Argentina) el 18/11/2026 (solo como control) |
+| Dólar cripto | Cotización de referencia de DolarApi para USDT/USDC (venta). El usuario puede fondear también a blue, MEP u oficial. | Misma API |
+
+Cadencia: GitHub Actions corre `scripts/refresh-fx.py` cada 3 horas (`7 */3 * * *`) y en disparo manual. El sitio no llama a la API desde el navegador. Se muestra “actualizado hh:mm (hora Argentina)” y la cita a DolarApi. Si el JSON no carga, se usan valores de referencia del 18/11/2026 ~10:03 (hora Argentina).
+
 La calculadora suma los tributos en forma aditiva: `lista × (1 + IVA + percepción + IIBB)`. IIBB queda en 0 por defecto porque no hay una alícuota nacional única.
 
 ## TTWO

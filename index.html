@@ -120,6 +120,7 @@
       <nav class="nav">
         <a href="#calculadora">Calculadora</a>
         <a href="#pago">Pago real</a>
+        <a href="#cripto-vs-banco">Cripto vs banco</a>
         <a href="#fuentes">Fuentes</a>
       </nav>
     </header>
@@ -249,6 +250,26 @@
       <p class="muted" style="margin-top:14px">Links de referido: el enlace de la BingX Card y el de Binance son de referido de LCA ITECH. El de Binance es un referido general de alta en la plataforma, no un referido específico de la tarjeta. Si te registrás o pedís o usás una tarjeta a través de esos links, LCA ITECH puede recibir una recompensa. Eso no cambia el precio que te cobran.</p>
     </section>
 
+    <section id="cripto-vs-banco">
+      <h2>Tarjeta cripto vs tarjeta bancaria</h2>
+      <p class="lede">La misma compra, pagada en pesos. La tarjeta bancaria argentina usa el dólar oficial venta + los impuestos que correspondan. La cripto se fondea con USDT comprado al dólar que elijas, + la comisión de la tarjeta − el cashback.</p>
+      <div class="fx-bar panel">
+        <div>
+          <label for="fund-rate">Dólar para fondear la tarjeta cripto</label>
+          <select id="fund-rate">
+            <option value="cripto" selected>Cripto (USDT)</option>
+            <option value="bolsa">MEP</option>
+            <option value="blue">Blue</option>
+            <option value="oficial">Oficial</option>
+          </select>
+        </div>
+        <p class="fx-meta" id="fx-meta">Cargando cotizaciones…</p>
+      </div>
+      <div id="savings"></div>
+      <div class="pay-grid" id="compare-grid"></div>
+      <p class="muted" id="compare-note"></p>
+    </section>
+
     <section id="impuestos">
       <h2>Cómo está armada la cuenta</h2>
       <div class="panel">
@@ -292,6 +313,7 @@
             <tr><td>BingX Card — dato del dueño del sitio</td><td>2% cashback, 1,5% de comisión; indica que no se suman impuestos argentinos al pagar desde Argentina. No es una verificación nuestra.</td><td>18/11/2026</td><td>Informado por el dueño del sitio. Verificá en la app y en tu resumen.</td></tr>
             <tr><td>Binance Card Argentina — existencia</td><td>Disponible para residentes (plástico, emitida por Pomelo)</td><td>18/11/2026</td><td><a href="https://www.infobae.com/economia/networking/2026/09/17/binance-lanzo-su-tarjeta-fisica-en-argentina/">Infobae, 17/09/2026</a></td></tr>
             <tr><td>Binance Card — cashback, percepción e IVA</td><td>Dato del dueño: 3% cashback instantáneo hasta el 31/12/2026; no se aplica la percepción del 30%. IVA: sin confirmar (el comparador lo suma por defecto y se puede apagar). Comisión: no publicada (la FAQ oficial no se pudo leer completa).</td><td>18/11/2026</td><td>Informado por el dueño del sitio. En prensa, Infobae (17/09/2026) también mencionó el 3% USDC hasta el 31/12/2026 (tope 100 USDC/mes) y el dicho de Binance sobre la percepción. No es una verificación normativa nuestra. · <a href="https://www.binance.com/en/support/faq/detail/2a32d3668e704413b47fbf515ee38d6e">FAQ oficial (no se pudo leer completa)</a></td></tr>
+            <tr><td>Cotizaciones AR diarias (oficial, tarjeta, blue, MEP, CCL, cripto)</td><td>Snapshot en <code>data/fx-ar.json</code>, se refresca cada 3 horas. Hoy: oficial 1.525 / 1.575; tarjeta 1.982,50 / 2.047,50 (oficial + 30%, no aplica a PSN/Microsoft/Rockstar); blue 1.585 / 1.605; MEP 1.591,50 / 1.603,30; CCL 1.694,20 / 1.697,20; cripto 1.686,39 / 1.689,93</td><td>18/11/2026</td><td><a href="https://dolarapi.com">DolarApi https://dolarapi.com</a> · <a href="https://dolarapi.com/docs/uso">Uso de los datos</a>. El “dólar tarjeta” 2.047,50 coincide con un agregado visto a las 10:03 (hora Argentina); para esta compra usamos oficial venta + IVA, sin el 30%.</td></tr>
             <tr><td>Binance — link de referido</td><td>Referido general de registro, no específico de la Card</td><td>18/11/2026</td><td><a href="https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=es-LA&ref=GRO_28502_9GVXD&utm_source=referral_entrance">Referido de alta en Binance</a></td></tr>
           </tbody>
         </table>
