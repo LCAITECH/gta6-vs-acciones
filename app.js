@@ -63,6 +63,60 @@ function closeOnOrBefore(quotes, iso) {
   return quotes[0];
 }
 
+function closeAt(list, iso) {
+  if (!list || !list.length || !iso) return null;
+  for (let i = list.length - 1; i >= 0; i -= 1) {
+    if (list[i].date <= iso) return list[i];
+  }
+  return null;
+}
+
+let currentAsset = "both";
+const ASSET_SHORT = { ttwo: "t", btc: "b", both: "2" };
+function assetMode() { return currentAsset; }
+function setAsset(mode, silent) {
+  if (!["ttwo", "btc", "both"].includes(mode)) return;
+  currentAsset = mode;
+  const box = $("asset-toggle");
+  if (box) {
+    box.querySelectorAll("[data-asset]").forEach((b) => {
+      b.setAttribute("aria-pressed", b.dataset.asset === mode ? "true" : "false");
+    });
+  }
+  if (!silent) update();
+}
+
+function addDaysIso(iso, days) {
+  const [y, m, d] = String(iso).split("-").map(Number);
+  const dt = new Date(Date.UTC(y, (m || 1) - 1, (d || 1) + days));
+  return dt.toISOString().slice(0, 10);
+}
+function addMonthsIso(iso, months) {
+  const [y, m, d] = String(iso).split("-").map(Number);
+  const dt = new Date(Date.UTC(y, (m || 1) - 1 + months, d || 1));
+  return dt.toISOString().slice(0, 10);
+}
+function lastAvailableDate(list, live) {
+  const d1 = list && list.length ? list[list.length - 1].date : null;
+  const d2 = live && live.asOfDate;
+  if (d2 && (!d1 || d2 > d1)) return d2;
+  return d1;
+}
+function livePx(list, live) {
+  if (live && typeof live.price === "number") return live.price;
+  return list && list.length ? list[list.length - 1].close : null;
+}
+function toDisplay(usd, ccy, fxNow) {
+  return ccy === "ARS" ? usd * fxNow : usd;
+}
+const HORIZONS = [
+  { key: "1w", label: "1 semana", days: 7 },
+  { key: "1m", label: "1 mes", months: 1 },
+  { key: "3m", label: "3 meses", months: 3 },
+  { key: "6m", label: "6 meses", months: 6 },
+  { key: "1y", label: "1 año", months: 12 },
+];
+
 function computeSpend() {
   const edition = $("edition").value;
   const store = $("store").value;
@@ -177,56 +231,138 @@ function clockFromArt(stamp) {
   return stamp.split(" ")[1];
 }
 
+function tickerCard(kind, list, live) {
+  const last = list && list[list.length - 1];
+  const price = livePx(list, live);
+  const name = kind === "btc" ? "BTC" : "TTWO";
+  if (price == null) {
+    return `<article class="ticker${kind === "btc" ? " btc" : ""}"><div class="k">${name} ahora</div><div class="meta">No pudimos cargar la cotización. Reintentá más tarde.</div></article>`;
+  }
+  const ch = live && typeof live.change === "number" ? live.change : null;
+  const pct = live && typeof live.changePercent === "number" ? live.changePercent : null;
+  const up = (ch ?? 0) >= 0;
+  const states = { REGULAR: "En el mercado", PRE: "Preapertura", POST: "After hours", CLOSED: "Mercado cerrado", "24/7": "Mercado 24/7" };
+  const state = states[(live && live.marketState) || ""] || "Último dato";
+  const updated = clockFromArt(live && live.updatedAtArt);
+  const quoteArt = live && live.quoteTimeArt;
+  const chLabel = ch == null ? "—" : `${up ? "+" : "−"}US$ ${fmtAR.format(Math.abs(ch))} (${up ? "+" : "−"}${fmtInt.format(Math.abs(pct || 0))}%)`;
+  const src = kind === "btc"
+    ? "Snapshot de Bitstamp (BTC/USD), no es un tick en vivo. Si falta el dato, usamos el último cierre diario."
+    : "Snapshot de Yahoo Finance, no es un tick en vivo. Si falta el dato, usamos el último cierre.";
+  return `
+    <article class="ticker${kind === "btc" ? " btc" : ""}">
+      <div class="k">${name} ahora</div>
+      <div class="price">US$ ${fmtAR.format(price)}</div>
+      <div class="chg ${up ? "up" : "down"}">${chLabel}</div>
+      <div class="meta">${state}. Actualizado <strong>${updated || "—"}</strong> (hora Argentina)${quoteArt ? ` · dato de cotización: ${quoteArt}` : ""}. ${src}</div>
+    </article>`;
+}
+
 function renderTicker() {
   const el = $("ticker");
   if (!el) return;
-  const last = quotes[quotes.length - 1];
-  const q = latestQuote;
-  const price = q && typeof q.price === "number" ? q.price : last && last.close;
-  if (price == null) {
-    el.textContent = "No pudimos cargar la cotización de TTWO. Reintentá más tarde.";
-    return;
-  }
-  const ch = q && typeof q.change === "number" ? q.change : null;
-  const pct = q && typeof q.changePercent === "number" ? q.changePercent : null;
-  const up = (ch ?? 0) >= 0;
-  const states = { REGULAR: "En el mercado", PRE: "Preapertura", POST: "After hours", CLOSED: "Mercado cerrado" };
-  const state = states[(q && q.marketState) || ""] || "Último dato";
-  const updated = clockFromArt(q && q.updatedAtArt);
-  const quoteArt = q && q.quoteTimeArt;
-  const chLabel = ch == null ? "—" : `${up ? "+" : "−"}US$ ${fmtAR.format(Math.abs(ch))} (${up ? "+" : "−"}${fmtInt.format(Math.abs(pct || 0))}%)`;
-  el.innerHTML = `
-    <div class="k">TTWO ahora</div>
-    <div class="price">US$ ${fmtAR.format(price)}</div>
-    <div class="chg ${up ? "up" : "down"}">${chLabel}</div>
-    <div class="meta">${state}. Actualizado <strong>${updated || "—"}</strong> (hora Argentina)${quoteArt ? ` · dato de cotización: ${quoteArt}` : ""}. Snapshot de Yahoo Finance, no es un tick en vivo. Si falta el dato, usamos el último cierre.</div>`;
+  const mode = assetMode();
+  const parts = [];
+  if (mode !== "btc") parts.push(tickerCard("ttwo", quotes, latestQuote));
+  if (mode !== "ttwo") parts.push(tickerCard("btc", btcQuotes, latestBtc));
+  el.innerHTML = parts.join("") || "No pudimos cargar las cotizaciones. Reintentá más tarde.";
+}
+
+function statCard(k, v, s, cls) {
+  return `<div class="stat${cls ? " " + cls : ""}"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
 }
 
 function renderStats(model) {
   const el = $("stats");
   const ccy = $("display-ccy").value;
   const spent = ccy === "ARS" ? model.spendArs : model.spendUsd;
-  const now = ccy === "ARS" ? model.valueNowUsd * model.fxNow : model.valueNowUsd;
-  const diff = now - spent;
-  const pct = spent ? (diff / spent) * 100 : 0;
-  const cls = diff >= 0 ? "up" : "down";
-  const verb = diff >= 0 ? "arriba" : "abajo";
-  el.innerHTML = `
-    <div class="stat">
-      <div class="k">Gastaste en el juego</div>
-      <div class="v">${money(spent, ccy)}</div>
-      <div class="s">${model.sharesLabel}</div>
-    </div>
-    <div class="stat ${cls}">
-      <div class="k">Hoy en TTWO</div>
-      <div class="v">${money(now, ccy)}</div>
-      <div class="s">${model.priceLabel}</div>
-    </div>
-    <div class="stat ${cls}">
-      <div class="k">Diferencia</div>
-      <div class="v">${diff >= 0 ? "+" : "−"}${money(Math.abs(diff), ccy)}</div>
-      <div class="s">${verb} un ${fmtInt.format(Math.abs(pct))}%</div>
-    </div>`;
+  const mode = assetMode();
+  const cards = [statCard("Gastaste en el juego", money(spent, ccy), mode === "both" ? "La misma plata, en cada activo por separado" : (mode === "btc" ? model.btcSharesLabel : model.sharesLabel))];
+  const addAsset = (label, valueUsd, sub, missing) => {
+    if (missing) {
+      cards.push(statCard(label, "Sin dato", sub || "No hay cotización para esa fecha de compra"));
+      return;
+    }
+    const now = toDisplay(valueUsd, ccy, model.fxNow);
+    const diff = now - spent;
+    const pct = spent ? (diff / spent) * 100 : 0;
+    const cls = diff >= 0 ? "up" : "down";
+    const verb = diff >= 0 ? "arriba" : "abajo";
+    cards.push(statCard(label, money(now, ccy), `${sub} · ${verb} un ${fmtInt.format(Math.abs(pct))}%`, cls));
+  };
+  if (mode !== "btc") addAsset("Hoy en TTWO", model.valueNowUsd, model.priceLabel, model.ttwoMissing);
+  if (mode !== "ttwo") addAsset("Hoy en BTC", model.btcValueNowUsd, model.btcPriceLabel, model.btcMissing);
+  if (mode !== "both") {
+    const valueUsd = mode === "btc" ? model.btcValueNowUsd : model.valueNowUsd;
+    const missing = mode === "btc" ? model.btcMissing : model.ttwoMissing;
+    if (!missing) {
+      const now = toDisplay(valueUsd, ccy, model.fxNow);
+      const diff = now - spent;
+      const pct = spent ? (diff / spent) * 100 : 0;
+      const cls = diff >= 0 ? "up" : "down";
+      const verb = diff >= 0 ? "arriba" : "abajo";
+      cards.push(statCard("Diferencia", `${diff >= 0 ? "+" : "−"}${money(Math.abs(diff), ccy)}`, `${verb} un ${fmtInt.format(Math.abs(pct))}%`, cls));
+    }
+  }
+  el.classList.toggle("cols-2", mode === "both");
+  el.innerHTML = cards.join("");
+}
+
+function renderBreakdown(model) {
+  const el = $("breakdown");
+  if (!el) return;
+  const ccy = $("display-ccy").value;
+  const mode = assetMode();
+  const purchase = $("purchase-date").value || "2026-06-25";
+  const spent = ccy === "ARS" ? model.spendArs : model.spendUsd;
+  const showT = mode !== "btc";
+  const showB = mode !== "ttwo";
+  const lastT = lastAvailableDate(quotes, latestQuote);
+  const lastB = lastAvailableDate(btcQuotes, latestBtc);
+  const rows = [];
+  for (const h of HORIZONS) {
+    const when = h.days ? addDaysIso(purchase, h.days) : addMonthsIso(purchase, h.months);
+    const cells = [];
+    let any = false;
+    const cell = (list, live, shares, missingEntry, last) => {
+      if (!showT && list === quotes) return "";
+      if (!showB && list === btcQuotes) return "";
+      if (missingEntry || !shares || !last || when > last) return `<td class="muted">sin dato</td>`;
+      const q = closeAt(list, when);
+      const px = (live && live.asOfDate === when && typeof live.price === "number") ? live.price : (q && q.close);
+      if (px == null) return `<td class="muted">sin dato</td>`;
+      any = true;
+      const val = toDisplay(shares * px, ccy, model.fxNow);
+      const diff = val - spent;
+      const pct = spent ? (diff / spent) * 100 : 0;
+      const cls = diff >= 0 ? "up" : "down";
+      return `<td class="${cls}">${money(val, ccy)}<small>${diff >= 0 ? "+" : "−"}${fmtInt.format(Math.abs(pct))}%</small></td>`;
+    };
+    const tCell = showT ? cell(quotes, latestQuote, model.shares, model.ttwoMissing, lastT) : "";
+    const bCell = showB ? cell(btcQuotes, latestBtc, model.btcShares, model.btcMissing, lastB) : "";
+    if (showT && tCell.includes("sin dato") && (!showB || bCell.includes("sin dato")) && !any) {
+      // still list the row only if at least one asset has data; if both sin dato because horizon is future, skip
+      const futureT = showT && (!lastT || when > lastT);
+      const futureB = showB && (!lastB || when > lastB);
+      if (futureT && futureB) continue;
+      if (showT && !showB && futureT) continue;
+      if (showB && !showT && futureB) continue;
+    }
+    // Skip a row only when every visible asset lacks a quote on/after the horizon.
+    const usableT = showT && !model.ttwoMissing && lastT && when <= lastT && closeAt(quotes, when);
+    const usableB = showB && !model.btcMissing && lastB && when <= lastB && closeAt(btcQuotes, when);
+    if (!usableT && !usableB) continue;
+    rows.push(`<tr><th scope="row">${h.label}<span class="muted"> ${dmy(when)}</span></th>${tCell}${bCell}</tr>`);
+  }
+  if (!rows.length) {
+    el.hidden = true;
+    el.innerHTML = "";
+    return;
+  }
+  const head = `<tr><th>Con el paso del tiempo</th>${showT ? "<th>TTWO</th>" : ""}${showB ? "<th>BTC</th>" : ""}</tr>`;
+  el.hidden = false;
+  el.innerHTML = `<table><thead>${head}</thead><tbody>${rows.join("")}</tbody></table>
+    <p class="hint">Valor de esa misma plata a 1 semana, 1 mes, 3, 6 meses y 1 año después de la compra, cuando hay dato. Si el horizonte todavía no llegó o no hay cierre, no se muestra.</p>`;
 }
 
 function renderPay(model) {
@@ -284,7 +420,7 @@ function drawChart(points, ccy) {
   if (!points.length) return;
 
   const pad = { t: 36, r: 70, b: 70, l: 150 };
-  const vals = points.flatMap((p) => [p.spent, p.invested]);
+  const vals = points.flatMap((p) => [p.spent, p.invested, p.btc].filter((v) => v != null));
   let min = Math.min(...vals);
   let max = Math.max(...vals);
   const padY = (max - min) * 0.12 || max * 0.08 || 1;
@@ -365,59 +501,75 @@ function drawChart(points, ccy) {
     ctx.restore();
     ctx.setLineDash([]);
 
-    const grad = ctx.createLinearGradient(0, pad.t, 0, h - pad.b);
-    grad.addColorStop(0, "#f976b055");
-    grad.addColorStop(1, "#f976b000");
-    ctx.beginPath();
-    visible.forEach((p, i) => {
-      const xx = x(i);
-      const yy = y(p.invested);
-      if (i === 0) ctx.moveTo(xx, yy);
-      else ctx.lineTo(xx, yy);
-    });
-    ctx.lineTo(x(visible.length - 1), h - pad.b);
-    ctx.lineTo(x(0), h - pad.b);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    ctx.save();
-    ctx.strokeStyle = "#f976b0";
-    ctx.lineWidth = 10;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-    ctx.shadowColor = "#f976b0";
-    ctx.shadowBlur = 28;
-    ctx.globalAlpha = 0.55;
-    ctx.beginPath();
-    visible.forEach((p, i) => {
-      const xx = x(i);
-      const yy = y(p.invested);
-      if (i === 0) ctx.moveTo(xx, yy);
-      else ctx.lineTo(xx, yy);
-    });
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-    ctx.lineWidth = 5;
-    ctx.shadowBlur = 16;
-    ctx.beginPath();
-    visible.forEach((p, i) => {
-      const xx = x(i);
-      const yy = y(p.invested);
-      if (i === 0) ctx.moveTo(xx, yy);
-      else ctx.lineTo(xx, yy);
-    });
-    ctx.stroke();
-    ctx.restore();
+    const hasTtwo = visible.some((p) => p.invested != null);
+    const hasBtc = visible.some((p) => p.btc != null);
+    const strokeKey = (key, color, width, alpha, fillFrom) => {
+      const pts = visible.map((p, i) => (p[key] != null ? [x(i), y(p[key])] : null));
+      const first = pts.findIndex(Boolean);
+      const lastI = pts.map((v, i) => (v ? i : -1)).reduce((a, b) => Math.max(a, b), -1);
+      if (first < 0) return;
+      if (fillFrom) {
+        const grad = ctx.createLinearGradient(0, pad.t, 0, h - pad.b);
+        grad.addColorStop(0, fillFrom);
+        grad.addColorStop(1, "#00000000");
+        ctx.beginPath();
+        let started = false;
+        pts.forEach((pt) => {
+          if (!pt) return;
+          if (!started) { ctx.moveTo(pt[0], pt[1]); started = true; }
+          else ctx.lineTo(pt[0], pt[1]);
+        });
+        ctx.lineTo(pts[lastI][0], h - pad.b);
+        ctx.lineTo(pts[first][0], h - pad.b);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 24;
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      let started = false;
+      pts.forEach((pt) => {
+        if (!pt) return;
+        if (!started) { ctx.moveTo(pt[0], pt[1]); started = true; }
+        else ctx.lineTo(pt[0], pt[1]);
+      });
+      ctx.stroke();
+      ctx.restore();
+    };
+    if (hasTtwo) {
+      strokeKey("invested", "#f976b0", 10, 0.55, "#f976b055");
+      strokeKey("invested", "#f976b0", 5, 1, null);
+    }
+    if (hasBtc) {
+      strokeKey("btc", "#3ef0d4", 8, 0.55, hasTtwo ? null : "#3ef0d455");
+      strokeKey("btc", "#3ef0d4", 4.5, 1, null);
+    }
 
     const lastPt = visible[visible.length - 1];
     ctx.save();
-    ctx.shadowColor = "#f976b0";
-    ctx.shadowBlur = 18;
-    ctx.fillStyle = "#f976b0";
-    ctx.beginPath();
-    ctx.arc(x(visible.length - 1), y(lastPt.invested), 8, 0, Math.PI * 2);
-    ctx.fill();
+    if (lastPt.invested != null) {
+      ctx.shadowColor = "#f976b0";
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = "#f976b0";
+      ctx.beginPath();
+      ctx.arc(x(visible.length - 1), y(lastPt.invested), 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (lastPt.btc != null) {
+      ctx.shadowColor = "#3ef0d4";
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = "#3ef0d4";
+      ctx.beginPath();
+      ctx.arc(x(visible.length - 1), y(lastPt.btc), 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.shadowColor = "#ffdf80";
     ctx.fillStyle = "#ffdf80";
     ctx.beginPath();
@@ -519,6 +671,8 @@ function renderCompare(model) {
 
 let quotes = [];
 let latestQuote = null;
+let btcQuotes = [];
+let latestBtc = null;
 let fx = null;
 let lastCompare = null;
 let amountMode = "official"; // official | custom | missing
@@ -542,7 +696,25 @@ async function boot() {
   } catch (err) {
     fx = null;
   }
-  $("purchase-date").min = quotes[0].date;
+  try {
+    const btcRes = await fetch("data/btc-daily.json");
+    if (btcRes.ok) {
+      const btcData = await btcRes.json();
+      btcQuotes = btcData.quotes || [];
+    }
+  } catch (err) {
+    btcQuotes = [];
+  }
+  try {
+    const liveBtc = await fetch("data/btc-latest.json", { cache: "no-store" });
+    if (liveBtc.ok) latestBtc = await liveBtc.json();
+  } catch (err) {
+    latestBtc = null;
+  }
+  const firsts = [];
+  if (quotes[0]) firsts.push(quotes[0].date);
+  if (btcQuotes[0]) firsts.push(btcQuotes[0].date);
+  if (firsts.length) $("purchase-date").min = firsts.sort()[0];
   loadStateFromUrl();
   $("memb-fields").hidden = !$("memb-on").checked;
   syncMembMonths();
@@ -614,6 +786,13 @@ function bind() {
   $("memb-on").addEventListener("change", () => { $("memb-fields").hidden = !$("memb-on").checked; update(); });
   $("memb-plan").addEventListener("change", () => { syncMembMonths(); update(); });
   $("courtesy-month").addEventListener("change", update);
+  const assets = $("asset-toggle");
+  if (assets) {
+    assets.addEventListener("click", (event) => {
+      const b = event.target.closest("button[data-asset]");
+      if (b) setAsset(b.dataset.asset);
+    });
+  }
   $("pay-grid").addEventListener("change", (event) => {
     if (event.target && event.target.id === "binance-iva") {
       binanceIva = event.target.checked;
@@ -622,46 +801,112 @@ function bind() {
   });
 }
 
+function unionChartPoints(purchase, spendUsd, fxNow, ccy, sharesT, sharesB, showT, showB) {
+  const dates = new Set();
+  const pushDates = (list, live) => {
+    if (!list) return;
+    for (const q of list) if (q.date >= purchase) dates.add(q.date);
+    const d = live && live.asOfDate;
+    if (d && d >= purchase) dates.add(d);
+  };
+  if (showT) pushDates(quotes, latestQuote);
+  if (showB) pushDates(btcQuotes, latestBtc);
+  const spent = toDisplay(spendUsd, ccy, fxNow);
+  const days = [...dates].sort();
+  if (!days.length) {
+    return [{ date: purchase, spent, invested: null, btc: null }];
+  }
+  const liveClose = (list, live, day) => {
+    if (live && live.asOfDate === day && typeof live.price === "number") return live.price;
+    const q = closeAt(list, day);
+    return q ? q.close : null;
+  };
+  return days.map((day) => {
+    const t = showT && sharesT ? liveClose(quotes, latestQuote, day) : null;
+    const b = showB && sharesB ? liveClose(btcQuotes, latestBtc, day) : null;
+    return {
+      date: day,
+      spent,
+      invested: t != null ? toDisplay(sharesT * t, ccy, fxNow) : null,
+      btc: b != null ? toDisplay(sharesB * b, ccy, fxNow) : null,
+      close: t,
+    };
+  });
+}
+
 function update() {
-  if (!quotes.length) return;
+  if (!quotes.length && !btcQuotes.length) return;
   const spend = computeSpend();
   const purchase = $("purchase-date").value || "2026-06-25";
-  const entry = closeOnOrBefore(quotes, purchase);
-  const lastClose = quotes[quotes.length - 1];
-  const livePrice = latestQuote && typeof latestQuote.price === "number" ? latestQuote.price : lastClose.close;
-  const shares = entry.close ? spend.spendUsd / entry.close : 0;
-  const valueNowUsd = shares * livePrice;
+  const entry = closeAt(quotes, purchase);
+  const btcEntry = closeAt(btcQuotes, purchase);
+  const lastClose = quotes.length ? quotes[quotes.length - 1] : null;
+  const lastBtc = btcQuotes.length ? btcQuotes[btcQuotes.length - 1] : null;
+  const livePrice = livePx(quotes, latestQuote);
+  const btcLive = livePx(btcQuotes, latestBtc);
+  const ttwoMissing = !entry || !entry.close;
+  const btcMissing = !btcEntry || !btcEntry.close;
+  const shares = !ttwoMissing ? spend.spendUsd / entry.close : 0;
+  const btcShares = !btcMissing ? spend.spendUsd / btcEntry.close : 0;
+  const valueNowUsd = shares && livePrice ? shares * livePrice : 0;
+  const btcValueNowUsd = btcShares && btcLive ? btcShares * btcLive : 0;
   const ccy = $("display-ccy").value;
   const updated = clockFromArt(latestQuote && latestQuote.updatedAtArt);
+  const updatedBtc = clockFromArt(latestBtc && latestBtc.updatedAtArt);
+  const mode = assetMode();
   const model = {
     ...spend,
-    entry,
+    entry: entry || { date: purchase, close: null },
+    btcEntry: btcEntry || { date: purchase, close: null },
     lastClose,
+    lastBtc,
     livePrice,
+    btcLive,
     shares,
+    btcShares,
     valueNowUsd,
-    sharesLabel: `${fmtInt.format(shares)} acciones a US$ ${fmtAR.format(entry.close)} el ${entry.date}`,
-    priceLabel: `TTWO US$ ${fmtAR.format(livePrice)}${updated ? ` · actualizado ${updated} (hora Argentina)` : ""}`,
+    btcValueNowUsd,
+    ttwoMissing,
+    btcMissing,
+    asset: mode,
+    sharesLabel: ttwoMissing ? "Sin dato de TTWO en esa fecha" : `${fmtInt.format(shares)} acciones a US$ ${fmtAR.format(entry.close)} el ${entry.date}`,
+    btcSharesLabel: btcMissing ? "Sin dato de BTC en esa fecha" : `${fmtInt.format(btcShares)} BTC a US$ ${fmtAR.format(btcEntry.close)} el ${btcEntry.date}`,
+    priceLabel: livePrice == null ? "Sin cotización de TTWO" : `TTWO US$ ${fmtAR.format(livePrice)}${updated ? ` · actualizado ${updated} (hora Argentina)` : ""}`,
+    btcPriceLabel: btcLive == null ? "Sin cotización de BTC" : `BTC US$ ${fmtAR.format(btcLive)}${updatedBtc ? ` · actualizado ${updatedBtc} (hora Argentina)` : ""}`,
   };
   renderTicker();
   renderStats(model);
+  renderBreakdown(model);
   renderPay(model);
   renderCompare(model);
   lastModel = model;
   saveStateToUrl();
   renderShare();
   (window.__gta ? window.__gta.listeners : []).forEach((fn) => { try { fn(model); } catch (e) { console.error(e); } });
-  const startForSeries = purchase < entry.date ? entry.date : purchase;
-  const pts = seriesFrom(quotes, startForSeries, shares, spend.spendUsd, spend.fxNow, ccy, latestQuote);
+  const showT = mode !== "btc" && !ttwoMissing;
+  const showB = mode !== "ttwo" && !btcMissing;
+  const startT = entry ? (purchase < entry.date ? entry.date : purchase) : purchase;
+  const startB = btcEntry ? (purchase < btcEntry.date ? btcEntry.date : purchase) : purchase;
+  const start = showT && showB ? (startT < startB ? startT : startB) : showT ? startT : startB;
+  const pts = unionChartPoints(start, spend.spendUsd, spend.fxNow, ccy, showT ? shares : 0, showB ? btcShares : 0, showT, showB);
   drawChart(pts, ccy);
+  const legT = $("leg-ttwo");
+  const legB = $("leg-btc");
+  if (legT) legT.hidden = mode === "btc";
+  if (legB) legB.hidden = mode === "ttwo";
   const bits = [];
   if (spend.note) bits.push(spend.note);
-  bits.push(`Histórico diario hasta ${lastClose.date}. La valuación de hoy usa la última cotización disponible (US$ ${fmtAR.format(livePrice)}). No es un tick en vivo.`);
-  if (purchase > lastClose.date) {
-    bits.push("La fecha de compra es posterior al último cierre del snapshot: usamos ese cierre como entrada y todavía no hay recorrido posterior.");
+  if (lastClose && mode !== "btc") bits.push(`TTWO: histórico diario hasta ${lastClose.date}. Última cotización US$ ${fmtAR.format(livePrice)}.`);
+  if (lastBtc && mode !== "ttwo") bits.push(`BTC: histórico diario hasta ${lastBtc.date} (Bitstamp BTC/USD). Última cotización US$ ${fmtAR.format(btcLive)}.`);
+  bits.push("Snapshots estáticos, no son un tick en vivo. El bitcoin es más volátil y puede caer mucho.");
+  if (lastClose && purchase > lastClose.date && mode !== "btc") {
+    bits.push("La fecha de compra es posterior al último cierre de TTWO del snapshot: usamos ese cierre como entrada y todavía no hay recorrido posterior.");
+  }
+  if (lastBtc && purchase > lastBtc.date && mode !== "ttwo") {
+    bits.push("La fecha de compra es posterior al último cierre de BTC del snapshot.");
   }
   if (ccy === "ARS") {
-    bits.push("En pesos, la línea de TTWO se convierte con el tipo de cambio de hoy que cargaste (no hay una serie histórica de dólar en este MVP).");
+    bits.push("En pesos, las líneas se convierten con el tipo de cambio de hoy que cargaste (no hay una serie histórica de dólar en este MVP).");
   }
   $("chart-note").textContent = bits.join(" ");
 }
@@ -700,6 +945,7 @@ function saveStateToUrl() {
   });
   if (!binanceIva) q.set("bi", "0");
   if (!gpIva) q.set("gi", "0");
+  if (currentAsset !== "both") q.set("as", ASSET_SHORT[currentAsset]);
   if (window.__gtaExtraState) window.__gtaExtraState(q);
   if (amountMode === "custom") q.set("m", "c");
   const qs = q.toString();
@@ -726,6 +972,10 @@ function loadStateFromUrl() {
     else if (el.tagName === "SELECT") { if ([...el.options].some((o) => o.value === v)) el.value = v; }
     else el.value = v.slice(0, 32);
   });
+  const as = q.get("as");
+  if (as === "t") setAsset("ttwo", true);
+  else if (as === "b") setAsset("btc", true);
+  else if (as === "2") setAsset("both", true);
   if (q.get("gi") === "0") gpIva = false;
   const bi = q.get("bi") ?? q.get("binance-iva");
   if (bi != null) binanceIva = bi === "1";
@@ -754,21 +1004,50 @@ function shareFacts() {
     ? `ARS ${Math.round(m.listArs + m.dlcUsd * m.fxBuy).toLocaleString("es-AR")}`
     : `US$ ${fmtAR.format(m.listUsd + m.dlcUsd)}`;
   const withTax = `US$ ${fmtAR.format(m.spendUsd)}`;
-  const diff = m.valueNowUsd - m.spendUsd;
-  const pct = m.spendUsd ? (diff / m.spendUsd) * 100 : 0;
-  const up = pct >= 0;
-  const pctTxt = `${up ? "+" : "−"}${fmtAR.format(Math.abs(pct)).replace(/,00$/, "")}%`;
-  const valTxt = `US$ ${Math.round(m.valueNowUsd).toLocaleString("es-AR")}`;
-  const glTxt = `${up ? "ganarías" : "perderías"} US$ ${fmtAR.format(Math.abs(diff))}`;
+  const pack = (valueUsd, missing) => {
+    if (missing || valueUsd == null) return null;
+    const diff = valueUsd - m.spendUsd;
+    const pct = m.spendUsd ? (diff / m.spendUsd) * 100 : 0;
+    const up = pct >= 0;
+    return {
+      up,
+      pct,
+      pctTxt: `${up ? "+" : "−"}${fmtAR.format(Math.abs(pct)).replace(/,00$/, "")}%`,
+      valTxt: `US$ ${Math.round(valueUsd).toLocaleString("es-AR")}`,
+      glTxt: `${up ? "ganarías" : "perderías"} US$ ${fmtAR.format(Math.abs(diff))}`,
+    };
+  };
+  const ttwo = pack(m.valueNowUsd, m.ttwoMissing);
+  const btc = pack(m.btcValueNowUsd, m.btcMissing);
+  const mode = m.asset || "ttwo";
+  const primary = mode === "btc" ? btc : ttwo;
   const c = lastCompare;
   const saveTxt = c && c.save > 0 ? `Pagándolo con la ${c.best.name} me ahorraba ${money(c.save, "ARS")} frente a la tarjeta del banco` : "";
-  return { what, paid, withTax, pct, up, pctTxt, valTxt, glTxt, saveTxt, date: dmy(m.entry.date) };
+  return {
+    what, paid, withTax, saveTxt, date: dmy((m.entry && m.entry.date) || $("purchase-date").value),
+    mode, ttwo, btc,
+    pct: primary ? primary.pct : 0,
+    up: primary ? primary.up : true,
+    pctTxt: primary ? primary.pctTxt : "—",
+    valTxt: primary ? primary.valTxt : "—",
+    glTxt: primary ? primary.glTxt : "",
+  };
 }
 
 function shareText() {
   const f = shareFacts();
   if (!f) return "";
-  return `Compré ${f.what} por ${f.paid}. Si hubiera comprado acciones de Take-Two (TTWO), hoy valdrían ${f.valTxt} (${f.pctTxt}).${f.saveTxt ? " " + f.saveTxt + "." : ""} Calculá el tuyo:`;
+  let mid;
+  if (f.mode === "both") {
+    const t = f.ttwo ? `en TTWO hoy valdrían ${f.ttwo.valTxt} (${f.ttwo.pctTxt})` : "en TTWO no hay dato";
+    const b = f.btc ? `en BTC, ${f.btc.valTxt} (${f.btc.pctTxt})` : "en BTC no hay dato";
+    mid = `Si hubiera puesto esa plata ${t}. ${b[0].toUpperCase()}${b.slice(1)}.`;
+  } else if (f.mode === "btc" && f.btc) {
+    mid = `Si hubiera comprado bitcoin (BTC), hoy valdrían ${f.btc.valTxt} (${f.btc.pctTxt}).`;
+  } else {
+    mid = `Si hubiera comprado acciones de Take-Two (TTWO), hoy valdrían ${f.valTxt} (${f.pctTxt}).`;
+  }
+  return `Compré ${f.what} por ${f.paid}. ${mid}${f.saveTxt ? " " + f.saveTxt + "." : ""} Calculá el tuyo:`;
 }
 
 let logoImg = null;
@@ -828,14 +1107,39 @@ async function drawShareCard(canvas) {
     fit(head.toUpperCase(), 800, 44, font, 690); ctx.fillText(head.toUpperCase(), 80, 105); ctx.restore();
     ctx.fillStyle = "#d4cbe0"; ctx.font = `500 19px ${body}`;
     ctx.fillText(`el ${f.date} · ${f.withTax} con impuestos`, 80, 136);
-    ctx.fillStyle = "#f6f0ea"; fit("Si hubiera comprado acciones de Take-Two Interactive (TTWO), hoy valdrían:", 500, 24, body, 690);
-    ctx.fillText("Si hubiera comprado acciones de Take-Two Interactive (TTWO), hoy valdrían:", 80, 180);
-    const col = f.up ? "#9ed39a" : "#ff8a9a";
-    ctx.save(); ctx.shadowColor = f.up ? "#9ed39a" : "#f976b0"; ctx.shadowBlur = 30;
-    ctx.fillStyle = f.up ? "#c8f5c3" : "#ffdf80"; ctx.font = `800 120px ${font}`;
-    ctx.fillText(f.valTxt, 76, 290); ctx.restore();
-    ctx.fillStyle = col; ctx.font = `700 40px ${font}`;
-    ctx.fillText(`${f.pctTxt}  ·  ${f.glTxt.toUpperCase()}`, 80, 345);
+    const line = f.mode === "btc"
+      ? "Si hubiera comprado bitcoin (BTC), hoy valdrían:"
+      : f.mode === "both"
+        ? "Si hubiera puesto esa plata en TTWO o en BTC, hoy valdrían:"
+        : "Si hubiera comprado acciones de Take-Two Interactive (TTWO), hoy valdrían:";
+    ctx.fillStyle = "#f6f0ea"; fit(line, 500, 24, body, 690);
+    ctx.fillText(line, 80, 180);
+    if (f.mode === "both" && (f.ttwo || f.btc)) {
+      const drawCol = (x0, pack, name, accent) => {
+        if (!pack) {
+          ctx.fillStyle = "#d4cbe0"; ctx.font = `700 28px ${font}`;
+          ctx.fillText(`${name}: sin dato`, x0, 280);
+          return;
+        }
+        const col = pack.up ? "#9ed39a" : "#ff8a9a";
+        ctx.fillStyle = accent; ctx.font = `700 22px ${font}`;
+        ctx.fillText(name, x0, 220);
+        ctx.save(); ctx.shadowColor = pack.up ? "#9ed39a" : accent; ctx.shadowBlur = 22;
+        ctx.fillStyle = pack.up ? "#c8f5c3" : "#ffdf80"; ctx.font = `800 64px ${font}`;
+        ctx.fillText(pack.valTxt, x0, 290); ctx.restore();
+        ctx.fillStyle = col; ctx.font = `700 26px ${font}`;
+        ctx.fillText(`${pack.pctTxt}  ·  ${pack.glTxt.toUpperCase()}`, x0, 330);
+      };
+      drawCol(80, f.ttwo, "TTWO", "#f976b0");
+      drawCol(430, f.btc, "BTC", "#3ef0d4");
+    } else {
+      const col = f.up ? "#9ed39a" : "#ff8a9a";
+      ctx.save(); ctx.shadowColor = f.up ? "#9ed39a" : "#f976b0"; ctx.shadowBlur = 30;
+      ctx.fillStyle = f.up ? "#c8f5c3" : "#ffdf80"; ctx.font = `800 120px ${font}`;
+      ctx.fillText(f.valTxt, 76, 290); ctx.restore();
+      ctx.fillStyle = col; ctx.font = `700 40px ${font}`;
+      ctx.fillText(`${f.pctTxt}  ·  ${f.glTxt.toUpperCase()}`, 80, 345);
+    }
   }
   if (f && f.saveTxt && lastCompare) {
     ctx.fillStyle = "rgba(255,223,128,0.12)"; roundRect(ctx, 70, 392, 700, 140, 20); ctx.fill();
@@ -1035,6 +1339,9 @@ window.__gta = {
   get model() { return lastModel; },
   get quotes() { return quotes; },
   get latestQuote() { return latestQuote; },
+  get btcQuotes() { return btcQuotes; },
+  get latestBtc() { return latestBtc; },
+  get asset() { return currentAsset; },
   get compare() { return lastCompare; },
   get binanceIva() { return binanceIva; },
   get gpIva() { return gpIva; },

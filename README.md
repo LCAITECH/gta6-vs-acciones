@@ -26,6 +26,8 @@ Un workflow de GitHub Actions (`refresh-ttwo.yml`) corre cada 15 minutos, de lun
 
 El recuadro **TTWO ahora** muestra ese snapshot y la hora: “actualizado hh:mm (hora Argentina)”. Si el archivo no está, la calculadora cae al último cierre diario.
 
+Lo mismo para **bitcoin (BTC/USD)**: `scripts/refresh-btc.py` (GitHub Action cada 3 horas) escribe `data/btc-latest.json` y `data/btc-daily.json` desde la API pública de Bitstamp. El sitio no llama a Bitstamp en el cliente. Coinbase no se usó (sus términos de market data no permiten mostrar esos datos a terceros sin consentimiento). Ver `FUENTES.md`.
+
 
 ## Cotizaciones en Argentina
 
@@ -57,9 +59,10 @@ El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-w
 
 La navegación es por vistas con hash (`#calculadora`, `#jodita`, `#conviene`, `#ttwo`, `#desafio`, `#encuesta`, `#fuentes`); los links y el botón atrás abren la vista correcta.
 
+- **Calculadora**: comparás la plata del juego (por defecto el precio de la edición, p. ej. US$ 99,99) en TTWO, en BTC o en los dos, con ganancia o pérdida, un desglose a 1 semana / 1 mes / 3 / 6 meses / 1 año, y el gráfico de las dos líneas.
 - **La jodita del GTA VI**: consola (PS5 Slim Digital y Standard, Pro, Series S/X) + juego digital o en caja + membresía + upgrade + tele + otros, en pesos, con cuotas por tienda, tarjeta del banco vs BingX vs Binance, escenarios con/sin consola y con/sin tele, y qué valdría el ahorro en TTWO.
 - **¿Me conviene?**: tabla de rendimiento por plataforma (Digital Foundry, 18/11/2026) más el precio ARS de hoy.
-- **TTWO**: gráfico interactivo de cierres diarios (rangos 1M–Máx) a partir de `data/ttwo-daily.json`.
-- **Desafío Gordo Compu** (`#desafio`): sub-pestañas Comparar / Armar PC / Meta y simulación / Encuesta. Comparador placa vs consola (ARS, USD al MEP y acciones TTWO) a partir de `data/hardware-prices.json` (refresco automático cada ~6 h, no es un tick en vivo). Armador con presets, chequeo de socket/RAM, totales, y gabinete 3D (CSS, se carga al abrir Armar). Sub-pestaña Metas: objetivo (PC nueva / placa / RAM / procesador) del catálogo verificado, plazo en meses y fecha (solo aportes y con supuesto de TTWO), barra de avance, escenarios (aporte ×2/×3, baja del componente, TTWO ±X%) y celebración si ya llegaste. Simulador de proyección con horizonte de 1 a 12 meses. Encuesta en vivo (barras cada ~30 s) también en esta vista.
+- **TTWO**: gráfico interactivo de cierres diarios de TTWO y de BTC (precio o % desde el mismo inicio; rangos 1M–Máx) a partir de `data/ttwo-daily.json` y `data/btc-daily.json`.
+- **Desafío Gordo Compu** (`#desafio`): sub-pestañas Comparar / Armar PC / Meta y simulación / Encuesta. Comparador placa vs consola (ARS, USD al MEP y acciones TTWO) a partir de `data/hardware-prices.json` (refresco automático cada ~6 h, no es un tick en vivo). Armador con presets, chequeo de socket/RAM, totales, y gabinete 3D (CSS, se carga al abrir Armar). Sub-pestaña Metas: objetivo (PC nueva / placa / RAM / procesador) del catálogo verificado, plazo en meses y fecha (solo aportes y con supuesto de TTWO, BTC o mitad y mitad), barra de avance, escenarios (aporte ×2/×3, baja del componente, variación del activo) y celebración si ya llegaste. Simulador de proyección con horizonte de 1 a 12 meses y selector de activo (TTWO / BTC / mitad y mitad). Encuesta en vivo (barras cada ~30 s) también en esta vista.
 - **Consola hoy vs esperar la PC**: misma lógica, con una fecha de PC elegida por el usuario (no hay fecha oficial) o un modo “esperar a fin de noviembre (Black Friday)” que muestra el mejor precio verificado de hoy, sin inventar descuentos.
 - **Encuesta**: votos en D1 vía el Worker de analítica; barras en vivo también en el Desafío.

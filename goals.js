@@ -2,7 +2,8 @@
 const $ = (id) => document.getElementById(id);
 const G = () => window.__gta;
 const MAX_M = 24;
-const DISCLAIMER = "No es asesoramiento financiero: puede salir bien o mal. La plata que no estás dispuesto a perder, dejala afuera. Los plazos y el supuesto de TTWO son una simulación hipotética, no un pronóstico ni una recomendación de compra.";
+const DISCLAIMER = "No es asesoramiento financiero: puede salir bien o mal. La plata que no estás dispuesto a perder, dejala afuera. Los plazos y el supuesto de TTWO o de BTC son una simulación hipotética, no un pronóstico ni una recomendación de compra. El bitcoin es más volátil y puede caer mucho.";
+let metaAsset = "ttwo";
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -54,6 +55,26 @@ function ttwoMonths(initial, monthly, goal, live, target) {
   return null;
 }
 
+function mixMonths(initial, monthly, goal, liveT, targetT, liveB, targetB) {
+  if (goal <= 0) return 0;
+  if (!(liveT > 0) || !(liveB > 0)) {
+    if (liveT > 0) return ttwoMonths(initial, monthly, goal, liveT, targetT);
+    if (liveB > 0) return ttwoMonths(initial, monthly, goal, liveB, targetB);
+    return cashMonths(initial, monthly, goal);
+  }
+  let sT = (initial / 2) / liveT;
+  let sB = (initial / 2) / liveB;
+  if (sT * liveT + sB * liveB >= goal - 1e-9) return 0;
+  for (let k = 1; k <= MAX_M; k++) {
+    const pT = Math.max(0.01, liveT + ((targetT - liveT) * k) / MAX_M);
+    const pB = Math.max(0.01, liveB + ((targetB - liveB) * k) / MAX_M);
+    sT += (monthly / 2) / pT;
+    sB += (monthly / 2) / pB;
+    if (sT * pT + sB * pB >= goal - 1e-9) return k;
+  }
+  return null;
+}
+
 function reachLabel(m, start) {
   if (m === null) return "no llega en 24 meses";
   if (m === 0) return "ya la alcanzás";
@@ -71,6 +92,32 @@ function livePrice() {
   if (g?.latestQuote && typeof g.latestQuote.price === "number") return g.latestQuote.price;
   const q = g?.quotes;
   return q && q.length ? q[q.length - 1].close : 0;
+}
+function liveBtc() {
+  const g = G();
+  if (g?.latestBtc && typeof g.latestBtc.price === "number") return g.latestBtc.price;
+  const q = g?.btcQuotes;
+  return q && q.length ? q[q.length - 1].close : 0;
+}
+function assumeMonths(initial, monthly, goal, liveT, targetT, liveB, targetB) {
+  if (metaAsset === "btc") return ttwoMonths(initial, monthly, goal, liveB, targetB);
+  if (metaAsset === "half") return mixMonths(initial, monthly, goal, liveT, targetT, liveB, targetB);
+  return ttwoMonths(initial, monthly, goal, liveT, targetT);
+}
+function syncMetaAssetUi() {
+  const half = metaAsset === "half";
+  const btcOnly = metaAsset === "btc";
+  const label = $("m-ttwo-label");
+  if (label) {
+    const val = $("m-ttwo-val");
+    const name = btcOnly ? "BTC" : "TTWO";
+    label.childNodes[0].textContent = `Supuesto de ${name}: `;
+    if (val && val.parentNode !== label) label.appendChild(val);
+  }
+  if ($("m-btc-block")) $("m-btc-block").hidden = !half;
+  document.querySelectorAll("#m-asset [data-asset]").forEach((b) => {
+    b.setAttribute("aria-pressed", b.dataset.asset === metaAsset ? "true" : "false");
+  });
 }
 
 function presetTotal(id) {
@@ -178,9 +225,14 @@ function itemInfo(g) {
 function renderGoals() {
   const drop = Number($("m-drop")?.value || 0);
   const ttwoPct = Number($("m-ttwo")?.value || 0);
+  const btcPct = Number($("m-btc")?.value || 0);
+  syncMetaAssetUi();
   if ($("m-drop-val")) $("m-drop-val").textContent = `${drop}%`;
   if ($("m-ttwo-val")) {
     $("m-ttwo-val").textContent = `${ttwoPct > 0 ? "+" : ttwoPct < 0 ? "−" : ""}${Math.abs(ttwoPct)}%`;
+  }
+  if ($("m-btc-val")) {
+    $("m-btc-val").textContent = `${btcPct > 0 ? "+" : btcPct < 0 ? "−" : ""}${Math.abs(btcPct)}%`;
   }
   document.querySelectorAll("#m-drop-chips [data-drop]").forEach((b) => {
     b.setAttribute("aria-pressed", Number(b.dataset.drop) === drop ? "true" : "false");
@@ -201,12 +253,15 @@ function renderGoals() {
   const monthly = num("m-monthly");
   const start = $("m-start")?.value || "2026-11-18";
   const live = livePrice();
-  const target = live * (1 + ttwoPct / 100);
+  const liveB = liveBtc();
+  const target = live * (1 + (metaAsset === "btc" ? btcPct : ttwoPct) / 100);
+  const targetT = live * (1 + ttwoPct / 100);
+  const targetB = liveB * (1 + (metaAsset === "btc" ? ttwoPct : btcPct) / 100);
   const base = goal.usdN;
   const dropped = base * (1 - drop / 100);
 
   const cash = cashMonths(initial, monthly, base);
-  const withT = ttwoMonths(initial, monthly, base, live, target);
+  const withT = assumeMonths(initial, monthly, base, live, targetT, liveB, metaAsset === "btc" ? (liveB * (1 + ttwoPct / 100)) : targetB);
   const pctNow = base > 0 ? Math.max(0, Math.min(100, (initial / base) * 100)) : 0;
   const reached = cash === 0;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -217,24 +272,51 @@ function renderGoals() {
 
   const bar = `<div class="m-progress"><div class="m-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pctNow)}"><div style="width:${pctNow}%"></div></div><p class="muted">Llevás ${usd(initial)} de ${usd(base)} (${Math.round(pctNow)}%).</p></div>`;
 
-  const ttwoX = Math.abs(ttwoPct) || 20;
+  const ttwoX = Math.abs(metaAsset === "btc" ? ttwoPct : ttwoPct) || 20;
+  const btcX = Math.abs(metaAsset === "half" ? btcPct : ttwoPct) || 20;
+  const path = (i, m, g, tT, tB) => assumeMonths(i, m, g, live, tT, liveB, tB);
+  const curT = metaAsset === "btc" ? live : targetT;
+  const curB = metaAsset === "btc" ? (liveB * (1 + ttwoPct / 100)) : targetB;
   const rows = [
-    { k: "Aporte mensual ×2", cash: cashMonths(initial, monthly * 2, base), ttwo: ttwoMonths(initial, monthly * 2, base, live, target) },
-    { k: "Aporte mensual ×3", cash: cashMonths(initial, monthly * 3, base), ttwo: ttwoMonths(initial, monthly * 3, base, live, target) },
-    { k: `Precio del componente −${drop}% (${usd(dropped)})`, cash: cashMonths(initial, monthly, dropped), ttwo: ttwoMonths(initial, monthly, dropped, live, target) },
-    { k: `TTWO +${ttwoX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, live, live * (1 + ttwoX / 100)), ttwoOnly: true },
-    { k: `TTWO −${ttwoX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, live, live * (1 - ttwoX / 100)), ttwoOnly: true },
+    { k: "Aporte mensual ×2", cash: cashMonths(initial, monthly * 2, base), ttwo: path(initial, monthly * 2, base, curT, curB) },
+    { k: "Aporte mensual ×3", cash: cashMonths(initial, monthly * 3, base), ttwo: path(initial, monthly * 3, base, curT, curB) },
+    { k: `Precio del componente −${drop}% (${usd(dropped)})`, cash: cashMonths(initial, monthly, dropped), ttwo: path(initial, monthly, dropped, curT, curB) },
   ];
+  if (metaAsset === "half") {
+    rows.push(
+      { k: `TTWO +${ttwoX}%`, cash: null, ttwo: path(initial, monthly, base, live * (1 + ttwoX / 100), liveB), ttwoOnly: true },
+      { k: `TTWO −${ttwoX}%`, cash: null, ttwo: path(initial, monthly, base, live * (1 - ttwoX / 100), liveB), ttwoOnly: true },
+      { k: `BTC +${btcX}%`, cash: null, ttwo: path(initial, monthly, base, live, liveB * (1 + btcX / 100)), ttwoOnly: true },
+      { k: `BTC −${btcX}%`, cash: null, ttwo: path(initial, monthly, base, live, liveB * (1 - btcX / 100)), ttwoOnly: true },
+    );
+  } else if (metaAsset === "btc") {
+    rows.push(
+      { k: `BTC +${btcX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, liveB, liveB * (1 + btcX / 100)), ttwoOnly: true },
+      { k: `BTC −${btcX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, liveB, liveB * (1 - btcX / 100)), ttwoOnly: true },
+    );
+  } else {
+    rows.push(
+      { k: `TTWO +${ttwoX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, live, live * (1 + ttwoX / 100)), ttwoOnly: true },
+      { k: `TTWO −${ttwoX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, live, live * (1 - ttwoX / 100)), ttwoOnly: true },
+    );
+  }
+  const assumeCol = metaAsset === "btc" ? "Con BTC" : metaAsset === "half" ? "Con el supuesto" : "Con TTWO";
 
   const scen = rows.map((r) => `<tr>
       <th scope="row">${esc(r.k)}</th>
       <td data-label="Solo aportes">${r.ttwoOnly ? "—" : reachLabel(r.cash, start)}</td>
-      <td data-label="Con TTWO">${reachLabel(r.ttwo, start)}</td>
+      <td data-label="${esc(assumeCol)}">${reachLabel(r.ttwo, start)}</td>
     </tr>`).join("");
 
-  const ttwoNote = live
-    ? `Supuesto de TTWO: ${ttwoPct >= 0 ? "+" : "−"}${Math.abs(ttwoPct)}% (de ${usd(live)} a ${usd(target)} a 24 meses).`
-    : "Sin precio de TTWO: solo se muestran los aportes.";
+  let ttwoNote = "Sin precio del activo: solo se muestran los aportes.";
+  if (metaAsset === "half" && live && liveB) {
+    ttwoNote = `Supuesto mitad y mitad: TTWO ${ttwoPct >= 0 ? "+" : "−"}${Math.abs(ttwoPct)}% (de ${usd(live)} a ${usd(targetT)}) y BTC ${btcPct >= 0 ? "+" : "−"}${Math.abs(btcPct)}% (de ${usd(liveB)} a ${usd(targetB)}) a 24 meses.`;
+  } else if (metaAsset === "btc" && liveB) {
+    const tgt = liveB * (1 + ttwoPct / 100);
+    ttwoNote = `Supuesto de BTC: ${ttwoPct >= 0 ? "+" : "−"}${Math.abs(ttwoPct)}% (de ${usd(liveB)} a ${usd(tgt)} a 24 meses).`;
+  } else if (live) {
+    ttwoNote = `Supuesto de TTWO: ${ttwoPct >= 0 ? "+" : "−"}${Math.abs(ttwoPct)}% (de ${usd(live)} a ${usd(targetT)} a 24 meses).`;
+  }
 
   out.innerHTML = `
     ${win}
@@ -246,12 +328,12 @@ function renderGoals() {
     ${bar}
     <div class="m-reach">
       <div class="m-cell"><span>Solo con aportes</span><strong class="${cash === null ? "down" : "up"}">${reachLabel(cash, start)}</strong></div>
-      <div class="m-cell"><span>Con el supuesto de TTWO</span><strong class="${withT === null ? "down" : "up"}">${reachLabel(withT, start)}</strong></div>
+      <div class="m-cell"><span>${metaAsset === "btc" ? "Con el supuesto de BTC" : metaAsset === "half" ? "Con el supuesto (mitad y mitad)" : "Con el supuesto de TTWO"}</span><strong class="${withT === null ? "down" : "up"}">${reachLabel(withT, start)}</strong></div>
     </div>
-    <p class="fine-inline">${esc(ttwoNote)} Tope de la cuenta: 24 meses.</p>
+    <p class="fine-inline">${esc(ttwoNote)} Tope de la cuenta: 24 meses. El bitcoin puede caer mucho.</p>
     <h4 class="cmp-list-title">Escenarios</h4>
     <div class="table-wrap"><table class="m-scen">
-      <thead><tr><th>Escenario</th><th>Solo aportes</th><th>Con TTWO</th></tr></thead>
+      <thead><tr><th>Escenario</th><th>Solo aportes</th><th>${esc(assumeCol)}</th></tr></thead>
       <tbody>${scen}</tbody>
     </table></div>`;
 }
@@ -273,6 +355,13 @@ function bind() {
   ["m-initial", "m-monthly", "m-start"].forEach((id) => $(id)?.addEventListener("input", renderGoals));
   $("m-drop")?.addEventListener("input", renderGoals);
   $("m-ttwo")?.addEventListener("input", renderGoals);
+  $("m-btc")?.addEventListener("input", renderGoals);
+  $("m-asset")?.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-asset]");
+    if (!b) return;
+    metaAsset = b.dataset.asset;
+    renderGoals();
+  });
   $("m-drop-chips")?.addEventListener("click", (e) => {
     const b = e.target.closest("[data-drop]");
     if (!b) return;

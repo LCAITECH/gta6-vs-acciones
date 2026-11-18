@@ -44,6 +44,14 @@ La calculadora suma los tributos en forma aditiva: `lista × (1 + IVA + percepci
 - Último cierre: **US$ 203,93 el 17/11/2026**. Coincide en [Nasdaq](https://www.nasdaq.com/market-activity/stocks/ttwo/historical) y [Yahoo Finance](https://finance.yahoo.com/quote/TTWO/history/).
 - Snapshot de 501 ruedas (18/11/2024 a 17/11/2026) en `data/ttwo-daily.json`.
 - Se eligió un corte estático de build, no un feed en vivo, para no exponer una API en el cliente y para no depender de un servicio pago. Las condiciones de Yahoo y Nasdaq suelen restringir la redistribución de datos de mercado; el archivo se publica solo como recorte ilustrativo, con atribución y fecha. Stooq se descartó porque su [términos](https://stooq.com/terms.html) prohíben redistribuir sin consentimiento.
+
+## BTC/USD
+
+- Cotización “casi en vivo”: `data/btc-latest.json`, generado en el servidor (GitHub Actions cada 3 horas, o `scripts/refresh-btc.py`). Fuente: [Bitstamp public API](https://www.bitstamp.net/api/) — ticker `https://www.bitstamp.net/api/v2/ticker/btcusd/` y velas diarias `OHLC` con `step=86400`. El navegador **no** llama a Bitstamp.
+- Histórico diario: `data/btc-daily.json` (cierres UTC de velas completas, `exclude_current_candle=true`). El primer snapshot cubre 2018-09-01 a 2026-11-17 (3.000 días). El script pagina con el parámetro `end` si hace falta más historia.
+- Último cierre diario del snapshot inicial: **US$ 64.877,24 el 17/11/2026**. Snapshot intradía: **US$ 62.430,69 el 18/11/2026 a las 13:57** (America/Buenos_Aires).
+- Se publica como recorte educativo fechado, con atribución. Un uso comercial de los datos de mercado de Bitstamp puede requerir su Data License Agreement (`partners@bitstamp.net`).
+- **Coinbase no se usó.** Los [Market Data Terms of Use](https://www.coinbase.com/legal/market_data) de Coinbase prohíben mostrar, redistribuir o diseminar esos market data (o obras derivadas) a terceros sin consentimiento escrito previo. CoinGecko y Binance tampoco se usan (el camino de licencias quedó cerrado).
 - Referencia del emisor: [Take-Two IR Historical Price Lookup](https://taketwointeractivesoftwareinc.gcs-web.com/historical-price-lookup/). Al consultarlo el 18/11/2026 la tabla visible llegaba al 16/11/2026.
 
 ## Tarjetas cripto

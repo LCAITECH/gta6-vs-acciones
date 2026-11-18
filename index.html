@@ -141,9 +141,9 @@
           </picture>
         </div>
         <div class="hero-copy">
-          <div class="pill">GTA 6 · TTWO · Argentina</div>
+          <div class="pill">GTA 6 · TTWO · BTC · Argentina</div>
           <h1>El juego contra la acción</h1>
-          <p class="lede">¿Y si, en vez de comprar Grand Theft Auto VI y lo que le agregues después, ponías esa misma plata en acciones de Take-Two Interactive (NASDAQ: TTWO) el día de la compra? Esta calculadora lo grafica. No es consejo financiero.</p>
+          <p class="lede">¿Y si, en vez de comprar Grand Theft Auto VI y lo que le agregues después, ponías esa misma plata en acciones de Take-Two Interactive (NASDAQ: TTWO) o en bitcoin (BTC) el día de la compra? Esta calculadora lo grafica, con un desglose en el tiempo. No es consejo financiero. El bitcoin puede caer mucho.</p>
         </div>
       </div>
     </section>
@@ -186,7 +186,7 @@
 
         <label for="purchase-date">Fecha de compra</label>
         <input id="purchase-date" type="date" value="2026-06-25" min="2024-11-18" max="2026-11-19">
-        <p class="hint">Cuándo pagaste. Por defecto, 25/06/2026 (apertura de reservas). Si ese día la bolsa estaba cerrada, usamos el cierre anterior.</p>
+        <p class="hint">Cuándo pagaste. Por defecto, 25/06/2026 (apertura de reservas). Si ese día no hay cierre, usamos el anterior. BTC cotiza todos los días; TTWO, en días hábiles de Nasdaq.</p>
 
         <div class="row">
           <div>
@@ -258,13 +258,21 @@
       </form>
 
       <div>
-        <article class="ticker" id="ticker" aria-live="polite">Cargando cotización de TTWO…</article>
+        <p class="k asset-k">Si hubieses metido esa plata en</p>
+        <div class="chips" id="asset-toggle" role="radiogroup" aria-label="Activo a comparar">
+          <button type="button" data-asset="ttwo" aria-pressed="false">TTWO</button>
+          <button type="button" data-asset="btc" aria-pressed="false">BTC</button>
+          <button type="button" data-asset="both" aria-pressed="true">Los dos</button>
+        </div>
+        <div class="ticker-row" id="ticker" aria-live="polite">Cargando cotizaciones…</div>
         <div class="results" id="stats"></div>
+        <div id="breakdown" class="breakdown" hidden></div>
         <div class="panel">
-          <div class="chart-wrap"><canvas id="chart" width="1400" height="720" aria-label="Gráfico comparativo del dinero gastado y del valor de TTWO en el tiempo"></canvas></div>
+          <div class="chart-wrap"><canvas id="chart" width="1400" height="720" aria-label="Gráfico comparativo del dinero gastado y del valor de TTWO o BTC en el tiempo"></canvas></div>
           <div class="legend">
             <span><i class="swatch" style="background:#ffdf80"></i>Plata gastada en el juego (queda fija)</span>
-            <span><i class="swatch" style="background:#f976b0"></i>Esa misma plata en TTWO</span>
+            <span id="leg-ttwo"><i class="swatch" style="background:#f976b0"></i>Esa misma plata en TTWO</span>
+            <span id="leg-btc"><i class="swatch" style="background:#3ef0d4"></i>Esa misma plata en BTC</span>
           </div>
           <p class="hint" id="chart-note"></p>
         </div>
@@ -274,7 +282,7 @@
     <section id="pago">
       <h2>Cuánto pagás de verdad</h2>
       <p class="lede">En la tienda, al precio de lista se le pueden sumar IVA y, según el caso, percepciones. Con una tarjeta cripto la cuenta puede ser otra. Comisión y cashback de BingX, y el cashback y la percepción de la Binance Card, los tomamos como <strong>dato informado por el dueño del sitio</strong>. Van marcados como “según condiciones vigentes, verificá en la app”. El IVA en Binance está sin confirmar: por defecto lo sumamos (estimación conservadora) y lo podés apagar en esa tarjeta.</p>
-      <p class="disclaimer-short">No es asesoramiento financiero ni una recomendación de inversión. Las acciones pueden subir o bajar: la plata que no estás dispuesto a perder, dejala afuera.</p>
+      <p class="disclaimer-short">No es asesoramiento financiero ni una recomendación de inversión. Las acciones y el bitcoin pueden subir o bajar; el bitcoin es más volátil y puede caer mucho. La plata que no estás dispuesto a perder, dejala afuera.</p>
       <div class="pay-grid" id="pay-grid"></div>
       <p class="muted" style="margin-top:14px">Links de referido: el enlace de la BingX Card y el de Binance son de referido de LCA ITECH. El de Binance es un referido general de alta en la plataforma, no un referido específico de la tarjeta. Si te registrás o pedís o usás una tarjeta a través de esos links, LCA ITECH puede recibir una recompensa. Eso no cambia el precio que te cobran.</p>
     </section>
@@ -399,9 +407,14 @@
 
       <div class="view" data-view="ttwo" hidden>
     <section id="ttwo">
-      <h2>TTWO, la acción de Take-Two</h2>
-      <p class="lede">Cierres diarios de Take-Two Interactive (NASDAQ: TTWO). Pasá el dedo o el mouse por la línea para ver fecha y precio.</p>
+      <h2>TTWO y bitcoin</h2>
+      <p class="lede">Cierres diarios de Take-Two Interactive (NASDAQ: TTWO) y de bitcoin (BTC/USD). Podés ver cada precio o comparar el porcentaje desde el mismo día de inicio. Pasá el dedo o el mouse por la línea. Es una foto puntual, no un consejo de inversión. El bitcoin puede caer mucho.</p>
       <div class="panel ttwo-panel">
+        <div class="chips" id="ttwo-asset" role="radiogroup" aria-label="Serie del gráfico">
+          <button type="button" data-series="ttwo" aria-pressed="true">Precio TTWO</button>
+          <button type="button" data-series="btc" aria-pressed="false">Precio BTC</button>
+          <button type="button" data-series="pct" aria-pressed="false">% desde el inicio</button>
+        </div>
         <div class="chips" id="ttwo-range" role="group" aria-label="Rango del gráfico">
           <button type="button" data-r="1M">1M</button>
           <button type="button" data-r="3M">3M</button>
@@ -411,7 +424,7 @@
         </div>
         <div class="ttwo-readout" id="ttwo-readout" aria-live="polite"></div>
         <div class="ttwo-chart-wrap">
-          <canvas id="ttwo-chart" width="1100" height="420" role="img" aria-label="Gráfico de cierres diarios de TTWO"></canvas>
+          <canvas id="ttwo-chart" width="1100" height="420" role="img" aria-label="Gráfico de cierres diarios de TTWO y BTC"></canvas>
         </div>
         <p class="hint" id="ttwo-note"></p>
       </div>
@@ -426,9 +439,9 @@
           <img src="assets/desafio-pc-1280.jpg" srcset="assets/desafio-pc-640.jpg 640w, assets/desafio-pc-1280.jpg 1280w" sizes="(max-width: 700px) 100vw, 1180px" width="1280" height="720" alt="Una PC gamer con luces neón frente a un atardecer synthwave con palmeras" loading="lazy" decoding="async">
         </picture>
         <div class="desafio-hero-text">
-          <h2>Desafío Gordo Compu: ¿me sale la PC (o la placa) con TTWO?</h2>
-          <p class="lede">Ponés plata en TTWO y mirás si llegás a la meta: datos reales y escenarios.</p>
-          <ul class="paths"><li>Comprar la PC</li><li>Meter en Take-Two</li><li>Ni una ni otra / esperar</li></ul>
+          <h2>Desafío Gordo Compu: ¿me sale la PC (o la placa) con TTWO o BTC?</h2>
+          <p class="lede">Ponés plata en TTWO, en bitcoin, o la mitad en cada uno, y mirás si llegás a la meta: datos reales y escenarios. El bitcoin puede caer mucho.</p>
+          <ul class="paths"><li>Comprar la PC</li><li>Meter en Take-Two o BTC</li><li>Ni una ni otra / esperar</li></ul>
         </div>
       </div>
       <nav class="d-subtabs" id="d-subtabs" aria-label="Dentro del desafío">
@@ -509,6 +522,12 @@
             </div>
             <label for="m-start">Desde</label>
             <input id="m-start" type="date" value="2026-11-18">
+            <p class="k">Supuesto de inversión</p>
+            <div class="chips" id="m-asset" role="radiogroup" aria-label="Activo para la meta">
+              <button type="button" data-asset="ttwo" aria-pressed="true">TTWO</button>
+              <button type="button" data-asset="btc" aria-pressed="false">BTC</button>
+              <button type="button" data-asset="half" aria-pressed="false">Mitad y mitad</button>
+            </div>
             <label for="m-drop">Si el componente baja: <strong id="m-drop-val">20%</strong></label>
             <input id="m-drop" type="range" min="0" max="40" step="5" value="20" aria-valuemin="0" aria-valuemax="40">
             <div class="chips" id="m-drop-chips" role="group" aria-label="Baja del componente">
@@ -516,9 +535,13 @@
               <button type="button" data-drop="20" aria-pressed="true">20%</button>
               <button type="button" data-drop="30">30%</button>
             </div>
-            <label for="m-ttwo">Supuesto de TTWO: <strong id="m-ttwo-val">0%</strong></label>
-            <input id="m-ttwo" type="range" min="-50" max="100" step="5" value="0">
-            <p class="fine-inline">El supuesto de TTWO interpola el precio en línea recta hasta esa variación a los 24 meses, igual que el simulador. No es un pronóstico.</p>
+            <label for="m-ttwo" id="m-ttwo-label">Supuesto de TTWO: <strong id="m-ttwo-val">0%</strong></label>
+            <input id="m-ttwo" type="range" min="-50" max="200" step="5" value="0">
+            <div id="m-btc-block" hidden>
+              <label for="m-btc">Supuesto de BTC: <strong id="m-btc-val">0%</strong></label>
+              <input id="m-btc" type="range" min="-50" max="200" step="5" value="0">
+            </div>
+            <p class="fine-inline" id="m-assume-note">El supuesto interpola el precio en línea recta hasta esa variación a los 24 meses, igual que el simulador. No es un pronóstico. El bitcoin puede caer mucho.</p>
           </form>
           <div>
             <div class="danger-box" id="m-disclaimer" role="note"></div>
@@ -530,20 +553,31 @@
       <div class="d-pane" data-pane="meta" hidden>
       <details class="sim panel" id="sim">
         <summary><strong>Simulador de proyección</strong> <span class="fine-inline">· simulación hipotética, no es consejo de inversión</span></summary>
+        <p class="k">Activo de la simulación</p>
+        <div class="chips" id="s-asset" role="radiogroup" aria-label="Activo de la simulación">
+          <button type="button" data-asset="ttwo" aria-pressed="true">TTWO</button>
+          <button type="button" data-asset="btc" aria-pressed="false">BTC</button>
+          <button type="button" data-asset="half" aria-pressed="false">Mitad y mitad</button>
+        </div>
         <div class="sim-grid">
           <div><label for="s-initial">Monto inicial (US$)</label><input id="s-initial" type="number" min="0" step="0.01"></div>
           <div><label for="s-monthly">Aporte mensual (US$)</label><input id="s-monthly" type="number" min="0" step="1" value="20"></div>
           <div><label for="s-start">Fecha de inicio</label><input id="s-start" type="date" value="2026-11-18"></div>
-          <div><label for="s-target">Precio TTWO al final (US$)</label><input id="s-target" type="number" min="1" step="0.01"></div>
+          <div id="s-target-wrap"><label for="s-target" id="s-target-label">Precio TTWO al final (US$)</label><input id="s-target" type="number" min="1" step="0.01"></div>
+          <div id="s-target-btc-wrap" hidden><label for="s-target-btc">Precio BTC al final (US$)</label><input id="s-target-btc" type="number" min="1" step="0.01"></div>
         </div>
         <div class="chips horizon-chips" id="s-horizon" role="radiogroup" aria-label="Horizonte en meses">
           <span class="fine-inline">Horizonte:</span>
           <button type="button" data-m="1">1 m</button><button type="button" data-m="2">2 m</button><button type="button" data-m="3">3 m</button><button type="button" data-m="4">4 m</button><button type="button" data-m="5">5 m</button><button type="button" data-m="6" aria-pressed="true">6 m</button><button type="button" data-m="7">7 m</button><button type="button" data-m="8">8 m</button><button type="button" data-m="9">9 m</button><button type="button" data-m="10">10 m</button><button type="button" data-m="11">11 m</button><button type="button" data-m="12">12 m</button>
         </div>
-        <label for="s-slider" class="slider-label">Variación de TTWO: <strong id="s-slider-val">0%</strong></label>
-        <input id="s-slider" type="range" min="-50" max="100" step="5" value="0">
+        <label for="s-slider" class="slider-label" id="s-slider-label">Variación de TTWO: <strong id="s-slider-val">0%</strong></label>
+        <input id="s-slider" type="range" min="-50" max="200" step="5" value="0">
+        <div id="s-btc-slider-block" hidden>
+          <label for="s-slider-btc" class="slider-label">Variación de BTC: <strong id="s-slider-btc-val">0%</strong></label>
+          <input id="s-slider-btc" type="range" min="-50" max="200" step="5" value="0">
+        </div>
         <div class="sim-out" id="s-out"></div>
-        <p class="fine-inline" id="s-note">Supuesto: el monto inicial compra al precio actual; cada aporte mensual compra en su fecha a un precio interpolado en línea recta entre el actual y el precio final que elegiste. Es una simulación hipotética, no es consejo de inversión ni un pronóstico.</p>
+        <p class="fine-inline" id="s-note">Supuesto: el monto inicial compra al precio actual; cada aporte mensual compra en su fecha a un precio interpolado en línea recta entre el actual y el precio final que elegiste. En mitad y mitad, el inicial y el aporte se parten en partes iguales. Es una simulación hipotética, no es consejo de inversión ni un pronóstico. El bitcoin puede caer mucho.</p>
       </details>
       <div class="grid">
         <form class="panel" id="d-form" autocomplete="off">
@@ -630,6 +664,7 @@
           <li>GTA+: US$ 7,99/mes en PlayStation Store AR y ARS 6.670/mes en Xbox Store AR (fichas oficiales, 18/11/2026).</li>
           <li>Desde el 16/04/2025, la RG 5677/2025 saca de la percepción del 30% a los pagos a portales del anexo, entre ellos PlayStation Network, Microsoft y Rockstar Games. El IVA 21% sigue. La percepción provincial depende de tu jurisdicción.</li>
           <li>TTWO: último cierre US$ 203,93 el 17/11/2026 (Nasdaq y Yahoo Finance, contrastados el 18/11/2026). El gráfico usa un snapshot estático de cierres diarios, no una cotización en vivo.</li>
+          <li>BTC/USD: último cierre diario US$ 64.877,24 el 17/11/2026; snapshot intradía US$ 62.430,69 el 18/11/2026 a las 13:57 (hora Argentina), tomado de la API pública de Bitstamp (ticker y velas diarias). El sitio no llama a Bitstamp en el navegador. Coinbase no se usó: sus términos de market data no permiten mostrar ni redistribuir esos datos a terceros sin consentimiento escrito.</li>
         </ul>
       </div>
     </section>
@@ -660,6 +695,7 @@
             <tr><td>Dólar BNA billete</td><td>Compra 1.525,00 · Venta 1.575,00</td><td>18/11/2026</td><td><a href="https://www.bna.com.ar/Personas">Banco Nación, Cotización Billetes</a></td></tr>
             <tr><td>Dólar BNA divisas</td><td>Compra 1.543,00 · Venta 1.552,00</td><td>18/11/2026</td><td><a href="https://www.bna.com.ar/Personas">Banco Nación, Cotización Divisas</a></td></tr>
             <tr><td>TTWO último cierre</td><td>US$ 203,93 (17/11/2026)</td><td>18/11/2026</td><td><a href="https://www.nasdaq.com/market-activity/stocks/ttwo/historical">Nasdaq</a> · <a href="https://finance.yahoo.com/quote/TTWO/history/">Yahoo Finance</a> (coinciden)</td></tr>
+            <tr><td>BTC/USD (Bitstamp)</td><td>Cierre diario US$ 64.877,24 (17/11/2026) · snapshot US$ 62.430,69 (18/11/2026 13:57, hora Argentina)</td><td>18/11/2026 13:57</td><td><a href="https://www.bitstamp.net/api/">Bitstamp public API</a> (ticker + OHLC diario, snapshot estático en <code>data/btc-latest.json</code> y <code>data/btc-daily.json</code>). El navegador no llama a Bitstamp. Uso educativo con atribución; un uso comercial de los datos de Bitstamp puede requerir su Data License Agreement.</td></tr>
             <tr><td>BingX Card — comisión y cashback (oficial)</td><td>Trading fee 1,50%. Cashback virtual tramo 1: 2% (si el gasto mensual es menor a US$ 200; sube a 2,5% / 3%)</td><td>18/11/2026</td><td><a href="https://bingx.com/en/support/articles/16946861859471">BingX Card Benefits and Fees, 23/07/2026</a></td></tr>
             <tr><td>BingX Card — disponibilidad en Argentina</td><td>LATAM figura entre las regiones compatibles; el listado país por país no está publicado. Confirmá en la app.</td><td>18/11/2026</td><td><a href="https://bingx.com/es/support/articles/16946777309967">Cómo solicitar y usar la BingX Card, 23/07/2026</a></td></tr>
             <tr><td>BingX Card — dato del dueño del sitio</td><td>2% cashback, 1,5% de comisión; indica que no se suman impuestos argentinos al pagar desde Argentina. No es una verificación nuestra.</td><td>18/11/2026</td><td>Informado por el dueño del sitio. Verificá en la app y en tu resumen.</td></tr>
@@ -687,8 +723,8 @@
 </details>
       <p><a href="#fuentes">Fuentes y metodología</a></p>
       <p>Precios, impuestos y cotizaciones relevados el 18/11/2026 (America/Buenos_Aires). Pueden cambiar. Contrastá el total en la tienda y en tu resumen antes de pagar.</p>
-      <p>Esta herramienta es solo educativa e ilustrativa. No es oferta, recomendación ni asesoramiento financiero, impositivo ni de inversión. El rendimiento pasado de TTWO no anticipa resultados futuros. Las acciones pueden subir o bajar, y el juego lo jugás: son cosas distintas.</p>
-      <p class="disclaimer-short">No es asesoramiento financiero ni una recomendación de inversión. Los escenarios son hipotéticos: puede salir bien o puede salir mal. La plata que no estás dispuesto a perder, dejala afuera.</p>
+      <p>Esta herramienta es solo educativa e ilustrativa. No es oferta, recomendación ni asesoramiento financiero, impositivo ni de inversión. El rendimiento pasado de TTWO o de bitcoin no anticipa resultados futuros. Las acciones y el bitcoin pueden subir o bajar —el bitcoin es más volátil y puede caer mucho— y el juego lo jugás: son cosas distintas.</p>
+      <p class="disclaimer-short">No es asesoramiento financiero ni una recomendación de inversión. Los escenarios son hipotéticos: puede salir bien o puede salir mal. El bitcoin puede caer mucho. La plata que no estás dispuesto a perder, dejala afuera.</p>
       <div class="made-by">
         <p class="made-title">Hecho por LCA ITECH</p>
         <ul class="social">
