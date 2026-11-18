@@ -639,7 +639,7 @@ boot().catch((err) => {
 
 // ---------- Shared state in the URL ----------
 const STATE_IDS = ["edition","store","custom-amount","custom-ccy","purchase-date","dlc","dlc-ccy","gtaplus-months","courtesy-month","iva","percepcion","iibb","fx-buy","fx-now","display-ccy","fund-rate"];
-const SITE_URL = "https://lcaitech.github.io/gta6-vs-acciones/";
+const SITE_URL = "https://gta6.lcaitech.com/";
 
 function saveStateToUrl() {
   const q = new URLSearchParams();
