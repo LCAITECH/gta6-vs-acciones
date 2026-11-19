@@ -5,8 +5,8 @@
   "exchange": "NASDAQ",
   "snapshotDate": "2026-11-19",
   "snapshotTimezone": "America/Buenos_Aires",
-  "lastCloseDate": "2026-11-18",
-  "lastClose": 216.61,
+  "lastCloseDate": "2026-11-19",
+  "lastClose": 208.65,
   "firstDate": "2024-11-19",
   "source": "Snapshot of daily official closes compiled 2026-11-19 from Yahoo Finance chart API, cross-checked against Nasdaq historical quotes when available. Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
   "sources": [
@@ -2532,6 +2532,10 @@
       "date": "2026-11-18",
       "close": 216.61,
       "adjClose": 216.61
+    },
+    {
+      "date": "2026-11-19",
+      "close": 208.65
     }
   ]
 }
