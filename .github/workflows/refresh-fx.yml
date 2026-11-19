@@ -2,8 +2,11 @@ name: Refresh AR dollar rates
 
 on:
   schedule:
-    # Every 3 hours (DolarApi suggests at most one query per series every 3h).
-    - cron: "7 */3 * * *"
+    # Hourly 10:07–18:07 ART weekdays (13:07–21:07 UTC Mon–Fri), so BNA/MEP
+    # are same-day. Plus one night run at 03:07 ART (06:07 UTC). Each job
+    # makes a single GET to DolarApi /v1/dolares.
+    - cron: "7 13-21 * * 1-5"
+    - cron: "7 6 * * *"
   workflow_dispatch:
 
 permissions:

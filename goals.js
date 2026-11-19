@@ -2,6 +2,7 @@
 const $ = (id) => document.getElementById(id);
 const G = () => window.__gta;
 const MAX_M = 24;
+const DOWN_CAP = 50; // a share can't fall more than 100%; we cap bear scenarios at −50%.
 const DISCLAIMER = "No es asesoramiento financiero: puede salir bien o mal. La plata que no estás dispuesto a perder, dejala afuera. Los plazos y el supuesto de TTWO o de BTC son una simulación hipotética, no un pronóstico ni una recomendación de compra. El bitcoin es más volátil y puede caer mucho.";
 let metaAsset = "ttwo";
 
@@ -73,6 +74,92 @@ function mixMonths(initial, monthly, goal, liveT, targetT, liveB, targetB) {
     if (sT * pT + sB * pB >= goal - 1e-9) return k;
   }
   return null;
+}
+
+function cashValueAt(initial, monthly, k) {
+  return initial + monthly * k;
+}
+
+function investedValueAt(initial, monthly, live, target, k) {
+  if (!(live > 0)) return cashValueAt(initial, monthly, k);
+  let shares = initial / live;
+  for (let i = 1; i <= k; i++) {
+    const p = Math.max(0.01, live + ((target - live) * i) / MAX_M);
+    shares += monthly / p;
+  }
+  const pEnd = k === 0 ? live : Math.max(0.01, live + ((target - live) * k) / MAX_M);
+  return shares * pEnd;
+}
+
+function mixValueAt(initial, monthly, liveT, targetT, liveB, targetB, k) {
+  if (!(liveT > 0) || !(liveB > 0)) {
+    if (liveT > 0) return investedValueAt(initial, monthly, liveT, targetT, k);
+    if (liveB > 0) return investedValueAt(initial, monthly, liveB, targetB, k);
+    return cashValueAt(initial, monthly, k);
+  }
+  let sT = (initial / 2) / liveT;
+  let sB = (initial / 2) / liveB;
+  for (let i = 1; i <= k; i++) {
+    const pT = Math.max(0.01, liveT + ((targetT - liveT) * i) / MAX_M);
+    const pB = Math.max(0.01, liveB + ((targetB - liveB) * i) / MAX_M);
+    sT += (monthly / 2) / pT;
+    sB += (monthly / 2) / pB;
+  }
+  const pT = k === 0 ? liveT : Math.max(0.01, liveT + ((targetT - liveT) * k) / MAX_M);
+  const pB = k === 0 ? liveB : Math.max(0.01, liveB + ((targetB - liveB) * k) / MAX_M);
+  return sT * pT + sB * pB;
+}
+
+function assumeValueAt(initial, monthly, liveT, targetT, liveB, targetB, k) {
+  if (metaAsset === "btc") return investedValueAt(initial, monthly, liveB, targetB, k);
+  if (metaAsset === "half") return mixValueAt(initial, monthly, liveT, targetT, liveB, targetB, k);
+  return investedValueAt(initial, monthly, liveT, targetT, k);
+}
+
+function usd0(n) {
+  return `US$ ${Math.round(Number(n) || 0).toLocaleString("es-AR")}`;
+}
+
+function mepStamp() {
+  return G()?.mepStamp?.() || "MEP";
+}
+
+function assumeName(long) {
+  if (metaAsset === "btc") return long ? "Con el supuesto de BTC" : "Con BTC";
+  if (metaAsset === "half") return long ? "Con el supuesto (mitad y mitad)" : "Mitad y mitad";
+  return long ? "Con el supuesto de TTWO" : "Con TTWO";
+}
+
+function scenarioDeltas(pct) {
+  const up = Math.abs(pct) || 20;
+  const down = Math.min(up, DOWN_CAP);
+  return { up, down };
+}
+
+function moneyLines(value, put, goalUsd, mep, reachedMonth) {
+  const gain = value - put;
+  const gainPct = put > 0 ? (gain / put) * 100 : 0;
+  const reach = goalUsd > 0 ? (value / goalUsd) * 100 : 0;
+  const missing = Math.max(0, goalUsd - value);
+  const arsBit = mep ? ` ≈ ${ars(value * mep)}` : "";
+  const when = reachedMonth === null ? "A 24 meses" : (reachedMonth === 0 ? "Hoy" : "En ese momento");
+  const sign = gain >= 0 ? "+" : "−";
+  const gainLbl = gain >= 0 ? "Ganancia" : "Pérdida";
+  const gainTxt = `${gainLbl} ${usd(Math.abs(gain))} (${sign}${Math.abs(gainPct).toLocaleString("es-AR", { maximumFractionDigits: 0 })}%)`;
+  const metaTxt = reachedMonth === null
+    ? `${Math.round(reach)}% de la meta · faltan ${usd(missing)}`
+    : `${Math.round(Math.min(100, reach))}% de la meta`;
+  return `<p class="m-money">${when}: <strong>${usd(value)}</strong>${arsBit}</p><p class="m-money">${gainTxt} · ${metaTxt}</p>`;
+}
+
+function scenCell(months, value, goalUsd, start, ttwoOnly) {
+  if (ttwoOnly) return "—";
+  if (months === null) {
+    const reach = goalUsd > 0 ? (value / goalUsd) * 100 : 0;
+    const missing = Math.max(0, goalUsd - value);
+    return `${usd0(value)} · ${Math.round(reach)}% · faltan ${usd0(missing)}`;
+  }
+  return `${reachLabel(months, start)} · ${usd0(value)}`;
 }
 
 function reachLabel(m, start) {
@@ -216,7 +303,7 @@ function itemInfo(g) {
   if (!box) return;
   if (!g) { box.textContent = "Elegí un ítem del catálogo verificado."; return; }
   if (g.error) { box.innerHTML = `<span class="danger-line">${esc(g.error)}</span>`; return; }
-  const usdBit = g.usdN != null ? `${usd(g.usdN)} al MEP${g.mep ? ` (${g.mep.toLocaleString("es-AR")})` : ""}` : "sin cotización MEP";
+  const usdBit = g.usdN != null ? `${usd(g.usdN)} (${mepStamp()})` : "sin cotización MEP";
   const link = g.url ? `<a href="${esc(g.url)}" target="_blank" rel="noopener noreferrer">${esc(g.store || "ficha")}</a>` : esc(g.store || "");
   const stale = g.stale ? " · último verificado" : "";
   box.innerHTML = `<strong>${esc(g.label)}</strong> · ${ars(g.arsN)} · ${usdBit}. ${link} <span class="tag">${esc(g.date)}${stale}</span>${g.note ? `<br>${esc(g.note)}` : ""}`;
@@ -260,8 +347,15 @@ function renderGoals() {
   const base = goal.usdN;
   const dropped = base * (1 - drop / 100);
 
+  const tgtB = metaAsset === "btc" ? (liveB * (1 + ttwoPct / 100)) : targetB;
   const cash = cashMonths(initial, monthly, base);
-  const withT = assumeMonths(initial, monthly, base, live, targetT, liveB, metaAsset === "btc" ? (liveB * (1 + ttwoPct / 100)) : targetB);
+  const withT = assumeMonths(initial, monthly, base, live, targetT, liveB, tgtB);
+  const cashK = cash === null ? MAX_M : cash;
+  const assumeK = withT === null ? MAX_M : withT;
+  const cashVal = cashValueAt(initial, monthly, cashK);
+  const cashPut = cashVal;
+  const assumeVal = assumeValueAt(initial, monthly, live, targetT, liveB, tgtB, assumeK);
+  const assumePut = cashValueAt(initial, monthly, assumeK);
   const pctNow = base > 0 ? Math.max(0, Math.min(100, (initial / base) * 100)) : 0;
   const reached = cash === 0;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -272,40 +366,62 @@ function renderGoals() {
 
   const bar = `<div class="m-progress"><div class="m-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pctNow)}"><div style="width:${pctNow}%"></div></div><p class="muted">Llevás ${usd(initial)} de ${usd(base)} (${Math.round(pctNow)}%).</p></div>`;
 
-  const ttwoX = Math.abs(metaAsset === "btc" ? ttwoPct : ttwoPct) || 20;
-  const btcX = Math.abs(metaAsset === "half" ? btcPct : ttwoPct) || 20;
-  const path = (i, m, g, tT, tB) => assumeMonths(i, m, g, live, tT, liveB, tB);
+  const ttwoD = scenarioDeltas(ttwoPct);
+  const btcD = scenarioDeltas(metaAsset === "half" ? btcPct : ttwoPct);
   const curT = metaAsset === "btc" ? live : targetT;
-  const curB = metaAsset === "btc" ? (liveB * (1 + ttwoPct / 100)) : targetB;
+  const curB = tgtB;
+
+  function rowBoth(label, init, mon, goalUsd, tT, tB) {
+    const c = cashMonths(init, mon, goalUsd);
+    const a = assumeMonths(init, mon, goalUsd, live, tT, liveB, tB);
+    return {
+      k: label,
+      cash: c,
+      ttwo: a,
+      cashVal: cashValueAt(init, mon, c === null ? MAX_M : c),
+      ttwoVal: assumeValueAt(init, mon, live, tT, liveB, tB, a === null ? MAX_M : a),
+    };
+  }
+  function rowAssume(label, init, mon, goalUsd, tT, tB) {
+    const a = assumeMonths(init, mon, goalUsd, live, tT, liveB, tB);
+    return {
+      k: label,
+      cash: null,
+      ttwo: a,
+      ttwoOnly: true,
+      ttwoVal: assumeValueAt(init, mon, live, tT, liveB, tB, a === null ? MAX_M : a),
+    };
+  }
+
   const rows = [
-    { k: "Aporte mensual ×2", cash: cashMonths(initial, monthly * 2, base), ttwo: path(initial, monthly * 2, base, curT, curB) },
-    { k: "Aporte mensual ×3", cash: cashMonths(initial, monthly * 3, base), ttwo: path(initial, monthly * 3, base, curT, curB) },
-    { k: `Precio del componente −${drop}% (${usd(dropped)})`, cash: cashMonths(initial, monthly, dropped), ttwo: path(initial, monthly, dropped, curT, curB) },
+    rowBoth("Aporte mensual ×2", initial, monthly * 2, base, curT, curB),
+    rowBoth("Aporte mensual ×3", initial, monthly * 3, base, curT, curB),
+    rowBoth(`Precio del componente −${drop}% (${usd(dropped)})`, initial, monthly, dropped, curT, curB),
   ];
   if (metaAsset === "half") {
     rows.push(
-      { k: `TTWO +${ttwoX}%`, cash: null, ttwo: path(initial, monthly, base, live * (1 + ttwoX / 100), liveB), ttwoOnly: true },
-      { k: `TTWO −${ttwoX}%`, cash: null, ttwo: path(initial, monthly, base, live * (1 - ttwoX / 100), liveB), ttwoOnly: true },
-      { k: `BTC +${btcX}%`, cash: null, ttwo: path(initial, monthly, base, live, liveB * (1 + btcX / 100)), ttwoOnly: true },
-      { k: `BTC −${btcX}%`, cash: null, ttwo: path(initial, monthly, base, live, liveB * (1 - btcX / 100)), ttwoOnly: true },
+      rowAssume(`TTWO +${ttwoD.up}%`, initial, monthly, base, live * (1 + ttwoD.up / 100), liveB),
+      rowAssume(`TTWO −${ttwoD.down}%`, initial, monthly, base, live * (1 - ttwoD.down / 100), liveB),
+      rowAssume(`BTC +${btcD.up}%`, initial, monthly, base, live, liveB * (1 + btcD.up / 100)),
+      rowAssume(`BTC −${btcD.down}%`, initial, monthly, base, live, liveB * (1 - btcD.down / 100)),
     );
   } else if (metaAsset === "btc") {
     rows.push(
-      { k: `BTC +${btcX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, liveB, liveB * (1 + btcX / 100)), ttwoOnly: true },
-      { k: `BTC −${btcX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, liveB, liveB * (1 - btcX / 100)), ttwoOnly: true },
+      rowAssume(`BTC +${btcD.up}%`, initial, monthly, base, curT, liveB * (1 + btcD.up / 100)),
+      rowAssume(`BTC −${btcD.down}%`, initial, monthly, base, curT, liveB * (1 - btcD.down / 100)),
     );
   } else {
     rows.push(
-      { k: `TTWO +${ttwoX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, live, live * (1 + ttwoX / 100)), ttwoOnly: true },
-      { k: `TTWO −${ttwoX}%`, cash: null, ttwo: ttwoMonths(initial, monthly, base, live, live * (1 - ttwoX / 100)), ttwoOnly: true },
+      rowAssume(`TTWO +${ttwoD.up}%`, initial, monthly, base, live * (1 + ttwoD.up / 100), curB),
+      rowAssume(`TTWO −${ttwoD.down}%`, initial, monthly, base, live * (1 - ttwoD.down / 100), curB),
     );
   }
-  const assumeCol = metaAsset === "btc" ? "Con BTC" : metaAsset === "half" ? "Con el supuesto" : "Con TTWO";
+  const assumeCol = assumeName(false);
 
   const scen = rows.map((r) => `<tr>
       <th scope="row">${esc(r.k)}</th>
-      <td data-label="Solo aportes">${r.ttwoOnly ? "—" : reachLabel(r.cash, start)}</td>
-      <td data-label="${esc(assumeCol)}">${reachLabel(r.ttwo, start)}</td>
+      <td data-label="Solo aportes">${scenCell(r.cash, r.cashVal, r.k.startsWith("Precio") ? dropped : base, start, r.ttwoOnly)}</td>
+      <td data-label="${esc(assumeCol)}">${scenCell(r.ttwo, r.ttwoVal, r.k.startsWith("Precio") ? dropped : base, start, false)}</td>
     </tr>`).join("");
 
   let ttwoNote = "Sin precio del activo: solo se muestran los aportes.";
@@ -323,12 +439,12 @@ function renderGoals() {
     <div class="m-head">
       <div class="k">Meta</div>
       <div class="v">${usd(base)}</div>
-      <div class="s">${ars(goal.arsN)} · ${esc(goal.label)}</div>
+      <div class="s">${ars(goal.arsN)} (${mepStamp()}) · ${esc(goal.label)}</div>
     </div>
     ${bar}
     <div class="m-reach">
-      <div class="m-cell"><span>Solo con aportes</span><strong class="${cash === null ? "down" : "up"}">${reachLabel(cash, start)}</strong></div>
-      <div class="m-cell"><span>${metaAsset === "btc" ? "Con el supuesto de BTC" : metaAsset === "half" ? "Con el supuesto (mitad y mitad)" : "Con el supuesto de TTWO"}</span><strong class="${withT === null ? "down" : "up"}">${reachLabel(withT, start)}</strong></div>
+      <div class="m-cell"><span>Solo con aportes</span><strong class="${cash === null ? "down" : "up"}">${reachLabel(cash, start)}</strong>${moneyLines(cashVal, cashPut, base, goal.mep, cash)}</div>
+      <div class="m-cell"><span>${assumeName(true)}</span><strong class="${withT === null ? "down" : "up"}">${reachLabel(withT, start)}</strong>${moneyLines(assumeVal, assumePut, base, goal.mep, withT)}</div>
     </div>
     <p class="fine-inline">${esc(ttwoNote)} Tope de la cuenta: 24 meses. El bitcoin puede caer mucho.</p>
     <h4 class="cmp-list-title">Escenarios</h4>

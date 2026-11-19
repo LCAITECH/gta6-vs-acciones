@@ -600,6 +600,70 @@ function fxVenta(key) {
   return r && typeof r.venta === "number" ? r.venta : FX_FALLBACK[key];
 }
 
+function fxRate(key) {
+  const r = fx && fx.rates && fx.rates[key];
+  return {
+    venta: r && typeof r.venta === "number" ? r.venta : FX_FALLBACK[key],
+    updatedAtArt: (r && r.updatedAtArt) || null,
+    label: (r && r.label) || key,
+  };
+}
+
+function shortArt(ts) {
+  if (!ts) return "";
+  const [date, time] = String(ts).split(/\s+/);
+  const short = (date || "").replace(/\/\d{4}$/, "");
+  return [short, time].filter(Boolean).join(" ");
+}
+
+function mepStamp() {
+  const m = fxRate("bolsa");
+  if (!(m.venta > 0)) return "MEP";
+  const when = shortArt(m.updatedAtArt);
+  return `MEP $${fmtInt.format(m.venta)}${when ? ` del ${when}` : ""}`;
+}
+
+function arsUsdMep(arsAmount, usdAmount) {
+  const arsTxt = `ARS ${Math.round(Number(arsAmount) || 0).toLocaleString("es-AR")}`;
+  const usdTxt = `US$ ${Math.round(Number(usdAmount) || 0).toLocaleString("es-AR")}`;
+  return `${arsTxt} ≈ ${usdTxt} (${mepStamp()})`;
+}
+
+function fxRatesHtml() {
+  const oficial = fxRate("oficial");
+  const mep = fxRate("bolsa");
+  const blue = fxRate("blue");
+  const src = `<a href="https://dolarapi.com" target="_blank" rel="noopener noreferrer">DolarApi https://dolarapi.com</a>`;
+  const bit = (info) => {
+    const when = shortArt(info.updatedAtArt);
+    return `${fmtInt.format(info.venta)}${when ? ` <span class="fx-when">(${when})</span>` : ""}`;
+  };
+  const snap = fx && fx.updatedAtArt ? fx.updatedAtArt : null;
+  if (!fx) {
+    return `Oficial BNA <strong>${fmtInt.format(FX_FALLBACK.oficial)}</strong> · MEP ${fmtInt.format(FX_FALLBACK.bolsa)} · Blue ${fmtInt.format(FX_FALLBACK.blue)}. Sin conexión a la fuente: valores de referencia del 18/11/2026 ~10:03 (hora Argentina).`;
+  }
+  return `Oficial BNA <strong>${bit(oficial)}</strong> · MEP <strong>${bit(mep)}</strong> · Blue ${bit(blue)}. Snapshot <strong>${snap}</strong> (hora Argentina). Fuente: ${src}.`;
+}
+
+function renderFxRates() {
+  const html = fxRatesHtml();
+  document.querySelectorAll("[data-fx-rates]").forEach((el) => { el.innerHTML = html; });
+  const el = $("fx-meta");
+  if (!el) return;
+  const oficial = fxRate("oficial");
+  const tarjeta = fxRate("tarjeta");
+  const blue = fxRate("blue");
+  const mep = fxRate("bolsa");
+  const cripto = fxRate("cripto");
+  const src = `<a href="https://dolarapi.com" target="_blank" rel="noopener noreferrer">DolarApi https://dolarapi.com</a>`;
+  const snap = fx && fx.updatedAtArt ? fx.updatedAtArt : null;
+  if (!fx) {
+    el.innerHTML = `Oficial BNA <strong>${fmtInt.format(FX_FALLBACK.oficial)}</strong> · Tarjeta ${fmtInt.format(FX_FALLBACK.tarjeta)} · Blue ${fmtInt.format(FX_FALLBACK.blue)} · MEP ${fmtInt.format(FX_FALLBACK.bolsa)} · Cripto <strong>${fmtInt.format(FX_FALLBACK.cripto)}</strong>. Sin conexión a la fuente: usamos valores de referencia del 18/11/2026.`;
+    return;
+  }
+  el.innerHTML = `Oficial BNA <strong>${fmtInt.format(oficial.venta)}</strong> · Tarjeta ${fmtInt.format(tarjeta.venta)} · Blue ${fmtInt.format(blue.venta)} · MEP <strong>${fmtInt.format(mep.venta)}</strong> · Cripto <strong>${fmtInt.format(cripto.venta)}</strong>. Snapshot <strong>${snap}</strong> (hora Argentina). Fuente: ${src}.`;
+}
+
 function renderCompare(model) {
   const fundKey = $("fund-rate").value;
   const oficial = fxVenta("oficial");
@@ -635,8 +699,7 @@ function renderCompare(model) {
   const savePct = bankArs ? (save / bankArs) * 100 : 0;
   const fundLabel = { cripto: "dólar cripto", bolsa: "dólar MEP", blue: "dólar blue", oficial: "dólar oficial" }[fundKey];
 
-  const updated = fx && fx.updatedAtArt ? fx.updatedAtArt.split(" ")[1] : null;
-  $("fx-meta").innerHTML = `Oficial venta <strong>${fmtAR.format(oficial)}</strong> · Tarjeta ${fmtAR.format(fxVenta("tarjeta"))} · Blue ${fmtAR.format(fxVenta("blue"))} · MEP ${fmtAR.format(fxVenta("bolsa"))} · Cripto <strong>${fmtAR.format(fxVenta("cripto"))}</strong>. ${updated ? `Actualizado <strong>${updated}</strong> (hora Argentina). Fuente: <a href="https://dolarapi.com" target="_blank" rel="noopener noreferrer">DolarApi https://dolarapi.com</a>.` : "Sin conexión a la fuente: usamos valores de referencia del 18/11/2026."}`;
+  renderFxRates();
 
   const pos = save > 0;
   lastCompare = { save, savePct, best, fund, bankArs };
@@ -696,6 +759,7 @@ async function boot() {
   } catch (err) {
     fx = null;
   }
+  renderFxRates();
   try {
     const btcRes = await fetch("data/btc-daily.json");
     if (btcRes.ok) {
@@ -1346,7 +1410,7 @@ window.__gta = {
   get binanceIva() { return binanceIva; },
   get gpIva() { return gpIva; },
   setGpIva(v) { gpIva = !!v; syncMembMonths(); update(); },
-  fxVenta, money, fmtAR, fmtInt, track, closeOnOrBefore, membershipCost, toast, dmy,
+  fxVenta, fxRate, mepStamp, arsUsdMep, renderFxRates, money, fmtAR, fmtInt, track, closeOnOrBefore, membershipCost, toast, dmy,
   MEMBERSHIPS, BINGX, BINANCE, PRICES,
   listeners: [],
   refreshUrl() { saveStateToUrl(); },

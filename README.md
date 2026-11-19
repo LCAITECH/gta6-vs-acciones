@@ -31,7 +31,7 @@ Lo mismo para **bitcoin (BTC/USD)**: `scripts/refresh-btc.py` (GitHub Action cad
 
 ## Cotizaciones en Argentina
 
-`data/fx-ar.json` se actualiza cada 3 horas (GitHub Actions + `scripts/refresh-fx.py`) con oficial, tarjeta, blue, MEP, CCL y cripto, desde [DolarApi](https://dolarapi.com) ([uso de los datos](https://dolarapi.com/docs/uso); hay que citar “DolarApi https://dolarapi.com”). El comparador “tarjeta cripto vs tarjeta bancaria” convierte a pesos: el banco usa oficial venta + IVA 21% (sin el 30% de percepción, porque PSN, Microsoft y Rockstar están excluidos). La cripto se fondea al dólar que elijas (cripto/USDT por defecto) + comisión − cashback.
+`data/fx-ar.json` se actualiza cada hora de 10 a 18 (hora Argentina) en días hábiles, y una vez de noche (GitHub Actions + `scripts/refresh-fx.py`) con oficial, tarjeta, blue, MEP, CCL y cripto, desde [DolarApi](https://dolarapi.com) ([uso de los datos](https://dolarapi.com/docs/uso); hay que citar “DolarApi https://dolarapi.com”). El comparador “tarjeta cripto vs tarjeta bancaria” convierte a pesos: el banco usa oficial venta + IVA 21% (sin el 30% de percepción, porque PSN, Microsoft y Rockstar están excluidos). La cripto se fondea al dólar que elijas (cripto/USDT por defecto) + comisión − cashback.
 
 ## Pagos con tarjeta cripto
 

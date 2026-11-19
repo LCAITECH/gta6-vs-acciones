@@ -32,7 +32,7 @@ Cada cifra usada en el sitio tiene URL y fecha. Si no había un dato publicado, 
 | Dólar tarjeta genérico | Oficial venta × 1,30 = 2.047,50 el 18/11/2026. **No se usa** para PSN / Microsoft / Rockstar (excluídos de la percepción 30% por RG 5677/2025). El comparador banco vs cripto usa oficial venta + IVA 21% (+ IIBB si lo cargás). | DolarApi · coincide con un agregado visto por el dueño ~10:03 (hora Argentina) el 18/11/2026 (solo como control) |
 | Dólar cripto | Cotización de referencia de DolarApi para USDT/USDC (venta). El usuario puede fondear también a blue, MEP u oficial. | Misma API |
 
-Cadencia: GitHub Actions corre `scripts/refresh-fx.py` cada 3 horas (`7 */3 * * *`) y en disparo manual. El sitio no llama a la API desde el navegador. Se muestra “actualizado hh:mm (hora Argentina)” y la cita a DolarApi. Si el JSON no carga, se usan valores de referencia del 18/11/2026 ~10:03 (hora Argentina).
+Cadencia: GitHub Actions corre `scripts/refresh-fx.py` cada hora de 10:07 a 18:07 (hora Argentina) en días hábiles (`7 13-21 * * 1-5` UTC) y una vez de noche a las 03:07 (`7 6 * * *` UTC), más disparo manual. Cada corrida hace un solo GET a `/v1/dolares`. DolarApi sugiere como máximo una consulta cada 3 h por serie; usamos esta cadencia para que el sitio muestre valores del día. El sitio no llama a la API desde el navegador. Se muestran Oficial BNA, MEP y Blue con fecha y hora (Argentina) y la cita a DolarApi. Si el JSON no carga, se usan valores de referencia del 18/11/2026 ~10:03 (hora Argentina).
 
 La calculadora suma los tributos en forma aditiva: `lista × (1 + IVA + percepción + IIBB)`. IIBB queda en 0 por defecto porque no hay una alícuota nacional única.
 

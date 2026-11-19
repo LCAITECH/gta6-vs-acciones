@@ -614,6 +614,8 @@ label, .muted, .hint, .check, .stat .k, .stat .s, .legend, .ticker .meta,
 .fx-meta { margin: 0 0 6px; font-size: 14px; line-height: 1.5; }
 .fx-meta strong { color: var(--gold); font-weight: 650; }
 .fx-meta a { color: var(--sky); }
+.fx-meta .fx-when { color: var(--dim); font-weight: 400; }
+.site-footer .fx-meta { margin: 8px 0; }
 
 .savings-box {
   position: relative;
@@ -1010,6 +1012,9 @@ section[id] { scroll-margin-top: 70px; }
 .m-cell strong { font-size: 15px; }
 .m-cell .up { color: #9dffb0; }
 .m-cell .down { color: #ff9ab8; }
+.m-cell .m-money { display: block; font-size: 13px; font-weight: 500; color: var(--text, #efe8ff); margin: 6px 0 0; line-height: 1.35; }
+.m-cell .m-money strong { font-size: 14px; color: inherit; }
+.m-scen td { white-space: normal; }
 .m-scen { width: 100%; border-collapse: collapse; font-size: 13px; }
 .m-scen th, .m-scen td { padding: 7px 8px; border-bottom: 1px solid #ffffff14; text-align: left; vertical-align: top; }
 .m-win { margin: 0 0 14px; padding: 16px 18px; border-radius: 16px; text-align: center; border: 1px solid #ffdf80aa; background: linear-gradient(120deg, rgba(255,223,128,0.12), rgba(249,118,176,0.16), rgba(155,137,245,0.12)); box-shadow: 0 0 24px #f976b066, 0 0 8px #ffdf8055; color: var(--gold); animation: m-neon 1.6s ease-in-out infinite; }

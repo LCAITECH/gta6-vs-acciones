@@ -473,7 +473,7 @@ function renderDesafio() {
   const lump = num("d-lump"), monthly = num("d-monthly");
   const start = $("d-start").value || "2026-06-25";
   const sim = simulate(lump, monthly, start);
-  const goalTxt = goal.ccy === "ARS" ? `${ars(goal.amount)} (≈ ${usd0(goal.usd)} al MEP)` : usd0(goal.usd);
+  const goalTxt = goal.ccy === "ARS" ? (G()?.arsUsdMep ? G().arsUsdMep(goal.amount, goal.usd) : `${ars(goal.amount)} ≈ ${usd0(goal.usd)} (${G()?.mepStamp?.() || "MEP"})`) : usd0(goal.usd);
   if (!sim || !sim.put) {
     $("d-real").innerHTML = `<p class="muted">Cargá un monto inicial o un aporte mensual.</p>`;
     $("d-scen").innerHTML = ""; return;
