@@ -3,36 +3,31 @@
   "name": "Take-Two Interactive Software, Inc.",
   "currency": "USD",
   "exchange": "NASDAQ",
-  "snapshotDate": "2026-11-18",
+  "snapshotDate": "2026-11-19",
   "snapshotTimezone": "America/Buenos_Aires",
-  "lastCloseDate": "2026-11-17",
-  "lastClose": 203.93,
-  "firstDate": "2024-11-18",
-  "source": "Snapshot of daily official closes compiled 2026-11-18 from Yahoo Finance chart API, cross-checked against Nasdaq historical quotes for recent sessions. Bundled at build time for an educational calculator. Not a live data feed and not for trading.",
+  "lastCloseDate": "2026-11-18",
+  "lastClose": 216.61,
+  "firstDate": "2024-11-19",
+  "source": "Snapshot of daily official closes compiled 2026-11-19 from Yahoo Finance chart API, cross-checked against Nasdaq historical quotes when available. Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
   "sources": [
     {
       "name": "Yahoo Finance chart",
       "url": "https://finance.yahoo.com/quote/TTWO/history/",
-      "role": "build-time daily closes (2y)"
+      "role": "daily closes"
     },
     {
       "name": "Nasdaq historical quotes",
       "url": "https://www.nasdaq.com/market-activity/stocks/ttwo/historical",
-      "role": "cross-check of recent official closes; last close 2026-11-17 US$203.93"
+      "role": "cross-check"
     },
     {
       "name": "Take-Two IR Historical Price Lookup",
       "url": "https://taketwointeractivesoftwareinc.gcs-web.com/historical-price-lookup/",
-      "role": "issuer IR reference (looked up 2026-11-18; table visible through 2026-11-16 at fetch time)"
+      "role": "issuer IR reference"
     }
   ],
-  "termsNote": "Yahoo and Nasdaq terms generally restrict redistribution of market data as a product. This file is a dated illustrative snapshot for a static educational page, with attribution. The site does not call these APIs from the browser. Refresh locally with scripts/refresh-ttwo.py.",
+  "termsNote": "Yahoo and Nasdaq terms generally restrict redistribution of market data as a product. This file is a dated illustrative snapshot for a static educational page, with attribution. The site does not call these APIs from the browser.",
   "quotes": [
-    {
-      "date": "2024-11-18",
-      "close": 182.93,
-      "adjClose": 182.93
-    },
     {
       "date": "2024-11-19",
       "close": 186.01,
@@ -2532,6 +2527,11 @@
       "date": "2026-11-17",
       "close": 203.93,
       "adjClose": 203.93
+    },
+    {
+      "date": "2026-11-18",
+      "close": 216.61,
+      "adjClose": 216.61
     }
   ]
 }
