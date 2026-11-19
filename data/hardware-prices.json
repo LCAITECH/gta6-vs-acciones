@@ -1,6 +1,6 @@
 {
-  "updatedAtUtc": "2026-11-18T15:39:02.341019+00:00",
-  "updatedAtArt": "18/11/2026 12:39",
+  "updatedAtUtc": "2026-11-19T00:31:12.779463+00:00",
+  "updatedAtArt": "18/11/2026 21:31",
   "timezone": "America/Buenos_Aires",
   "sourceNote": "Precios de fichas públicas, mayormente Venex (listados enhancedClick y, en los casos indicados, meta product:price:amount de la ficha). Relevado el 18/11/2026 (hora Argentina). No es un tick en vivo: un script intenta refrescar cada ~6 horas. Si una tienda no responde, se conserva el último valor verificado con su fecha. No se usa Mercado Libre (su API pública no permite el rastreo sin OAuth).",
   "items": [
@@ -17,8 +17,9 @@
       "vram": "8 GB",
       "parse": "venex-product-meta",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5060-8",
@@ -34,8 +35,9 @@
       "parse": "venex-product-meta",
       "note": "Precio de la ficha de producto (meta product:price:amount), confirmado el 18/11/2026. Es el más bajo de las 5060 8 GB listadas ese día en Venex.",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5060ti-8",
@@ -50,8 +52,9 @@
       "vram": "8 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5060ti-16",
@@ -66,8 +69,9 @@
       "vram": "16 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5070-12",
@@ -82,8 +86,9 @@
       "vram": "12 GB",
       "parse": "venex-product-meta",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5070-12-fh",
@@ -100,7 +105,8 @@
       "parse": "fullh4rd-product",
       "note": "Último precio verificado el 18/11/2026. En este entorno el sitio respondió 403; se conserva el valor hasta que el refresco automático pueda leer la ficha.",
       "ccy": "ARS",
-      "status": "ok"
+      "status": "stale",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5070ti-16",
@@ -115,8 +121,9 @@
       "vram": "16 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rtx-5080-16",
@@ -131,8 +138,9 @@
       "vram": "16 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rx-7600-8",
@@ -147,8 +155,9 @@
       "vram": "8 GB",
       "parse": "venex-product-meta",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rx-9060-8",
@@ -163,8 +172,9 @@
       "vram": "8 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rx-9060xt-8",
@@ -179,8 +189,9 @@
       "vram": "8 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rx-9060xt-16",
@@ -195,8 +206,9 @@
       "vram": "16 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rx-9070-16",
@@ -212,8 +224,9 @@
       "parse": "venex-listing",
       "note": "La ficha de listado dice 16 GB; el slug de la URL dice 15gb. Se muestra el nombre publicado; si el refresco lee otro precio o título, se actualiza.",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "gpu-rx-9070xt-16",
@@ -228,8 +241,9 @@
       "vram": "16 GB",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-r5-5500",
@@ -244,8 +258,9 @@
       "socket": "AM4",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-r5-5600",
@@ -260,8 +275,9 @@
       "socket": "AM4",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-r7-5700",
@@ -276,8 +292,9 @@
       "socket": "AM4",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-r5-8400f",
@@ -292,8 +309,9 @@
       "socket": "AM5",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-r5-8600g",
@@ -308,8 +326,9 @@
       "socket": "AM5",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-i3-12100f",
@@ -324,8 +343,9 @@
       "socket": "LGA1700",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-i5-12400f",
@@ -340,8 +360,9 @@
       "socket": "LGA1700",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "cpu-i5-14400f",
@@ -356,8 +377,9 @@
       "socket": "LGA1700",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ram-ddr4-8-3200",
@@ -375,8 +397,9 @@
       "qty": 1,
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ram-ddr4-16-3200",
@@ -394,8 +417,9 @@
       "qty": 1,
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ram-ddr4-32-3200",
@@ -415,8 +439,9 @@
       "parse": "venex-listing",
       "note": "No había un kit de 32 GB verificado en las fichas relevadas (páginas 1–2 de memorias desktop). El precio es 2 × el módulo de 16 GB de la misma ficha.",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ram-ddr5-16-5600",
@@ -434,8 +459,9 @@
       "qty": 1,
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ram-ddr5-16-6000",
@@ -453,8 +479,9 @@
       "qty": 1,
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ram-ddr5-32-5600",
@@ -474,8 +501,9 @@
       "parse": "venex-listing",
       "note": "No había un kit de 32 GB verificado en las fichas relevadas. El precio es 2 × el módulo de 16 GB de la misma ficha.",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "mobo-a520",
@@ -491,8 +519,9 @@
       "ramType": "DDR4",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "mobo-b550",
@@ -508,8 +537,9 @@
       "ramType": "DDR4",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "mobo-a620",
@@ -525,8 +555,9 @@
       "ramType": "DDR5",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "mobo-b650",
@@ -542,8 +573,9 @@
       "ramType": "DDR5",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "mobo-h610-d4",
@@ -559,8 +591,9 @@
       "ramType": "DDR4",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "mobo-h610-d5",
@@ -576,8 +609,9 @@
       "ramType": "DDR5",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "psu-550",
@@ -592,8 +626,9 @@
       "watts": 550,
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "psu-750",
@@ -608,8 +643,9 @@
       "watts": 750,
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ssd-500",
@@ -623,8 +659,9 @@
       "fetchedAtArt": "18/11/2026 12:39",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "ssd-1tb",
@@ -638,8 +675,9 @@
       "fetchedAtArt": "18/11/2026 12:39",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "case-n5",
@@ -653,8 +691,9 @@
       "fetchedAtArt": "18/11/2026 12:39",
       "parse": "venex-listing",
       "ccy": "ARS",
-      "status": "ok",
-      "store": "Venex"
+      "status": "stale",
+      "store": "Venex",
+      "error": "HTTP Error 403: Forbidden"
     },
     {
       "id": "con-ps5-digital",
@@ -668,11 +707,12 @@
       "compareHow": "precio de lista",
       "store": "Cetrogar",
       "url": "https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p",
-      "fetchedAtArt": "18/11/2026 ~11:15",
+      "fetchedAtArt": "18/11/2026 21:31",
       "parse": "manual",
       "note": "También ARS 1.899.999 en Frávega el mismo día. Precio de lista, IVA incluido.",
       "ccy": "ARS",
-      "status": "ok"
+      "status": "ok",
+      "fetchedAtUtc": "2026-11-19T00:31:12.779463+00:00"
     },
     {
       "id": "con-ps5-standard",
@@ -715,17 +755,18 @@
       "label": "Xbox Series S 512 GB",
       "product": "Xbox Series S 512 GB",
       "brand": "MICROSOFT",
-      "price": 1294000,
+      "price": 1313000,
       "cashPrice": 1035200,
       "comparePrice": 1035200,
       "compareHow": "efectivo",
       "store": "Game Sense",
       "url": "https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/",
-      "fetchedAtArt": "18/11/2026 ~11:15",
+      "fetchedAtArt": "18/11/2026 21:31",
       "parse": "manual",
       "note": "Lista ARS 1.294.000; efectivo −20% = ARS 1.035.200. El comparador usa el efectivo.",
       "ccy": "ARS",
-      "status": "ok"
+      "status": "ok",
+      "fetchedAtUtc": "2026-11-19T00:31:12.779463+00:00"
     },
     {
       "id": "con-xbox-x",
@@ -734,17 +775,18 @@
       "label": "Xbox Series X 1 TB",
       "product": "Xbox Series X 1 TB",
       "brand": "MICROSOFT",
-      "price": 2386000,
+      "price": 2409000,
       "cashPrice": 1908800,
       "comparePrice": 1908800,
       "compareHow": "efectivo",
       "store": "Game Sense",
       "url": "https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/",
-      "fetchedAtArt": "18/11/2026 ~11:15",
+      "fetchedAtArt": "18/11/2026 21:31",
       "parse": "manual",
       "note": "Lista ARS 2.386.000; efectivo −20% = ARS 1.908.800. El comparador usa el efectivo.",
       "ccy": "ARS",
-      "status": "ok"
+      "status": "ok",
+      "fetchedAtUtc": "2026-11-19T00:31:12.779463+00:00"
     }
   ],
   "presets": [
