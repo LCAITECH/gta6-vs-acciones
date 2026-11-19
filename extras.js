@@ -1,51 +1,60 @@
 // Secciones extra: La jodita (cost builder), Desafío Gordo Compu, Consola hoy vs esperar la PC, Encuesta.
 // Precios: ver FUENTES.md (relevados 18/11/2026). Nada inventado: si no hay precio publicado, lo carga el usuario.
 
+import { loadHardware } from "./catalog.js";
+
 const $ = (id) => document.getElementById(id);
 const INITIAL_QS = new URLSearchParams(location.search);
 const API = "https://gta6-analytics.lcaitech.workers.dev";
 const SITE = "https://gta6.lcaitech.com/";
 
-// Consolas: precios de referencia en tiendas argentinas (ARS, IVA incluido), 18/11/2026 ~11:15 (hora Argentina).
+// PRECIOS: la fuente única es data/hardware-prices.json (la comparten Comparar, Armar PC, Metas y La jodita).
+// Cada entrada con `item` toma de ahí su precio al cargar (ver applyCatalog). Los valores de este archivo son el
+// respaldo si el JSON no carga (copia del catálogo al 19/11/2026) y la fuente de lo que el JSON no cubre:
+// otras tiendas, condiciones de cuotas y juego en caja. Si cambiás un precio con `item`, cambialo en el JSON.
+// Consolas: precios de lista en tiendas argentinas (ARS, IVA incluido).
 const CONSOLES = {
   none: { label: "No compro consola", ars: 0 },
-  "ps5-digital": { label: "PS5 Slim Digital (bundle Astro Bot + GT7)", ars: 1899999, src: "Frávega" },
-  "ps5-standard": { label: "PS5 Slim Standard con lectora (bundle Astro Bot + GT7)", ars: 1999999, src: "Frávega" },
-  "ps5-pro": { label: "PS5 Pro Digital", ars: 2859999, src: "Tienda oficial Sony en Frávega" },
-  "xbox-s": { label: "Xbox Series S 512 GB", ars: 1294000, src: "Game Sense" },
-  "xbox-x": { label: "Xbox Series X 1 TB", ars: 2386000, src: "Game Sense" },
+  "ps5-digital": { label: "PS5 Slim Digital (bundle Astro Bot + GT7)", ars: 1899999, src: "Cetrogar", item: "con-ps5-digital" },
+  "ps5-standard": { label: "PS5 Slim Standard con lectora (bundle Astro Bot + GT7)", ars: 1999999, src: "Frávega", item: "con-ps5-standard" },
+  "ps5-pro": { label: "PS5 Pro Digital", ars: 2859999, src: "Tienda oficial Sony en Frávega", item: "con-ps5-pro" },
+  "xbox-s": { label: "Xbox Series S 512 GB", ars: 1313000, src: "Game Sense", item: "con-xbox-s" },
+  "xbox-x": { label: "Xbox Series X 1 TB", ars: 2409000, src: "Game Sense", item: "con-xbox-x" },
   custom: { label: "Otra / la cargo yo", ars: null },
 };
-// Cuotas y precios por tienda, verificados el 18/11/2026 (hora Argentina) en páginas oficiales de cada tienda.
-const D = "18/11/2026";
+// Cuotas y precios por tienda. Las condiciones de cuotas se relevaron el 18/11/2026 (hora Argentina) en las páginas
+// de cada tienda. Las cuotas no se cargan a mano: se calculan sobre el precio vigente (cuota = precio × tasa ÷ n).
+// Sin interés la tasa es 1; con interés (Mercado Pago) es total ÷ precio de lista, relevada ese mismo día.
+const PLANS_DATE = "18/11/2026";
+let D = PLANS_DATE; // fecha de los precios que se muestran: pasa a ser la del catálogo cuando carga
 const OFFERS = {
   "ps5-digital": [
-    { store: "Cetrogar", price: 1899999, url: "https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p",
-      plans: [{ n: 18, cuota: 105555.5, si: true, cond: "Visa / Mastercard (CFT 0%)" }, { n: 12, cuota: 158333.25, si: true, cond: "Visa / Mastercard" }, { n: 6, cuota: 316666.5, si: true, cond: "Visa / Mastercard" }],
+    { store: "Cetrogar", item: "con-ps5-digital", price: 1899999, url: "https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p",
+      plans: [{ n: 18, si: true, cond: "Visa / Mastercard (CFT 0%)" }, { n: 12, si: true, cond: "Visa / Mastercard" }, { n: 6, si: true, cond: "Visa / Mastercard" }],
       note: "Naranja: 6/9/12/18 sin interés; Amex/Sol hasta 12; Cabal/Tuya hasta 9." },
     { store: "Frávega", price: 1899999, url: "https://www.fravega.com/promociones/bancarias",
-      plans: [{ n: 6, cuota: 1899999 / 6, si: true, cond: "Banco Provincia, si aplica en el checkout" }] },
+      plans: [{ n: 6, si: true, cond: "Banco Provincia, si aplica en el checkout" }] },
   ],
   "ps5-standard": [
-    { store: "Frávega", price: 1999999, url: "https://www.fravega.com/promociones/bancarias",
-      plans: [{ n: 6, cuota: 1999999 / 6, si: true, cond: "Banco Provincia, si aplica en el checkout" }] },
+    { store: "Frávega", item: "con-ps5-standard", price: 1999999, url: "https://www.fravega.com/promociones/bancarias",
+      plans: [{ n: 6, si: true, cond: "Banco Provincia, si aplica en el checkout" }] },
     { store: "Cetrogar", price: 2099999, url: "https://www.cetrogar.com.ar/consola-ps5-playstation-standard-bundle-gt7-astrobot-el3000/p",
-      plans: [{ n: 18, cuota: 116666.61, si: true, cond: "Visa / Mastercard (CFT 0%)" }, { n: 12, cuota: 174999.91, si: true, cond: "Visa / Mastercard" }],
+      plans: [{ n: 18, si: true, cond: "Visa / Mastercard (CFT 0%)" }, { n: 12, si: true, cond: "Visa / Mastercard" }],
       note: "Naranja: 6/9/12/18 sin interés; Amex/Sol hasta 12; Cabal/Tuya hasta 9." },
   ],
   "ps5-pro": [
-    { store: "Tienda oficial Sony en Frávega", price: 2859999, url: "https://www.fravega.com/l/videojuegos/consolas/?tipo-de-consola=ps5", plans: [], note: "Cuotas sin interés: no confirmadas." },
+    { store: "Tienda oficial Sony en Frávega", item: "con-ps5-pro", price: 2859999, url: "https://www.fravega.com/l/videojuegos/consolas/?tipo-de-consola=ps5", plans: [], note: "Cuotas sin interés: no confirmadas." },
   ],
   "xbox-s": [
-    { store: "Game Sense", price: 1294000, url: "https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/",
-      cash: 1035200, transfer: 1164600,
-      plans: [{ n: 6, cuota: 284981.93, si: false, cond: "Mercado Pago (total ARS 1.709.891,60)" }, { n: 12, cuota: 167562.22, si: false, cond: "Mercado Pago (total ARS 2.010.746,60)" }],
+    { store: "Game Sense", item: "con-xbox-s", price: 1313000, url: "https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/",
+      cash: 1050400, transfer: 1181700,
+      plans: [{ n: 6, si: false, rate: 1709891.6 / 1294000, cond: "Mercado Pago" }, { n: 12, si: false, rate: 2010746.6 / 1294000, cond: "Mercado Pago" }],
       note: "Con Mercado Pago solo 1 pago es sin interés." },
   ],
   "xbox-x": [
-    { store: "Game Sense", price: 2386000, url: "https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/",
-      cash: 1908800, transfer: 2147400,
-      plans: [{ n: 6, cuota: 525476.73, si: false, cond: "Mercado Pago (total ARS 3.152.860,40)" }, { n: 12, cuota: 308967.12, si: false, cond: "Mercado Pago (total ARS 3.707.605,40)" }],
+    { store: "Game Sense", item: "con-xbox-x", price: 2409000, url: "https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/",
+      cash: 1927200, transfer: 2168100,
+      plans: [{ n: 6, si: false, rate: 3152860.4 / 2386000, cond: "Mercado Pago" }, { n: 12, si: false, rate: 3707605.4 / 2386000, cond: "Mercado Pago" }],
       note: "Con Mercado Pago solo 1 pago es sin interés." },
   ],
 };
@@ -54,6 +63,55 @@ const BOXED = {
   ps: { label: "GTA VI PS5 caja con código (Frávega)", ars: 219999, url: "https://www.fravega.com/p/juego-ps5-grand-theft-auto-vi-formato-fisico-con-codigo-342114/" },
   xbox: { label: "GTA VI Xbox caja (Game Sense)", ars: 239999, url: "https://gamesenseargentina.com/" },
 };
+
+// ---- Catálogo único (data/hardware-prices.json) ----
+const fmtArs2 = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const posNum = (v) => (typeof v === "number" && v > 0 ? v : null);
+const dayOf = (s) => String(s || "").split(/[\s~]/)[0]; // "19/11/2026 12:53" -> "19/11/2026"
+const dayKey = (s) => dayOf(s).split("/").reverse().join(""); // dd/mm/yyyy -> yyyymmdd, para comparar
+
+// cuota = precio × tasa ÷ n. Se recalcula cada vez que cambia el precio de la oferta.
+function refreshPlans(o) {
+  (o.plans || []).forEach((p) => {
+    if (p.baseCond == null) p.baseCond = p.cond;
+    const total = o.price * (p.rate || 1);
+    p.cuota = total / p.n;
+    p.cond = p.rate > 1 ? `${p.baseCond} (total ARS ${fmtArs2.format(total)})` : p.baseCond;
+  });
+}
+Object.values(OFFERS).flat().forEach(refreshPlans);
+
+// Pisa las constantes con lo que dice el catálogo: un producto, un solo precio en toda la página.
+function applyCatalog(byId) {
+  let latest = "";
+  const seen = (it) => { if (dayKey(it.fetchedAtArt) > dayKey(latest)) latest = it.fetchedAtArt; };
+  Object.values(CONSOLES).forEach((c) => {
+    const it = c.item && byId[c.item];
+    if (!it || !posNum(it.price)) return;
+    c.ars = it.price;
+    c.src = it.store || c.src;
+    c.fetched = it.fetchedAtArt;
+    c.stale = it.status === "stale";
+    seen(it);
+  });
+  Object.values(OFFERS).flat().forEach((o) => {
+    const it = o.item && byId[o.item];
+    if (!it || !posNum(it.price)) return;
+    o.price = it.price;
+    o.fetched = it.fetchedAtArt;
+    if (posNum(it.cashPrice)) o.cash = it.cashPrice;
+    if (posNum(it.transferPrice)) o.transfer = it.transferPrice;
+    refreshPlans(o);
+  });
+  Object.values(GOALS).forEach((g) => {
+    const it = g.item && byId[g.item];
+    if (!it || !posNum(it.price)) return;
+    g.amount = it.price;
+    g.label = `${it.label} · ${it.store} · ${ars(it.price)} (${dayOf(it.fetchedAtArt)})${it.status === "stale" ? " · último verificado" : ""}`;
+    seen(it);
+  });
+  if (latest) D = dayOf(latest);
+}
 
 function bestOffer(key) {
   const offers = OFFERS[key] || [];
@@ -71,13 +129,13 @@ function cuotasHtml(key) {
   if (!CONSOLES[key] || !CONSOLES[key].ars) return "";
   if (!offers) return `<div class="cuotas-box pending"><strong>Cuotas:</strong> pendiente de verificar. Mirá las condiciones de tu banco.</div>`;
   const fmt = (n) => `ARS ${G().fmtAR.format(n)}`;
-  return `<div class="cuotas-box"><strong>Precio y cuotas por tienda</strong> (${D}):<ul>${offers.map((o) => `<li><strong>${o.store}</strong>: ${fmt(o.price)}${o.cash ? ` · efectivo ${fmt(o.cash)} · transferencia ${fmt(o.transfer)}` : ""}${o.plans.length ? "<br>" + o.plans.map((p) => `${p.n} cuotas ${p.si ? "sin interés" : "con interés"} de <strong>${fmt(p.cuota)}</strong> <span class="fine-inline">(${p.cond})</span>`).join("<br>") : ""}${o.note ? `<br><span class="fine-inline">${o.note}</span>` : ""} · <a href="${o.url}" target="_blank" rel="noopener noreferrer">ver</a></li>`).join("")}</ul><span class="fine">Las condiciones cambian según banco, tarjeta y día. Confirmá en el checkout.</span></div>`;
+  return `<div class="cuotas-box"><strong>Precio y cuotas por tienda</strong>:<ul>${offers.map((o) => `<li><strong>${o.store}</strong> <span class="fine-inline">(${dayOf(o.fetched) || PLANS_DATE})</span>: ${fmt(o.price)}${o.cash ? ` · efectivo ${fmt(o.cash)} · transferencia ${fmt(o.transfer)}` : ""}${o.plans.length ? "<br>" + o.plans.map((p) => `${p.n} cuotas ${p.si ? "sin interés" : "con interés"} de <strong>${fmt(p.cuota)}</strong> <span class="fine-inline">(${p.cond})</span>`).join("<br>") : ""}${o.note ? `<br><span class="fine-inline">${o.note}</span>` : ""} · <a href="${o.url}" target="_blank" rel="noopener noreferrer">ver</a></li>`).join("")}</ul><span class="fine">Las condiciones cambian según banco, tarjeta y día. Confirmá en el checkout. Las cuotas se calculan sobre el precio de hoy; las condiciones se relevaron el ${PLANS_DATE}.</span></div>`;
 }
 
 // Metas del desafío (referencias, no requisitos). ARS = tiendas AR 18/11/2026; USD = precio sugerido de NVIDIA.
 const GOALS = {
-  "5060-ar": { label: "RTX 5060 8 GB · Venex · ARS 979.999 (18/11/2026)", amount: 979999, ccy: "ARS" },
-  "5070-ar": { label: "RTX 5070 12 GB · FullH4rd · ARS 1.789.650 (18/11/2026)", amount: 1789650, ccy: "ARS" },
+  "5060-ar": { label: "RTX 5060 8 GB · Venex · ARS 694.999 (18/11/2026)", amount: 694999, ccy: "ARS", item: "gpu-rtx-5060-8" },
+  "5070-ar": { label: "RTX 5070 12 GB · FullH4rd · ARS 1.789.650 (18/11/2026)", amount: 1789650, ccy: "ARS", item: "gpu-rtx-5070-12-fh" },
   "5060-msrp": { label: "RTX 5060 · precio sugerido NVIDIA US$ 299", amount: 299, ccy: "USD" },
   "5070-msrp": { label: "RTX 5070 · precio sugerido NVIDIA US$ 549", amount: 549, ccy: "USD" },
   custom: { label: "Mi PC / otra meta (la cargo yo)", amount: null, ccy: "USD" },
@@ -391,7 +449,7 @@ function syncConsolePrice(force) {
   if (info.ars != null && (force || !inp.dataset.edited)) { inp.value = info.ars; inp.dataset.edited = ""; }
   if (c === "custom" && force) { inp.value = ""; inp.dataset.edited = "1"; }
   $("j-console-hint").innerHTML = info.ars
-    ? `Referencia: ${ars(info.ars)} en ${info.src} (18/11/2026, IVA incluido). Editalo si conseguiste otro precio.`
+    ? `Referencia: ${ars(info.ars)} en ${info.src} (${info.fetched ? dayOf(info.fetched) : D}${info.stale ? ", último verificado" : ""}, IVA incluido). Editalo si conseguiste otro precio.`
     : c === "custom" ? "Cargá el precio que pagaste o encontraste." : "";
   $("j-cuotas").innerHTML = cuotasHtml(c);
 }
@@ -733,7 +791,12 @@ function init() {
   const waitQuotes = () => (g.quotes && g.quotes.length ? (($("d-start").min = g.quotes[0].date), ($("d-start").max = g.quotes[g.quotes.length - 1].date), renderAll()) : setTimeout(waitQuotes, 100));
   waitQuotes();
 }
-init();
+// Los precios salen del catálogo único (data/hardware-prices.json). Si no carga a tiempo se usan las constantes
+// de arriba (mismos valores, copia del catálogo) y la página funciona igual.
+Promise.race([loadHardware(), new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 4000))])
+  .then(({ byId }) => applyCatalog(byId))
+  .catch(() => { /* respaldo: constantes */ })
+  .finally(init);
 
 
 // ================= SIMULADOR DE PROYECCIÓN =================

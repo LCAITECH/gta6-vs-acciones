@@ -1,9 +1,9 @@
 // Comparador placa vs consola, armador de PC y sub-pestañas del Desafío Gordo Compu.
 import { renderCaseShell, syncCase } from "./case3d.js";
+import { loadHardware } from "./catalog.js";
 
 const $ = (id) => document.getElementById(id);
 const G = () => window.__gta;
-const HW_URL = "data/hardware-prices.json";
 
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -347,10 +347,7 @@ function showPane(name) {
 }
 
 async function loadHw() {
-  const res = await fetch(HW_URL, { cache: "no-store" });
-  if (!res.ok) throw new Error("hardware-prices");
-  hw = await res.json();
-  byId = Object.fromEntries((hw.items || []).map((it) => [it.id, it]));
+  ({ hw, byId } = await loadHardware());
 }
 
 function bind() {

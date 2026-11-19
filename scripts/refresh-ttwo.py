@@ -6,7 +6,7 @@ in the browser (CORS + terms). This script writes static JSON for Pages.
 
 Usage:
   python3 scripts/refresh-ttwo.py           # history + quote
-  python3 scripts/refresh-ttwo.py --quote   # quote only (and append today's close if official)
+  python3 scripts/refresh-ttwo.py --quote   # quote only; also appends the session that just closed
 """
 from __future__ import annotations
 
@@ -69,6 +69,10 @@ def market_state(meta: dict, now_ts: int) -> str:
 def from_yahoo_history() -> dict[str, dict]:
     raw = json.loads(fetch(YAHOO_HISTORY))
     result = raw["chart"]["result"][0]
+    # While the session is open Yahoo's last daily bar is the live price, not a close: skip it.
+    live_day = None
+    if market_state(result.get("meta") or {}, int(time.time())) in {"PRE", "REGULAR"}:
+        live_day = datetime.now(NY).date().isoformat()
     ts = result["timestamp"]
     closes = result["indicators"]["quote"][0]["close"]
     adj = result["indicators"].get("adjclose", [{}])[0].get("adjclose")
@@ -78,6 +82,8 @@ def from_yahoo_history() -> dict[str, dict]:
         if c is None:
             continue
         d = datetime.fromtimestamp(t, tz=NY).date().isoformat()
+        if d == live_day:
+            continue
         rec = {"date": d, "close": round(float(c), 2)}
         if adj and adj[i] is not None:
             rec["adjClose"] = round(float(adj[i]), 2)
@@ -175,6 +181,32 @@ def write_quote(meta: dict) -> dict:
     return payload
 
 
+def append_close_if_missing(payload: dict) -> bool:
+    """Add the session that just finished to the daily history.
+
+    The quote job runs every 15 minutes but the history used to be written only by
+    hand, so the daily file lagged behind the quote (and buyers of the last day got
+    the wrong entry price). Once the regular session is over (state != REGULAR) the
+    quote's regularMarketPrice is that session's close, so we store it right away.
+    The full history run after the close overwrites it with the official close.
+    """
+    price = payload.get("price")
+    day = payload.get("asOfDate")
+    if payload.get("marketState") == "REGULAR" or not DAILY.exists():
+        return False
+    if not day or not isinstance(price, (int, float)) or price <= 0:
+        return False
+    data = json.loads(DAILY.read_text(encoding="utf-8"))
+    rows = data.get("quotes") or []
+    if not rows or day <= rows[-1]["date"]:
+        return False
+    rows.append({"date": day, "close": round(float(price), 2)})
+    data["lastCloseDate"] = day
+    data["lastClose"] = rows[-1]["close"]
+    DAILY.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return True
+
+
 def refresh_history() -> list[dict]:
     yahoo = from_yahoo_history()
     try:
@@ -204,6 +236,8 @@ def refresh_quote() -> dict:
         f"Wrote {LATEST} price={payload['price']} change={payload['changePercent']}% "
         f"state={payload['marketState']} updated={payload['updatedAtArt']}"
     )
+    if append_close_if_missing(payload):
+        print(f"Appended {payload['asOfDate']} close {payload['price']} to {DAILY}")
     return payload
 
 

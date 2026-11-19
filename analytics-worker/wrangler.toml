@@ -16,3 +16,10 @@ database_id = "0768854c-d3b6-4d3c-b378-6378629945f8"
 name = "POLL_LIMITER"
 namespace_id = "1001"
 simple = { limit = 3, period = 60 }
+
+# Native rate limiting for analytics events (/e). Keys are not stored. The Origin check only stops other
+# websites; this stops scripts from flooding D1 with fake events. Needs its own namespace_id.
+[[ratelimits]]
+name = "EVENT_LIMITER"
+namespace_id = "1002"
+simple = { limit = 30, period = 60 }

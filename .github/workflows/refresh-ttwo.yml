@@ -6,7 +6,15 @@ on:
     # Mon–Fri 14:00–21:45 UTC ≈ 11:00–18:45 America/Buenos_Aires
     # (covers the 9:30–16:00 America/New_York session, including after the close print).
     - cron: "*/15 14-21 * * 1-5"
+    # Once after the close (21:00 UTC in winter, 20:00 UTC in summer) to store the official
+    # daily close. Keep this string in sync with the check in the "Fetch snapshot" step.
+    - cron: "30 22 * * 1-5"
   workflow_dispatch:
+    inputs:
+      history:
+        description: "Also refresh the full daily history (official closes)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -25,8 +33,18 @@ jobs:
           python-version: "3.12"
       - name: Install tzdata
         run: pip install --quiet tzdata
-      - name: Fetch quote snapshot
-        run: python3 scripts/refresh-ttwo.py --quote
+      - name: Fetch snapshot
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          HISTORY: ${{ github.event.inputs.history }}
+        run: |
+          if [ "$SCHEDULE" = "30 22 * * 1-5" ] || [ "$HISTORY" = "true" ]; then
+            # After the close (or on demand): daily history with official closes + latest quote.
+            python3 scripts/refresh-ttwo.py
+          else
+            # Intraday: quote only (also appends the session that just closed).
+            python3 scripts/refresh-ttwo.py --quote
+          fi
       - name: Commit snapshot
         run: |
           git config user.name "github-actions[bot]"

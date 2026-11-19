@@ -136,6 +136,36 @@ def apply_qty(item: dict, unit_price: int) -> int:
     return unit_price * qty
 
 
+def fmt_ars(n: int) -> str:
+    return f"{int(n):,}".replace(",", ".")
+
+
+def derive_discounts(item: dict) -> None:
+    """Keep cash/transfer prices consistent with the list price.
+
+    Stores like Game Sense publish "efectivo -20%" and "transferencia -10%" as a rule
+    over the list price. The rule lives in the JSON (cashDiscountPct / transferDiscountPct)
+    and the derived prices are recomputed whenever the list price moves, so the cash
+    price (and the note shown to users) never go stale while the list price changes.
+    """
+    price = item.get("price")
+    if not price:
+        return
+    cash_pct = item.get("cashDiscountPct")
+    transfer_pct = item.get("transferDiscountPct")
+    if cash_pct is not None:
+        item["cashPrice"] = int(round(price * (1 - cash_pct / 100)))
+        if item.get("compareHow") == "efectivo":
+            item["comparePrice"] = item["cashPrice"]
+    if transfer_pct is not None:
+        item["transferPrice"] = int(round(price * (1 - transfer_pct / 100)))
+    if cash_pct is not None:
+        parts = [f"Lista ARS {fmt_ars(price)}", f"efectivo −{cash_pct:g}% = ARS {fmt_ars(item['cashPrice'])}"]
+        if transfer_pct is not None:
+            parts.append(f"transferencia −{transfer_pct:g}% = ARS {fmt_ars(item['transferPrice'])}")
+        item["note"] = "; ".join(parts) + ". El comparador usa el efectivo."
+
+
 def main() -> int:
     data = json.loads(DATA.read_text(encoding="utf-8"))
     now = now_art()
@@ -164,6 +194,7 @@ def main() -> int:
                 item["price"] = apply_qty(item, price)
                 if "comparePrice" in item and "cashPrice" not in item:
                     item["comparePrice"] = item["price"]
+                derive_discounts(item)
                 item["status"] = "ok"
                 item["fetchedAtArt"] = fmt_art(now)
                 item["fetchedAtUtc"] = now.astimezone(ZoneInfo("UTC")).isoformat()

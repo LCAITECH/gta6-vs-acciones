@@ -27,7 +27,31 @@ function burstLimited(key, max = 5, windowMs = 60000) {
   if (recent.size > 5000) recent.clear();
   return arr.length > max;
 }
+// Client key for rate limiting. IPv4 as is; IPv6 grouped by /64 (one home/device network), expanding "::"
+// first so "2001:db8::1" and "2001:db8:0:0:0:0:0:2" land in the same bucket. Never stored.
+function ipKey(ip) {
+  if (!ip.includes(":") || ip.includes(".")) return ip; // IPv4 (or IPv4-mapped): use as is
+  const [head, tail = ""] = ip.split("::");
+  const h = head ? head.split(":") : [];
+  const t = tail ? tail.split(":") : [];
+  const groups = ip.includes("::") ? [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill("0"), ...t] : h;
+  return groups.slice(0, 4).map((g) => g.toLowerCase().replace(/^0+(?=.)/, "")).join(":");
+}
+
+// True when this client is over its limit. Uses the native Rate Limiting binding when present
+// (shared across isolates), the in-memory burst limiter otherwise. No IP header -> not limited.
+async function limited(request, limiter, prefix, max) {
+  const ip = ipKey(request.headers.get("CF-Connecting-IP") || "");
+  if (!ip) return false;
+  if (limiter) {
+    const { success } = await limiter.limit({ key: prefix + ":" + ip });
+    return !success;
+  }
+  return burstLimited(prefix + ":" + ip, max);
+}
+
 const MAX_BODY = 1024;
+const EVENT_BURST = 30; // events per client per minute (a normal visit sends a handful)
 
 function cors(origin) {
   const h = { "Vary": "Origin" };
@@ -79,12 +103,16 @@ function safeEqual(a, b) {
 
 async function collect(request, env, origin) {
   if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "origin" }, 403, origin);
+  // The Origin check only stops browsers on other sites: curl can send any Origin header. This per-client
+  // limit is what keeps scripts from flooding D1 (shared with the poll and the stats) with fake events.
+  if (await limited(request, env.EVENT_LIMITER, "e", EVENT_BURST)) return json({ error: "slow down" }, 429, origin);
   const len = Number(request.headers.get("Content-Length") || 0);
   if (len > MAX_BODY) return json({ error: "too large" }, 413, origin);
   const text = await request.text();
   if (text.length > MAX_BODY) return json({ error: "too large" }, 413, origin);
   let body;
   try { body = JSON.parse(text); } catch { return json({ error: "bad json" }, 400, origin); }
+  if (!body || typeof body !== "object") return json({ error: "bad json" }, 400, origin);
   const event = String(body.e || "");
   if (!EVENTS.has(event)) return json({ error: "event" }, 400, origin);
   const device = deviceClass(request.headers.get("User-Agent"));
@@ -105,19 +133,12 @@ async function pollVote(request, env, origin) {
   if (text.length > 256) return json({ error: "too large" }, 413, origin);
   let body;
   try { body = JSON.parse(text); } catch { return json({ error: "bad json" }, 400, origin); }
+  if (!body || typeof body !== "object") return json({ error: "bad json" }, 400, origin);
   const poll = String(body.poll || "");
   const option = String(body.option || "");
   if (!POLLS[poll] || !POLLS[poll].includes(option)) return json({ error: "option" }, 400, origin);
   if (deviceClass(request.headers.get("User-Agent")) === "bot") return json({ error: "bot" }, 403, origin);
-  const rawIp = request.headers.get("CF-Connecting-IP") || "";
-  // IPv6: group by /64 (one home/device network). Never stored.
-  const ip = rawIp.includes(":") ? rawIp.split(":").slice(0, 4).join(":") : rawIp;
-  if (ip) {
-    if (env.POLL_LIMITER) {
-      const { success } = await env.POLL_LIMITER.limit({ key: "poll:" + ip });
-      if (!success) return json({ error: "slow down" }, 429, origin);
-    } else if (burstLimited(ip)) return json({ error: "slow down" }, 429, origin);
-  }
+  if (await limited(request, env.POLL_LIMITER, "poll", 5)) return json({ error: "slow down" }, 429, origin);
   const now = Date.now();
   const country = (request.cf && request.cf.country) || null;
   await env.DB.prepare("INSERT INTO poll_votes (poll, option, ts, day, country) VALUES (?, ?, ?, ?, ?)")

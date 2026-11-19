@@ -24,6 +24,8 @@ No hay una API gratuita, con CORS y términos claros, que el navegador pueda con
 
 Un workflow de GitHub Actions (`refresh-ttwo.yml`) corre cada 15 minutos, de lunes a viernes, entre las 14:00 y las 21:45 UTC (aprox. 11:00–18:45 hora Argentina), cubriendo la rueda de Nasdaq. Trae el dato en el servidor, lo guarda en el JSON y hace commit. También se puede disparar a mano (`workflow_dispatch`) o correr `python3 scripts/refresh-ttwo.py --quote` en local.
 
+El **histórico diario** (`data/ttwo-daily.json`) se actualiza una vez por día de lunes a viernes a las 22:30 UTC, ya cerrada la rueda, con los cierres oficiales (Yahoo cruzado con Nasdaq). Entre una corrida y otra, `--quote` suma al histórico la rueda que acaba de cerrar (nunca un precio parcial de la rueda en curso), así que quien compra el día del lanzamiento no queda con un precio de entrada viejo. Para forzar la actualización completa: `gh workflow run refresh-ttwo.yml -f history=true`.
+
 El recuadro **TTWO ahora** muestra ese snapshot y la hora: “actualizado hh:mm (hora Argentina)”. Si el archivo no está, la calculadora cae al último cierre diario.
 
 Lo mismo para **bitcoin (BTC/USD)**: `scripts/refresh-btc.py` (GitHub Action cada 3 horas) escribe `data/btc-latest.json` y `data/btc-daily.json` desde la API pública de Bitstamp. El sitio no llama a Bitstamp en el cliente. Coinbase no se usó (sus términos de market data no permiten mostrar esos datos a terceros sin consentimiento). Ver `FUENTES.md`.
@@ -53,7 +55,7 @@ MIT. Ver `LICENSE`.
 
 ## Privacidad y estadísticas
 
-El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo.
+El sitio cuenta visitas y clics con un Worker propio de Cloudflare (`analytics-worker/`, base D1 `gta6-analytics`). Se guarda solo: tipo de evento, ruta (sin parámetros), dominio de referencia, país (encabezado de Cloudflare), tipo de dispositivo (móvil/tablet/escritorio) y fecha y hora. No se guardan IPs, user agents, cookies ni identificadores, y se respeta Do Not Track. El panel `stats.html` está protegido con una clave que no está en el repo. El Worker limita por IP la cantidad de eventos y de votos por minuto (la clave del límite no se guarda): el chequeo de `Origin` solo frena a otros sitios web, no a un script.
 
 ## Secciones extra
 
