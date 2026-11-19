@@ -31,6 +31,29 @@ El recuadro **TTWO ahora** muestra ese snapshot y la hora: “actualizado hh:mm 
 Lo mismo para **bitcoin (BTC/USD)**: `scripts/refresh-btc.py` (GitHub Action cada 3 horas) escribe `data/btc-latest.json` y `data/btc-daily.json` desde la API pública de Bitstamp. El sitio no llama a Bitstamp en el cliente. Coinbase no se usó (sus términos de market data no permiten mostrar esos datos a terceros sin consentimiento). Ver `FUENTES.md`.
 
 
+## Quién dispara los refrescos
+
+Los `schedule` de GitHub Actions son "best effort": con carga los demoran horas o los descartan (el 19/11/2026 el cron de TTWO corrió 0 de unas 27 veces esperadas). Por eso los workflows de datos los dispara también un Worker con Cron Trigger de Cloudflare (`cron-worker/`), que llama a la API de GitHub (`workflow_dispatch`) a la hora justa. Hay una sola cron cada 15 minutos y el código decide qué sale en cada tick (hora UTC):
+
+| Workflow | Cuándo |
+|---|---|
+| TTWO (cotización) | cada 15 min, lunes a viernes, 14:00–21:45 |
+| TTWO (histórico oficial, `history=true`) | lunes a viernes, 22:30 |
+| Dólar | cada hora, lunes a viernes, 13:00–21:00, y todos los días a las 06:00 |
+| BTC | cada 3 horas, en el minuto :15 |
+| Hardware | cada 6 horas, en el minuto :30 |
+
+Los `schedule` de los workflows quedan como respaldo: si corren ambos, `concurrency: data-refresh` los encola. Cada workflow cae en un minuto distinto para que nunca haya más de dos por tick, porque GitHub guarda solo una corrida en curso y una pendiente por grupo de concurrencia.
+
+Puesta en marcha, una sola vez:
+
+1. Creá un token en GitHub: Settings → Developer settings → Fine-grained tokens. Repositorio: solo `LCAITECH/gta6-vs-acciones`. Permiso: *Actions → Read and write*. Ponele vencimiento y anotá la fecha para renovarlo.
+2. `cd cron-worker && npx wrangler deploy`
+3. `npx wrangler secret put GH_TOKEN` y pegá el token.
+4. Verificá en el próximo múltiplo de 15 minutos: `npx wrangler tail`, y que aparezcan corridas con evento `workflow_dispatch` en la pestaña Actions.
+
+Si el token vence o se revoca, la invocación falla de forma visible en el panel de Cloudflare y los `schedule` de GitHub siguen como respaldo.
+
 ## Cotizaciones en Argentina
 
 `data/fx-ar.json` se actualiza cada hora de 10 a 18 (hora Argentina) en días hábiles, y una vez de noche (GitHub Actions + `scripts/refresh-fx.py`) con oficial, tarjeta, blue, MEP, CCL y cripto, desde [DolarApi](https://dolarapi.com) ([uso de los datos](https://dolarapi.com/docs/uso); hay que citar “DolarApi https://dolarapi.com”). El comparador “tarjeta cripto vs tarjeta bancaria” convierte a pesos: el banco usa oficial venta + IVA 21% (sin el 30% de percepción, porque PSN, Microsoft y Rockstar están excluidos). La cripto se fondea al dólar que elijas (cripto/USDT por defecto) + comisión − cashback.
