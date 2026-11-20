@@ -1,0 +1,175 @@
+/* ----- Refinements: glass, ticker, logo, richer scene ----- */
+.sky {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 30%, #ffd27a77, transparent 60%),
+    radial-gradient(ellipse 36% 28% at 16% 16%, #e963c755, transparent 70%),
+    radial-gradient(ellipse 32% 24% at 88% 12%, #99ccff44, transparent 70%),
+    radial-gradient(ellipse 50% 20% at 50% 68%, #f4717c66, transparent 70%),
+    linear-gradient(180deg,
+      #100820 0%,
+      #2a1044 12%,
+      #6e1c58 28%,
+      #c4455a 46%,
+      #f08a55 57%,
+      #ffd27a 65%,
+      #f7c4a0 69%,
+      #3a7ea0 70.6%,
+      #164466 82%,
+      #081222 100%);
+}
+.haze {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 30% at 50% 62%, #ffdf8040, transparent 70%),
+    radial-gradient(ellipse 100% 40% at 50% 48%, #f976b024, transparent 65%);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.sun-wrap {
+  width: min(46vw, 380px);
+  top: 18%;
+  filter: drop-shadow(0 0 36px #ffdf80dd) drop-shadow(0 0 100px #f4717caa);
+  will-change: transform;
+}
+.sun-reflect {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: min(46vw, 380px);
+  height: 22vh;
+  transform: translate(-50%, 0) scaleY(-1);
+  background: radial-gradient(ellipse 70% 80% at 50% 0%, #ffdf8099, #f4717c55 40%, transparent 70%);
+  filter: blur(6px);
+  opacity: 0.45;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 80%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 80%);
+  pointer-events: none;
+}
+.ocean {
+  background:
+    linear-gradient(180deg, #9ad4ee66 0%, #1a557ecc 18%, #0c2038f2 100%);
+}
+.water-sheen {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 7px, #ffffff18 8px, transparent 16px),
+    linear-gradient(90deg, transparent 20%, #ffe7a444 50%, transparent 80%);
+  opacity: 0.35;
+  animation: sheen 10s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes sheen {
+  0%, 100% { opacity: 0.22; transform: translateX(-4%); }
+  50% { opacity: 0.42; transform: translateX(4%); }
+}
+.horizon {
+  box-shadow: 0 0 22px #ffdf80, 0 0 48px #f976b0cc, 0 8px 40px #99ccff55;
+}
+.palm { will-change: transform; }
+.palm-left, .palm-right { filter: drop-shadow(-6px 0 12px #f976b044) drop-shadow(0 0 8px #000c); }
+
+.vi-mark {
+  width: min(100%, 420px);
+  justify-self: center;
+  filter:
+    drop-shadow(0 0 14px #ffdf80ee)
+    drop-shadow(0 0 36px #f976b0f2)
+    drop-shadow(0 0 80px #9b89f5aa)
+    drop-shadow(0 0 120px #f4717c88);
+  animation: viPulse 5.5s ease-in-out infinite;
+}
+.vi-mark img, .vi-mark picture { width: 100%; height: auto; display: block; }
+@keyframes viPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 14px #ffdf80ee) drop-shadow(0 0 36px #f976b0f2) drop-shadow(0 0 80px #9b89f5aa) drop-shadow(0 0 120px #f4717c88);
+  }
+  50% {
+    filter: drop-shadow(0 0 22px #fff1b8) drop-shadow(0 0 52px #f976b0) drop-shadow(0 0 100px #e963c7) drop-shadow(0 0 150px #f4717ccc);
+  }
+}
+
+.hero { padding: 10px 0 18px; }
+.hero-layout { gap: 8px 28px; align-items: center; }
+.hero h1 { font-size: clamp(44px, 8.2vw, 90px); margin: 0 0 14px; }
+
+.panel, .legal-box, .pay-card, .stat, .ticker {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(10,6,18,0.72));
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+.panel {
+  border: 1px solid rgba(249, 118, 176, 0.38);
+  box-shadow: 0 20px 50px #00000080, 0 0 0 1px #ffdf8018, 0 0 32px #f976b033;
+  padding: 24px 22px 26px;
+}
+.legal-box { box-shadow: 0 0 28px #f976b022; }
+
+input, select {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(249, 118, 176, 0.4);
+  background: rgba(7, 4, 12, 0.72);
+  font-size: 15px;
+}
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #ffdf80 50%), linear-gradient(135deg, #ffdf80 50%, transparent 50%); background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px); background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; padding-right: 32px; }
+
+.results { gap: 14px; margin-bottom: 18px; }
+.stat { padding: 18px 16px 16px; }
+.stat .v { font-size: clamp(36px, 5vw, 56px); letter-spacing: 0.01em; text-shadow: 0 0 20px #f976b044; }
+
+.ticker {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px 18px;
+  align-items: baseline;
+  border: 1px solid rgba(249, 118, 176, 0.45);
+  border-radius: 20px;
+  padding: 16px 20px 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 28px #f976b033, 0 16px 40px #00000066;
+}
+.ticker .k {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: var(--glow-gold);
+  font-size: 16px;
+  grid-column: 1;
+}
+.ticker .price {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 54px);
+  line-height: 0.9;
+  margin: 0;
+  grid-column: 2;
+  text-shadow: 0 0 18px #ffdf8066;
+}
+.ticker .chg { font-family: var(--font-display); font-size: 28px; }
+.ticker .chg.up { color: var(--ok); text-shadow: 0 0 14px #9ed39a88; }
+.ticker .chg.down { color: var(--coral); text-shadow: 0 0 14px #f4717c88; }
+.ticker .meta { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+.ticker .meta strong { color: var(--gold); font-weight: 600; }
+
+.grid { gap: 26px; margin: 28px 0 56px; }
+section { margin: 56px 0; }
+h2 { font-size: 36px; margin-bottom: 16px; }
+label { margin: 14px 0 7px; }
+
+@media (max-width: 900px) {
+  .vi-mark { width: min(86vw, 340px); }
+  .ticker { grid-template-columns: 1fr; }
+  .ticker .price, .ticker .k, .ticker .chg { grid-column: 1; }
+  .sun-wrap { width: min(64vw, 280px); }
+  .palm-left, .palm-right { opacity: 0.92; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-sheen, .vi-mark { animation: none !important; }
+  .sun-wrap, .palm, .sun-reflect { transform: none !important; }
+}
+
+

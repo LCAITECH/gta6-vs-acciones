@@ -1,0 +1,50 @@
+/* ----- BTC alongside TTWO ----- */
+.asset-k { margin: 16px 0 6px; font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; }
+.ticker-row { display: grid; gap: 10px; margin-bottom: 14px; }
+.ticker-row:has(.ticker + .ticker) { grid-template-columns: 1fr 1fr; }
+.ticker.btc { border-color: rgba(62, 240, 212, 0.45); box-shadow: 0 0 28px #3ef0d433, 0 16px 40px #00000066; }
+.ticker.btc .k { color: var(--teal); text-shadow: 0 0 14px #3ef0d488; }
+.ticker.btc .price { text-shadow: 0 0 18px #3ef0d466; }
+.ticker-row:has(.ticker + .ticker) .ticker { margin-bottom: 0; padding: 12px 14px 10px; }
+.ticker-row:has(.ticker + .ticker) .ticker .price { font-size: clamp(26px, 3.4vw, 40px); }
+.ticker-row:has(.ticker + .ticker) .ticker .chg { font-size: 20px; }
+.ticker-row:has(.ticker + .ticker) .ticker .meta { font-size: 11px; }
+.results.cols-2 { grid-template-columns: repeat(3, 1fr); }
+.breakdown { margin: 0 0 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.breakdown table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 280px; }
+.breakdown th, .breakdown td { padding: 8px 10px; border-bottom: 1px solid #f976b033; text-align: right; vertical-align: top; }
+.breakdown th:first-child, .breakdown td:first-child { text-align: left; }
+.breakdown thead th { color: var(--gold); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.breakdown td small { display: block; font-size: 11px; opacity: 0.9; }
+.breakdown .up { color: var(--ok); }
+.breakdown .down { color: var(--coral); }
+.breakdown .muted { color: var(--dim); }
+.breakdown .hint { margin-top: 8px; }
+#s-btc-slider-block, #m-btc-block { margin-top: 8px; }
+#ttwo-asset { margin-bottom: 2px; }
+
+@media (max-width: 900px) {
+  .ticker-row:has(.ticker + .ticker) { grid-template-columns: 1fr; }
+  .results.cols-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) {
+  .breakdown { font-size: 12px; }
+  .breakdown th, .breakdown td { padding: 7px 8px; }
+  .ticker-row:has(.ticker + .ticker) .ticker .meta { font-size: 11px; }
+}
+
+#s-slider-btc, #m-btc { accent-color: #3ef0d4; }
+.asset-k { margin-top: 0; }
+
+/* Lo oficial: video incrustado a pedido (fachada hasta que se toca «Ver») y links */
+.official-chips { margin-bottom: 12px; }
+.video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; display: grid; place-items: center; overflow: hidden; background: #07040c; border: 1px solid #f976b044; border-radius: 14px; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-play { appearance: none; cursor: pointer; font: inherit; font-weight: 700; padding: 14px 24px; border-radius: 999px; border: 1px solid var(--gold); background: #ffdf8022; color: var(--gold); box-shadow: 0 0 24px #ffdf8044; }
+.video-play:hover { background: #ffdf8033; }
+.video-play:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.video-meta { margin-top: 10px; }
+.official-grid { margin-bottom: 8px; }
+.official-actions { margin-top: auto; display: grid; gap: 8px; padding-top: 6px; }
+.official-actions .cta { margin-top: 0; }
+

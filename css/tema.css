@@ -1,0 +1,42 @@
+:root {
+  --bg-0: #070711;
+  --bg-1: #0d0c1a;
+  --bg-2: #151732;
+  --bg-3: #1e1728;
+  --panel: #120c18e6;
+  --panel-solid: #161328;
+  --line: #f976b066;
+  --pink: #f976b0;
+  --magenta: #e963c7;
+  --coral: #f4717c;
+  --gold: #ffdf80;
+  --lavender: #9b89f5;
+  --sky: #99ccff;
+  --text: #f6f0ea;
+  --muted: #d7cde0;
+  --dim: #9b90b0;
+  --danger: #ff8a9a;
+  --ok: #9ed39a;
+  --teal: #3ef0d4;
+  --shadow: 0 24px 60px #00000080;
+  --glow-pink: 0 0 18px #f976b088, 0 0 42px #e963c755;
+  --glow-gold: 0 0 14px #ffdf8088, 0 0 32px #f4717c55;
+  --radius: 22px;
+  --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: var(--font-body);
+  background: #07040c;
+  overflow-x: hidden;
+}
+
+a { color: var(--sky); text-shadow: 0 0 10px #99ccff55; }
+a:hover { color: var(--gold); text-shadow: 0 0 12px #ffdf80aa; }
+
