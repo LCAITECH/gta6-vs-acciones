@@ -236,7 +236,7 @@ function tickerCard(kind, list, live) {
   const price = livePx(list, live);
   const name = kind === "btc" ? "BTC" : "TTWO";
   if (price == null) {
-    return `<article class="ticker${kind === "btc" ? " btc" : ""}"><div class="k">${name} ahora</div><div class="meta">No pudimos cargar la cotización. Reintentá más tarde.</div></article>`;
+    return `<article class="ticker${kind === "btc" ? " btc" : ""}"><div class="k">${name} último dato</div><div class="meta">No pudimos cargar la cotización. Reintentá más tarde.</div></article>`;
   }
   const ch = live && typeof live.change === "number" ? live.change : null;
   const pct = live && typeof live.changePercent === "number" ? live.changePercent : null;
@@ -251,7 +251,7 @@ function tickerCard(kind, list, live) {
     : "Snapshot de Yahoo Finance, no es un tick en vivo. Si falta el dato, usamos el último cierre.";
   return `
     <article class="ticker${kind === "btc" ? " btc" : ""}">
-      <div class="k">${name} ahora</div>
+      <div class="k">${name} último dato</div>
       <div class="price">US$ ${fmtAR.format(price)}</div>
       <div class="chg ${up ? "up" : "down"}">${chLabel}</div>
       <div class="meta">${state}. Actualizado <strong>${updated || "—"}</strong> (hora Argentina)${quoteArt ? ` · dato de cotización: ${quoteArt}` : ""}. ${src}</div>

@@ -32,13 +32,13 @@ Cada cifra usada en el sitio tiene URL y fecha. Si no había un dato publicado, 
 | Dólar tarjeta genérico | Oficial venta × 1,30 = 2.047,50 el 18/11/2026. **No se usa** para PSN / Microsoft / Rockstar (excluídos de la percepción 30% por RG 5677/2025). El comparador banco vs cripto usa oficial venta + IVA 21% (+ IIBB si lo cargás). | DolarApi · coincide con un agregado visto por el dueño ~10:03 (hora Argentina) el 18/11/2026 (solo como control) |
 | Dólar cripto | Cotización de referencia de DolarApi para USDT/USDC (venta). El usuario puede fondear también a blue, MEP u oficial. | Misma API |
 
-Cadencia: GitHub Actions corre `scripts/refresh-fx.py` cada hora de 10:07 a 18:07 (hora Argentina) en días hábiles (`7 13-21 * * 1-5` UTC) y una vez de noche a las 03:07 (`7 6 * * *` UTC), más disparo manual. Cada corrida hace un solo GET a `/v1/dolares`. DolarApi sugiere como máximo una consulta cada 3 h por serie; usamos esta cadencia para que el sitio muestre valores del día. El sitio no llama a la API desde el navegador. Se muestran Oficial BNA, MEP y Blue con fecha y hora (Argentina) y la cita a DolarApi. Si el JSON no carga, se usan valores de referencia del 18/11/2026 ~10:03 (hora Argentina).
+Cadencia: GitHub Actions corre `scripts/refresh-fx.py` tres veces por día hábil (11:11, 14:11 y 17:11 hora Argentina; `11 14,17,20 * * 1-5` UTC) y una vez de noche a las 03:11 (`11 6 * * *` UTC), más disparo manual. Cada corrida hace un solo GET a `/v1/dolares`. DolarApi sugiere como máximo una consulta cada 3 h por serie; las corridas van separadas por 3 h para respetar esa sugerencia y que el sitio muestre valores del día. El sitio no llama a la API desde el navegador. Se muestran Oficial BNA, MEP y Blue con fecha y hora (Argentina) y la cita a DolarApi. Si el JSON no carga, se usan valores de referencia del 18/11/2026 ~10:03 (hora Argentina).
 
 La calculadora suma los tributos en forma aditiva: `lista × (1 + IVA + percepción + IIBB)`. IIBB queda en 0 por defecto porque no hay una alícuota nacional única.
 
 ## TTWO
 
-- Cotización “casi en vivo”: `data/ttwo-latest.json`, generado en el servidor (GitHub Actions cada 15 minutos en horario de Nasdaq, o `scripts/refresh-ttwo.py --quote`). Fuente: Yahoo Finance, sin llamadas desde el navegador (no hay CORS habilitado y los términos no prestan para un feed en el cliente). La tarjeta “TTWO ahora” muestra precio, variación del día y “actualizado hh:mm (hora Argentina)”. Si falta el snapshot, se usa el último cierre.
+- Última cotización: `data/ttwo-latest.json`, generado en el servidor (GitHub Actions una vez por día hábil después del cierre de Nasdaq, con un segundo intento unas horas más tarde, o `scripts/refresh-ttwo.py`). Fuente: Yahoo Finance, sin llamadas desde el navegador (no hay CORS habilitado y los términos no prestan para un feed en el cliente). La tarjeta “TTWO último dato” muestra precio, variación del día y “actualizado hh:mm (hora Argentina)”. Si falta el snapshot, se usa el último cierre.
 
 
 - Último cierre: **US$ 203,93 el 17/11/2026**. Coincide en [Nasdaq](https://www.nasdaq.com/market-activity/stocks/ttwo/historical) y [Yahoo Finance](https://finance.yahoo.com/quote/TTWO/history/).
@@ -47,7 +47,7 @@ La calculadora suma los tributos en forma aditiva: `lista × (1 + IVA + percepci
 
 ## BTC/USD
 
-- Cotización “casi en vivo”: `data/btc-latest.json`, generado en el servidor (GitHub Actions cada 3 horas, o `scripts/refresh-btc.py`). Fuente: [Bitstamp public API](https://www.bitstamp.net/api/) — ticker `https://www.bitstamp.net/api/v2/ticker/btcusd/` y velas diarias `OHLC` con `step=86400`. El navegador **no** llama a Bitstamp.
+- Última cotización: `data/btc-latest.json`, generado en el servidor (GitHub Actions dos veces por día, o `scripts/refresh-btc.py`). Fuente: [Bitstamp public API](https://www.bitstamp.net/api/) — ticker `https://www.bitstamp.net/api/v2/ticker/btcusd/` y velas diarias `OHLC` con `step=86400`. El navegador **no** llama a Bitstamp.
 - Histórico diario: `data/btc-daily.json` (cierres UTC de velas completas, `exclude_current_candle=true`). El primer snapshot cubre 2018-09-01 a 2026-11-17 (3.000 días). El script pagina con el parámetro `end` si hace falta más historia.
 - Último cierre diario del snapshot inicial: **US$ 64.877,24 el 17/11/2026**. Snapshot intradía: **US$ 62.430,69 el 18/11/2026 a las 13:57** (America/Buenos_Aires).
 - Se publica como recorte educativo fechado, con atribución. Un uso comercial de los datos de mercado de Bitstamp puede requerir su Data License Agreement (`partners@bitstamp.net`).
@@ -133,7 +133,7 @@ La Digital de la tienda oficial Sony (ARS 1.869.999) no se usa como precio de re
 
 ## Precios de hardware (Desafío Gordo Compu)
 
-Snapshot armado el 18/11/2026 12:39 (hora Argentina, `America/Buenos_Aires`). Fuente principal: fichas públicas de [Venex](https://www.venex.com.ar). El comparador **no es un tick en vivo**: `scripts/refresh-hardware.py` (GitHub Action cada ~6 h) intenta releer cada URL. Si una tienda no responde, se conserva el último valor verificado con su fecha (`status: stale`).
+Snapshot armado el 18/11/2026 12:39 (hora Argentina, `America/Buenos_Aires`). Fuente principal: fichas públicas de [Venex](https://www.venex.com.ar). El comparador **no es un tick en vivo**: `scripts/refresh-hardware.py` (GitHub Action una vez por día) intenta releer cada URL. Si una tienda no responde, se conserva el último valor verificado con su fecha (`status: stale`).
 
 No se usa Mercado Libre: `api.mercadolibre.com` declara `Disallow: /` y la API anónima responde 403.
 

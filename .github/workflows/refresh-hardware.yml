@@ -2,8 +2,8 @@ name: Refresh hardware prices
 
 on:
   schedule:
-    # About every 6 hours.
-    - cron: "19 */6 * * *"
+    # Once a day.
+    - cron: "47 12 * * *"
   workflow_dispatch:
 
 permissions:

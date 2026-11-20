@@ -2,8 +2,8 @@ name: Refresh BTC quote
 
 on:
   schedule:
-    # Every 3 hours (BTC trades 24/7). Offset from the FX job at minute 7.
-    - cron: "23 */3 * * *"
+    # Twice a day (BTC trades 24/7): just after the daily candle closes (00:00 UTC) and at midday.
+    - cron: "41 0,12 * * *"
   workflow_dispatch:
 
 permissions:
