@@ -11,6 +11,7 @@ const EVENTS = new Set([
   "pageview", "calc", "share", "share_download", "share_copy", "share_native",
   "share_x", "share_whatsapp", "click_bingx", "click_binance",
   "view_calculadora", "view_jodita", "view_conviene", "view_ttwo", "view_desafio", "view_encuesta", "view_fuentes",
+  "view_oficial", "trailer_play", "click_rockstar", "click_rockstar_mapa", "click_rockstar_musica",
   "poll_vote", "challenge_calc", "projection_calc", "cost_builder_calc", "wait_calc",
   "build_pc", "case3d_interact", "compare_view",
   "share_challenge_x", "share_challenge_whatsapp", "share_challenge_copy",

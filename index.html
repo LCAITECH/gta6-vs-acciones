@@ -128,7 +128,7 @@
     </header>
 
     <nav class="tabs" aria-label="Secciones">
-      <a href="#calculadora" data-tab="calculadora">Calculadora</a><a href="#jodita" data-tab="jodita">La jodita</a><a href="#conviene" data-tab="conviene">¿Me conviene?</a><a href="#ttwo" data-tab="ttwo">TTWO</a><a href="#desafio" data-tab="desafio">Desafío Gordo Compu</a><a href="#encuesta" data-tab="encuesta">Encuesta</a>
+      <a href="#calculadora" data-tab="calculadora">Calculadora</a><a href="#jodita" data-tab="jodita">La jodita</a><a href="#conviene" data-tab="conviene">¿Me conviene?</a><a href="#ttwo" data-tab="ttwo">TTWO</a><a href="#desafio" data-tab="desafio">Desafío Gordo Compu</a><a href="#oficial" data-tab="oficial">Lo oficial</a><a href="#encuesta" data-tab="encuesta">Encuesta</a>
     </nav>
     <main id="views">
       <div class="view" data-view="calculadora">
@@ -644,6 +644,45 @@
     </section>
 
       </div>
+      <div class="view" data-view="oficial" hidden>
+    <section id="oficial">
+      <h2>Lo oficial de GTA VI</h2>
+      <p class="lede">Material oficial de Rockstar Games. No lo alojamos ni lo copiamos: el video se ve directamente desde el canal oficial de Rockstar en YouTube y lo demás son links a su sitio.</p>
+      <div class="panel">
+        <div class="chips official-chips" id="trailer-chips" role="radiogroup" aria-label="Elegí el video"></div>
+        <div class="video-frame" id="video-frame"></div>
+        <p class="hint video-meta" id="video-meta" aria-live="polite"></p>
+        <p class="hint">El video recién se le pide a YouTube cuando tocás «Ver», y usamos su modo de privacidad ampliada (youtube-nocookie.com).</p>
+      </div>
+      <div class="pay-grid official-grid">
+        <article class="pay-card">
+          <h3>Sitio oficial</h3>
+          <p class="muted">La página de Grand Theft Auto VI y el canal de Rockstar Games en YouTube, con todo lo que publica la empresa.</p>
+          <div class="official-actions">
+            <a class="cta" href="https://www.rockstargames.com/VI" data-track="click_rockstar" target="_blank" rel="noopener noreferrer">Ir al sitio de GTA VI</a>
+            <a class="cta alt" href="https://www.youtube.com/channel/UC6VcWc1rAoWdBCM0JxrRQ3A" data-track="click_rockstar" target="_blank" rel="noopener noreferrer">Canal de Rockstar</a>
+          </div>
+        </article>
+        <article class="pay-card">
+          <h3>Mapa de Leónida</h3>
+          <p class="muted">Rockstar publicó el póster oficial «Leonida Map &amp; Cover Art Poster» (4 variantes, una imprimible). No tiene un link directo: se descarga desde su galería de arte y fondos de pantalla.</p>
+          <div class="official-actions">
+            <a class="cta" href="https://www.rockstargames.com/VI/media/artwork-wallpapers" data-track="click_rockstar_mapa" target="_blank" rel="noopener noreferrer">Ver y descargar el mapa</a>
+          </div>
+        </article>
+        <article class="pay-card">
+          <h3>Música</h3>
+          <p class="muted">Singles, radios del juego y el score original de Justice, con el reproductor de Rockstar.</p>
+          <div class="official-actions">
+            <a class="cta" href="https://www.rockstargames.com/VI/music" data-track="click_rockstar_musica" target="_blank" rel="noopener noreferrer">Escuchar en rockstargames.com</a>
+          </div>
+        </article>
+      </div>
+      <p class="hint">Estos links no son de referido: no nos llevamos nada si los tocás.</p>
+      <p class="hint">Grand Theft Auto VI, su logo, los tráileres y todo el material de Rockstar Games y Take-Two Interactive pertenecen a sus dueños. Este sitio es independiente y no está afiliado: solo enlaza e incrusta contenido que ellos mismos publican.</p>
+    </section>
+
+      </div>
       <div class="view" data-view="encuesta" hidden>
     <section id="encuesta">
       <h2>Encuesta: ¿vas a esperar al lanzamiento en PC o vas a comprar consola?</h2>
@@ -680,6 +719,7 @@
             <tr><th>Dato</th><th>Valor</th><th>Fecha</th><th>Fuente</th></tr>
           </thead>
           <tbody>
+            <tr><td>Tráileres de GTA VI (incrustados)</td><td>Se cargan desde YouTube al tocar «Ver»; no alojamos el video</td><td>19/11/2026</td><td><a href="https://www.youtube.com/channel/UC6VcWc1rAoWdBCM0JxrRQ3A">Canal oficial de Rockstar Games en YouTube</a></td></tr>
             <tr><td>Lanzamiento GTA VI (PS5 y Xbox Series)</td><td>19/11/2026</td><td>18/11/2026</td><td><a href="https://taketwointeractivesoftwareinc.gcs-web.com/news-releases/news-release-details/rockstar-games-announces-pre-orders-grand-theft-auto-vi/">Take-Two / Rockstar, 24/06/2026</a></td></tr>
             <tr><td>Inicio de reservas</td><td>25/06/2026, medianoche local</td><td>18/11/2026</td><td><a href="https://taketwointeractivesoftwareinc.gcs-web.com/news-releases/news-release-details/rockstar-games-announces-pre-orders-grand-theft-auto-vi/">Take-Two, 24/06/2026</a></td></tr>
             <tr><td>Precio de lista oficial USD</td><td>Estándar US$ 79,99 · Ultimate US$ 99,99</td><td>18/11/2026</td><td><a href="https://taketwointeractivesoftwareinc.gcs-web.com/news-releases/news-release-details/rockstar-games-announces-pre-orders-grand-theft-auto-vi/">Take-Two, 24/06/2026</a></td></tr>
@@ -745,5 +785,6 @@
   <script src="pc-builder.js" type="module"></script>
   <script src="goals.js" type="module"></script>
   <script src="ttwo-chart.js" type="module"></script>
+  <script src="oficial.js" type="module"></script>
 </body>
 </html>

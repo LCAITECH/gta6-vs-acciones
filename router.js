@@ -1,6 +1,6 @@
 // Hash routing between views: #calculadora, #jodita, #desafio, #encuesta, #fuentes.
 // Any other hash (e.g. #pago, #esperar) opens the view that contains that element and scrolls to it.
-const VIEWS = ["calculadora", "jodita", "conviene", "ttwo", "desafio", "encuesta", "fuentes"];
+const VIEWS = ["calculadora", "jodita", "conviene", "ttwo", "desafio", "oficial", "encuesta", "fuentes"];
 let current = null;
 
 function viewFor(hash) {
@@ -29,7 +29,7 @@ function show(hash, initial) {
   document.querySelectorAll("[data-tab]").forEach((a) => {
     if (a.dataset.tab === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
   });
-  const titles = { calculadora: "Calculadora", jodita: "La jodita", conviene: "¿Me conviene?", ttwo: "TTWO", desafio: "Desafío Gordo Compu", encuesta: "Encuesta", fuentes: "Fuentes" };
+  const titles = { calculadora: "Calculadora", jodita: "La jodita", conviene: "¿Me conviene?", ttwo: "TTWO", desafio: "Desafío Gordo Compu", oficial: "Lo oficial", encuesta: "Encuesta", fuentes: "Fuentes" };
   document.title = `${titles[view]} · GTA 6 vs. acciones de Take-Two — LCA ITECH`;
   if (el) requestAnimationFrame(() => el.scrollIntoView({ block: "start" }));
   else if (changed && !initial) {
