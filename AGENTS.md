@@ -25,6 +25,7 @@ Aplica a lo que se mantiene a mano: `*.js`, `*.css`, `*.html` y `*.py`. No aplic
 - Al terminar una tarea, revisar los archivos tocados y avisar si alguno cambió de zona.
 - Modularizar es un cambio de código: aplica la regla 1 (se pacta el corte antes), se prueba en el navegador (no hay tests ni build) y va en su propio commit, sin mezclar cambios de comportamiento.
 - La línea base y la deuda vigente están en el handoff (ver regla 4).
+- La tolerancia no exime de modularizar: el objetivo es modularizar todo, incluso un archivo de ~500 líneas (ver regla 7).
 
 ## 3. Git y publicación
 
@@ -51,3 +52,10 @@ Aplica a lo que se mantiene a mano: `*.js`, `*.css`, `*.html` y `*.py`. No aplic
 ## 6. Idioma
 
 El usuario escribe en español rioplatense informal. Documentos, commits y respuestas, en español rioplatense (voseo).
+
+## 7. Modularidad
+
+- El código se mantiene lo más modularizado posible: cada pieza vive en el módulo que le corresponde por responsabilidad.
+- No se crean archivos de código nuevos solo por agregar código, ni se suma código a un archivo que no es el suyo. Antes de escribir, se busca el módulo donde encaja.
+- Si lo que se hace es algo nuevo (un efecto, una sección, una funcionalidad propia), va en su propio módulo, con un nombre claro. Si ya existe un módulo de ese tema, va ahí.
+- Modularizar lo existente sigue las reglas 1 y 2: el corte se pacta antes con el usuario y va en su propio commit, sin cambios de comportamiento.
