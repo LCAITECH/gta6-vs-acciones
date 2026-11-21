@@ -3,12 +3,12 @@
   "name": "Take-Two Interactive Software, Inc.",
   "currency": "USD",
   "exchange": "NASDAQ",
-  "snapshotDate": "2026-11-20",
+  "snapshotDate": "2026-11-21",
   "snapshotTimezone": "America/Buenos_Aires",
-  "lastCloseDate": "2026-11-19",
-  "lastClose": 208.65,
-  "firstDate": "2024-11-20",
-  "source": "Snapshot of daily official closes compiled 2026-11-20 from Yahoo Finance chart API, cross-checked against Nasdaq historical quotes when available. Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
+  "lastCloseDate": "2026-11-20",
+  "lastClose": 210.0,
+  "firstDate": "2024-11-21",
+  "source": "Snapshot of daily official closes compiled 2026-11-21 from Yahoo Finance chart API, cross-checked against Nasdaq historical quotes when available. Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
   "sources": [
     {
       "name": "Yahoo Finance chart",
@@ -28,11 +28,6 @@
   ],
   "termsNote": "Yahoo and Nasdaq terms generally restrict redistribution of market data as a product. This file is a dated illustrative snapshot for a static educational page, with attribution. The site does not call these APIs from the browser.",
   "quotes": [
-    {
-      "date": "2024-11-20",
-      "close": 185.5,
-      "adjClose": 185.5
-    },
     {
       "date": "2024-11-21",
       "close": 186.58,
@@ -2532,6 +2527,11 @@
       "date": "2026-11-19",
       "close": 208.65,
       "adjClose": 208.65
+    },
+    {
+      "date": "2026-11-20",
+      "close": 210.0,
+      "adjClose": 210.0
     }
   ]
 }
