@@ -4,12 +4,12 @@
   "currency": "USD",
   "exchange": "Bitstamp",
   "pair": "BTC/USD",
-  "snapshotDate": "2026-11-23",
+  "snapshotDate": "2026-11-24",
   "snapshotTimezone": "America/Buenos_Aires",
   "lastCloseDate": "2026-11-23",
   "lastClose": 61209.32,
   "firstDate": "2018-09-07",
-  "source": "Snapshot of daily BTC/USD closes compiled 2026-11-23 from the Bitstamp public OHLC API (step=86400). Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
+  "source": "Snapshot of daily BTC/USD closes compiled 2026-11-24 from the Bitstamp public OHLC API (step=86400). Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
   "sources": [
     {
       "name": "Bitstamp public OHLC",
