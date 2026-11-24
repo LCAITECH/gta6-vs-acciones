@@ -6,9 +6,9 @@
   "pair": "BTC/USD",
   "snapshotDate": "2026-11-23",
   "snapshotTimezone": "America/Buenos_Aires",
-  "lastCloseDate": "2026-11-22",
-  "lastClose": 61169.55,
-  "firstDate": "2018-09-06",
+  "lastCloseDate": "2026-11-23",
+  "lastClose": 61209.32,
+  "firstDate": "2018-09-07",
   "source": "Snapshot of daily BTC/USD closes compiled 2026-11-23 from the Bitstamp public OHLC API (step=86400). Bundled at build time / GitHub Actions. Not a live data feed and not for trading.",
   "sources": [
     {
@@ -24,10 +24,6 @@
   ],
   "termsNote": "Educational dated snapshot with attribution. The browser never calls Bitstamp. Commercial redistribution of Bitstamp exchange data may require a Data License Agreement (partners@bitstamp.net). Coinbase was not used: its Market Data Terms of Use forbid displaying or redistributing that market data to third parties without prior written consent. CoinGecko and Binance are not used.",
   "quotes": [
-    {
-      "date": "2018-09-06",
-      "close": 6493.09
-    },
     {
       "date": "2018-09-07",
       "close": 6400.0
@@ -12023,6 +12019,10 @@
     {
       "date": "2026-11-22",
       "close": 61169.55
+    },
+    {
+      "date": "2026-11-23",
+      "close": 61209.32
     }
   ]
 }
