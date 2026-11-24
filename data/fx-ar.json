@@ -1,6 +1,6 @@
 {
-  "updatedAtUtc": "2026-11-24T17:34:13.606085+00:00",
-  "updatedAtArt": "24/11/2026 14:34",
+  "updatedAtUtc": "2026-11-24T23:27:41.065099+00:00",
+  "updatedAtArt": "24/11/2026 20:27",
   "source": "DolarApi https://dolarapi.com",
   "sourceUrl": "https://dolarapi.com/docs/uso",
   "note": "Valores informativos. Cripto = cotización de referencia de DolarApi para USDT/USDC; tu exchange puede cobrar otro precio.",
@@ -9,50 +9,50 @@
       "label": "Oficial (BNA)",
       "compra": 1565,
       "venta": 1615,
-      "updatedAtUtc": "2026-11-24T14:00:00+00:00",
-      "updatedAtArt": "24/11/2026 11:00"
+      "updatedAtUtc": "2026-11-24T18:00:00+00:00",
+      "updatedAtArt": "24/11/2026 15:00"
     },
     "blue": {
       "label": "Blue",
-      "compra": 1670,
-      "venta": 1690,
-      "updatedAtUtc": "2026-11-24T16:56:00+00:00",
-      "updatedAtArt": "24/11/2026 13:56"
+      "compra": 1680,
+      "venta": 1700,
+      "updatedAtUtc": "2026-11-24T21:02:00+00:00",
+      "updatedAtArt": "24/11/2026 18:02"
     },
     "bolsa": {
       "label": "MEP (bolsa)",
-      "compra": 1688.6,
-      "venta": 1691.8,
-      "updatedAtUtc": "2026-11-24T16:56:00+00:00",
-      "updatedAtArt": "24/11/2026 13:56"
+      "compra": 1677.6,
+      "venta": 1695.1,
+      "updatedAtUtc": "2026-11-24T21:02:00+00:00",
+      "updatedAtArt": "24/11/2026 18:02"
     },
     "contadoconliqui": {
       "label": "CCL",
-      "compra": 1792.2,
-      "venta": 1793.3,
-      "updatedAtUtc": "2026-11-24T16:56:00+00:00",
-      "updatedAtArt": "24/11/2026 13:56"
+      "compra": 1793.4,
+      "venta": 1797.1,
+      "updatedAtUtc": "2026-11-24T21:02:00+00:00",
+      "updatedAtArt": "24/11/2026 18:02"
     },
     "mayorista": {
       "label": "Mayorista",
-      "compra": 1586,
-      "venta": 1595,
-      "updatedAtUtc": "2026-11-24T13:47:00+00:00",
-      "updatedAtArt": "24/11/2026 10:47"
+      "compra": 1584,
+      "venta": 1593,
+      "updatedAtUtc": "2026-11-24T17:17:00+00:00",
+      "updatedAtArt": "24/11/2026 14:17"
     },
     "cripto": {
       "label": "Cripto (USDT/USDC)",
-      "compra": 1783.18,
-      "venta": 1790.18,
-      "updatedAtUtc": "2026-11-24T16:56:00+00:00",
-      "updatedAtArt": "24/11/2026 13:56"
+      "compra": 1749.06,
+      "venta": 1777.74,
+      "updatedAtUtc": "2026-11-24T21:02:00+00:00",
+      "updatedAtArt": "24/11/2026 18:02"
     },
     "tarjeta": {
       "label": "Tarjeta (oficial + 30%)",
       "compra": 2034.5,
       "venta": 2099.5,
-      "updatedAtUtc": "2026-11-24T14:00:00+00:00",
-      "updatedAtArt": "24/11/2026 11:00"
+      "updatedAtUtc": "2026-11-24T18:00:00+00:00",
+      "updatedAtArt": "24/11/2026 15:00"
     }
   }
 }
