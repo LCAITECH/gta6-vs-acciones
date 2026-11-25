@@ -1,6 +1,6 @@
 {
-  "updatedAtUtc": "2026-11-24T22:46:51.663537+00:00",
-  "updatedAtArt": "24/11/2026 19:46",
+  "updatedAtUtc": "2026-11-25T21:59:56.884122+00:00",
+  "updatedAtArt": "25/11/2026 18:59",
   "timezone": "America/Buenos_Aires",
   "sourceNote": "Precios de fichas públicas, mayormente Venex (listados enhancedClick y, en los casos indicados, meta product:price:amount de la ficha). Relevado el 18/11/2026 (hora Argentina). No es un tick en vivo: un script intenta refrescar cada ~6 horas. Si una tienda no responde, se conserva el último valor verificado con su fecha. No se usa Mercado Libre (su API pública no permite el rastreo sin OAuth).",
   "items": [
@@ -707,12 +707,12 @@
       "compareHow": "precio de lista",
       "store": "Cetrogar",
       "url": "https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p",
-      "fetchedAtArt": "24/11/2026 19:46",
+      "fetchedAtArt": "25/11/2026 18:59",
       "parse": "manual",
       "note": "También ARS 1.899.999 en Frávega el mismo día. Precio de lista, IVA incluido.",
       "ccy": "ARS",
       "status": "ok",
-      "fetchedAtUtc": "2026-11-24T22:46:51.663537+00:00"
+      "fetchedAtUtc": "2026-11-25T21:59:56.884122+00:00"
     },
     {
       "id": "con-ps5-standard",
@@ -757,21 +757,21 @@
       "label": "Xbox Series S 512 GB",
       "product": "Xbox Series S 512 GB",
       "brand": "MICROSOFT",
-      "price": 1475000,
-      "cashPrice": 1180000,
-      "comparePrice": 1180000,
+      "price": 1474560,
+      "cashPrice": 1179648,
+      "comparePrice": 1179648,
       "compareHow": "efectivo",
       "store": "Game Sense",
       "url": "https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/",
-      "fetchedAtArt": "24/11/2026 19:46",
+      "fetchedAtArt": "25/11/2026 18:59",
       "parse": "manual",
-      "note": "Lista ARS 1.475.000; efectivo −20% = ARS 1.180.000; transferencia −10% = ARS 1.327.500. El comparador usa el efectivo.",
+      "note": "Lista ARS 1.474.560; efectivo −20% = ARS 1.179.648; transferencia −10% = ARS 1.327.104. El comparador usa el efectivo.",
       "ccy": "ARS",
       "status": "ok",
-      "fetchedAtUtc": "2026-11-24T22:46:51.663537+00:00",
+      "fetchedAtUtc": "2026-11-25T21:59:56.884122+00:00",
       "cashDiscountPct": 20,
       "transferDiscountPct": 10,
-      "transferPrice": 1327500
+      "transferPrice": 1327104
     },
     {
       "id": "con-xbox-x",
@@ -780,21 +780,21 @@
       "label": "Xbox Series X 1 TB",
       "product": "Xbox Series X 1 TB",
       "brand": "MICROSOFT",
-      "price": 2742000,
-      "cashPrice": 2193600,
-      "comparePrice": 2193600,
+      "price": 2741760,
+      "cashPrice": 2193408,
+      "comparePrice": 2193408,
       "compareHow": "efectivo",
       "store": "Game Sense",
       "url": "https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/",
-      "fetchedAtArt": "24/11/2026 19:46",
+      "fetchedAtArt": "25/11/2026 18:59",
       "parse": "manual",
-      "note": "Lista ARS 2.742.000; efectivo −20% = ARS 2.193.600; transferencia −10% = ARS 2.467.800. El comparador usa el efectivo.",
+      "note": "Lista ARS 2.741.760; efectivo −20% = ARS 2.193.408; transferencia −10% = ARS 2.467.584. El comparador usa el efectivo.",
       "ccy": "ARS",
       "status": "ok",
-      "fetchedAtUtc": "2026-11-24T22:46:51.663537+00:00",
+      "fetchedAtUtc": "2026-11-25T21:59:56.884122+00:00",
       "cashDiscountPct": 20,
       "transferDiscountPct": 10,
-      "transferPrice": 2467800
+      "transferPrice": 2467584
     }
   ],
   "presets": [
