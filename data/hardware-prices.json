@@ -1,6 +1,6 @@
 {
-  "updatedAtUtc": "2026-11-26T21:57:47.949737+00:00",
-  "updatedAtArt": "26/11/2026 18:57",
+  "updatedAtUtc": "2026-11-27T21:40:38.803269+00:00",
+  "updatedAtArt": "27/11/2026 18:40",
   "timezone": "America/Buenos_Aires",
   "sourceNote": "Precios de fichas públicas, mayormente Venex (listados enhancedClick y, en los casos indicados, meta product:price:amount de la ficha). Relevado el 18/11/2026 (hora Argentina). No es un tick en vivo: un script intenta refrescar cada ~6 horas. Si una tienda no responde, se conserva el último valor verificado con su fecha. No se usa Mercado Libre (su API pública no permite el rastreo sin OAuth).",
   "items": [
@@ -707,12 +707,12 @@
       "compareHow": "precio de lista",
       "store": "Cetrogar",
       "url": "https://www.cetrogar.com.ar/consola-playstation-ps5-digital-bundle-gt7---astrobot-825gb-el3034/p",
-      "fetchedAtArt": "26/11/2026 18:57",
+      "fetchedAtArt": "27/11/2026 18:40",
       "parse": "manual",
       "note": "También ARS 1.899.999 en Frávega el mismo día. Precio de lista, IVA incluido.",
       "ccy": "ARS",
       "status": "ok",
-      "fetchedAtUtc": "2026-11-26T21:57:47.949737+00:00"
+      "fetchedAtUtc": "2026-11-27T21:40:38.803269+00:00"
     },
     {
       "id": "con-ps5-standard",
@@ -763,12 +763,12 @@
       "compareHow": "efectivo",
       "store": "Game Sense",
       "url": "https://gamesenseargentina.com/productos/consola-xbox-microsoft-series-s-de-512gb-digital-color-blanco/",
-      "fetchedAtArt": "26/11/2026 18:57",
+      "fetchedAtArt": "27/11/2026 18:40",
       "parse": "manual",
       "note": "Lista ARS 1.474.560; efectivo −20% = ARS 1.179.648; transferencia −10% = ARS 1.327.104. El comparador usa el efectivo.",
       "ccy": "ARS",
       "status": "ok",
-      "fetchedAtUtc": "2026-11-26T21:57:47.949737+00:00",
+      "fetchedAtUtc": "2026-11-27T21:40:38.803269+00:00",
       "cashDiscountPct": 20,
       "transferDiscountPct": 10,
       "transferPrice": 1327104
@@ -786,12 +786,12 @@
       "compareHow": "efectivo",
       "store": "Game Sense",
       "url": "https://gamesenseargentina.com/productos/xbox-series-x-standard-1tb/",
-      "fetchedAtArt": "26/11/2026 18:57",
+      "fetchedAtArt": "27/11/2026 18:40",
       "parse": "manual",
       "note": "Lista ARS 2.741.760; efectivo −20% = ARS 2.193.408; transferencia −10% = ARS 2.467.584. El comparador usa el efectivo.",
       "ccy": "ARS",
       "status": "ok",
-      "fetchedAtUtc": "2026-11-26T21:57:47.949737+00:00",
+      "fetchedAtUtc": "2026-11-27T21:40:38.803269+00:00",
       "cashDiscountPct": 20,
       "transferDiscountPct": 10,
       "transferPrice": 2467584
